@@ -207,12 +207,12 @@ typedef struct POLAR2D_TYP
 }POLAR2D, *LPPOLAR2D;
 
 //3D cylindrical coordinates//////////////////////////
-typedef struct CYLINDRICAL_TYP
+typedef struct CYLINDRICAL3D_TYP
 {
 	float r;
 	float theta;
 	float z;
-}CYLINDRICAL, *PCYLINDRICAL;
+}CYLINDRICAL3D, *LPCYLINDRICAL3D;
 
 typedef struct SPHERICAL3D_TYP
 {
@@ -326,5 +326,115 @@ inline void QUAT_INITWXYZ(LPQUAT pQ, float x, float y, float, float z, float w) 
 inline void QUAT_INIT_VECTOR3D(LPQUAT pQ, LPVECTOR3D pV) { pQ->w = 0; pQ->x = pV->x; pQ->y = pV->y; pQ->z = pV->z; }
 inline void QUAT_INIT(LPQUAT pDest, LPQUAT pSour) { pDest->x = pSour->x; pDest->y = pSour->y; pDest->z = pSour->z; pDest->w = pSour->w; }
 inline void QUAT_COPY(LPQUAT pDest, LPQUAT pSour) { pDest->x = pSour->x; pDest->y = pSour->y; pDest->z = pSour->z; pDest->w = pSour->w; }
+
+
+
+///////////////////Function Prototypes///////////////////////
+
+
+float Fast_Sin(float theta);
+float Fast_Cos(float theta);
+
+int   Fast_Distance_2D(int x, int y);
+float Fast_Distance_3D(float x, float y, float z);
+
+void POLAR2D_TO_POINT2D(LPPOLAR2D polar, LPPOINT2D point);
+void POLAR2D_TO_XY(LPPOLAR2D, float* x, float* y);
+void POINT2D_TO_POLAR2D(LPPOINT2D point, LPPOLAR2D polar);
+void POINT2D_TO_POLAR_RTH(LPPOINT2D point, float* r, float* theta);
+void CYLINDRICAL3D_TO_POINT3D(LPCYLINDRICAL3D cyl, LPPOINT3D);
+void CYLINDRICAL3D_TO_XYZ(LPCYLINDRICAL3D cyl, float* x, float* y, float*, z);
+void POINT3D_TO_CYLINDRICAL3D(LPPOINT3D point, LPCYLINDRICAL3D cyl);
+void POINT3D_TO_CYLINDRICAL3D_RTHZ(LPPOINT3D, float* r, float* theta, float* z);
+void SPHERICAL3D_TO_POINT3D(LPSPHERICAL3D sph, LPPOINT3D point);
+void SPHERICAL3D_TO_XYZ(LPSPHERICAL3D sph, float* x, float* y, float* z);
+void POINT3D_TO_SPHERICAL3D(LPPOINT3D point, LPSPHERICAL3D sph);
+void POINT3D_TO_SPHERICAL3D_PTHPI(float* p, float* theta, float* phi);
+
+void     VECTOR2D_ADD(LPVECTOR2D va, LPVECTOR2D vb, LPVECTOR2D vsum);
+VECTOR2D VECTOR2D_ADD(LPVECTOR2D va, LPVECTOR2D vb);
+void     VECTOR2D_SUB(LPVECTOR2D va, LPVECTOR2D vb, LPVECTOR2D vdiff);
+VECTOR2D VECTOR2D_SUB(LPVECTOR2D va, LPVECTOR2D vb);
+void     VECTOR2D_SCALE(float k, LPVECTOR2D vector);
+void     VECTOR2D_SCALE(float k, LPVECTOR2D vector, LPVECTOR2D scaled);
+float    VECTOR2D_DOT(LPVECTOR2D va, LPVECTOR2D vb);
+float    VECTOR2D_LENGTH(LPVECTOR2D vector);
+float    VECTOR2D_LENGTH_FAST(LPVECTOR2D vector);
+void     VECTOR2D_NORMALIZE(LPVECTOR2D vector);
+void     VECTOR2D_NORMALIZE(LPVECTOR2D va, LPVECTOR2D vn);
+void     VECTOR2D_BUILD(LPVECTOR2D init, LPVECTOR2D term, LPVECTOR2D result);
+float    VECTOR2D_COSTH(LPVECTOR2D va, LPVECTOR2D vb);
+float    VECTOR2D_PRINT(LPVECTOR2D va, char* name);
+
+void     VECTOR3D_ADD(LPVECTOR3D va, LPVECTOR3D vb, LPVECTOR3D vsum);
+VECTOR3D VECTOR3D_ADD(LPVECTOR3D va, LPVECTOR3D vb);
+void     VECTOR3D_SUB(LPVECTOR3D va, LPVECTOR3D vb, LPVECTOR3D vdiff);
+VECTOR3D VECTOR3D_SUB(LPVECTOR3D va, LPVECTOR3D vb);
+void     VECTOR3D_SCALE(float k, LPVECTOR3D vector);
+void     VECTOR3D_SCALE(float k, LPVECTOR3D vector, LPVECTOR3D scaled);
+float    VECTOR3D_DOT(LPVECTOR3D va, LPVECTOR3D vb);
+void     VECTOR3D_CROSS(LPVECTOR3D va, LPVECTOR3D vb, LPVECTOR3D vn);
+VECTOR3D VECTOR3D_CROSS(LPVECTOR3D va, LPVECTOR3D vb);
+float    VECTOR3D_LENGTH(LPVECTOR3D vector);
+float    VECTOR3D_LENGTH_FAST(LPVECTOR3D vector);
+void     VECTOR3D_NORMALIZE(LPVECTOR3D vector);
+void     VECTOR3D_NORMALIZE(LPVECTOR3D va, LPVECTOR3D vn);
+void     VECTOR3D_BUILD(LPVECTOR3D init, LPVECTOR3D term, LPVECTOR3D result);
+float    VECTOR3D_COSTH(LPVECTOR3D va, LPVECTOR3D vb);
+float    VECTOR3D_PRINT(LPVECTOR3D va, char* name);
+
+void     VECTOR4D_ADD(LPVECTOR4D va, LPVECTOR4D vb, LPVECTOR4D vsum);
+VECTOR4D VECTOR4D_ADD(LPVECTOR4D va, LPVECTOR4D vb);
+void     VECTOR4D_SUB(LPVECTOR4D va, LPVECTOR4D vb, LPVECTOR4D vdiff);
+VECTOR4D VECTOR4D_SUB(LPVECTOR4D va, LPVECTOR4D vb);
+void     VECTOR4D_SCALE(float k, LPVECTOR4D vector);
+void     VECTOR4D_SCALE(float k, LPVECTOR4D vector, LPVECTOR4D scaled);
+float    VECTOR4D_DOT(LPVECTOR4D va, LPVECTOR4D vb);
+void     VECTOR4D_CROSS(LPVECTOR4D va, LPVECTOR4D vb, LPVECTOR4D vn);
+VECTOR4D VECTOR4D_CROSS(LPVECTOR4D va, LPVECTOR4D vb);
+float    VECTOR4D_LENGTH(LPVECTOR4D vector);
+float    VECTOR4D_LENGTH_FAST(LPVECTOR4D vector);
+void     VECTOR4D_NORMALIZE(LPVECTOR4D vector);
+void     VECTOR4D_NORMALIZE(LPVECTOR4D va, LPVECTOR4D vn);
+void     VECTOR4D_BUILD(LPVECTOR4D init, LPVECTOR4D term, LPVECTOR4D result);
+float    VECTOR4D_COSTH(LPVECTOR4D va, LPVECTOR4D vb);
+float    VECTOR4D_PRINT(LPVECTOR4D va, char* name);
+
+
+
+void  MATRIX_INIT_2X2(LPMATRIX_2X2 m, float m00, float m01, float m10, float m11);
+void  MATRIX_PRINT_2X2(LPMATRIX_2X2 m, char* name);
+float MATRIX_DET_2X2(LPMATRIX_2X2 m);
+void  MATRIX_ADD_2X2(LPMATRIX_2X2 ma, LPMATRIX_2X2 mb, LPMATRIX_2X2 msum);
+void  MATRIX_MUL_2X2(LPMATRIX_2X2 ma, LPMATRIX_2X2 mb, LPMATRIX_2X2 mprod);
+void  MATRIX_INVERSE_2X2(LPMATRIX_2X2 m, LPMATRIX_2X2 mi);
+void  SOLVE_SYSTEM_2X2(LPMATRIX_2X2 ma, LPMATRIX_2X2 mx, LPMATRIX_2X2 mb);
+
+void  MATRIX_INIT_3X3(LPMATRIX_3X3 m,
+					  float m00, float m01, float m02,
+					  float m10, float m11, float m12,
+					  float m20, float m21, float m22);
+void  MATRIX_PRINT_3X3(LPMATRIX_3X3 m, char* name);
+float MATRIX_DET_3X3(LPMATRIX_3X3 m);
+void  MATRIX_ADD_3X3(LPMATRIX_3X3 ma, LPMATRIX_3X3 mb, LPMATRIX_3X3 msum);
+void  MATRIX_MUL_3X3(LPMATRIX_3X3 ma, LPMATRIX_3X3 mb, LPMATRIX_3X3 mprod);
+void  MATRIX_INVERSE_3X3(LPMATRIX_3X3 m, LPMATRIX_3X3 mi);
+void  SOLVE_SYSTEM_3X3(LPMATRIX_3X3 ma, LPMATRIX_3X3 mx, LPMATRIX_3X3 mb);
+
+void  MATRIX_INIT_4X4(LPMATRIX_4X4 m, float m00, float m01, float m02, float m03,
+					                  float m10, float m11, float m12, float m13,
+									  float m20, float m21, float m22, float m23,
+									  float m30, float m31, float m32, float m33);
+void  MATRIX_PRINT_4X4(LPMATRIX_4X4 m, char* name);
+float MATRIX_DET_4X4(LPMATRIX_4X4 m);
+void  MATRIX_ADD_4X4(LPMATRIX_4X4 va, LPMATRIX_4X4 vb, LPMATRIX_4X4 vsum);
+void  MATRIX_MUL_4X4(LPMATRIX_4X4 va, LPMATRIX_4X4 vb, LPMATRIX_4X4 vprod);
+void  MATRIX_MUL_1X4_4X4(LPMATRIX_1X4 va, LPMATRIX_4X4, LPMATRIX_4X4 vprod);
+void  MATRIX_MUL_VECTOR3D_4X4(LPVECTOR3D va);
+void  MATRIX_INVERSE_4X4(LPMATRIX_4X4 m, LPMATRIX_4X4 mi);
+void  SOLVE_SYSTEM_4X4(LPMATRIX_4X4 a, LPMATRIX_4X4 x, LPMATRIX_4X4 b);
+
+
+
 
 #endif
