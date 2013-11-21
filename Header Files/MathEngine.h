@@ -3,6 +3,9 @@
 
 #include <cstring>
 
+float cos_look[361];
+float sin_look[361];
+
 ///////Point and Vector///////////////////////////////////////////////
 typedef struct VECTOR2D_TYP
 {
@@ -364,7 +367,7 @@ void     VECTOR2D_NORMALIZE(LPVECTOR2D vector);
 void     VECTOR2D_NORMALIZE(LPVECTOR2D va, LPVECTOR2D vn);
 void     VECTOR2D_BUILD(LPVECTOR2D init, LPVECTOR2D term, LPVECTOR2D result);
 float    VECTOR2D_COSTH(LPVECTOR2D va, LPVECTOR2D vb);
-float    VECTOR2D_PRINT(LPVECTOR2D va, char* name);
+void     VECTOR2D_PRINT(LPVECTOR2D va, char* name);
 
 void     VECTOR3D_ADD(LPVECTOR3D va, LPVECTOR3D vb, LPVECTOR3D vsum);
 VECTOR3D VECTOR3D_ADD(LPVECTOR3D va, LPVECTOR3D vb);
@@ -381,7 +384,7 @@ void     VECTOR3D_NORMALIZE(LPVECTOR3D vector);
 void     VECTOR3D_NORMALIZE(LPVECTOR3D va, LPVECTOR3D vn);
 void     VECTOR3D_BUILD(LPVECTOR3D init, LPVECTOR3D term, LPVECTOR3D result);
 float    VECTOR3D_COSTH(LPVECTOR3D va, LPVECTOR3D vb);
-float    VECTOR3D_PRINT(LPVECTOR3D va, char* name);
+void     VECTOR3D_PRINT(LPVECTOR3D va, char* name);
 
 void     VECTOR4D_ADD(LPVECTOR4D va, LPVECTOR4D vb, LPVECTOR4D vsum);
 VECTOR4D VECTOR4D_ADD(LPVECTOR4D va, LPVECTOR4D vb);
@@ -398,7 +401,7 @@ void     VECTOR4D_NORMALIZE(LPVECTOR4D vector);
 void     VECTOR4D_NORMALIZE(LPVECTOR4D va, LPVECTOR4D vn);
 void     VECTOR4D_BUILD(LPVECTOR4D init, LPVECTOR4D term, LPVECTOR4D result);
 float    VECTOR4D_COSTH(LPVECTOR4D va, LPVECTOR4D vb);
-float    VECTOR4D_PRINT(LPVECTOR4D va, char* name);
+void     VECTOR4D_PRINT(LPVECTOR4D va, char* name);
 
 
 
