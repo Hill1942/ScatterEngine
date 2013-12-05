@@ -41,7 +41,11 @@ float Fast_Distance_3D(float x, float y, float z)
 }
 
 
-////////////   QUAD Functions  ///////////////
+//////////////////////////////////////////////////////////////////////////////
+                 
+/*                     QUAD Functions                             */
+
+//////////////////////////////////////////////////////////////////////////////
 void QUAT_ADD(LPQUAT qa, LPQUAT qb, LPQUAT qsum)
 {
 	qsum->w = qa->w + qb->w;
@@ -125,7 +129,14 @@ void QUAT_UNIT_INVERSE(LPQUAT q)
 	q->z = - q->z;
 }
 
+void  QUAT_INVERSE(LPQUAT q, LPQUAT qi)
+{
 
+}
+void  QUAT_INVERSE(LPQUAT q)
+{
+
+}
 
 
 
@@ -550,11 +561,11 @@ void VECTOR4D_PRINT(LPVECTOR4D va, char* name = "v")
 
 
 
+//////////////////////////////////////////////////////////////////////////////
+                 
+/*                     All 2D Matrix Functions                             */
 
-
-
-
-///////////////////////  Matrix Function   ////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 void MATRIX_INIT_2X2(LPMATRIX_2X2 m, float m00, float m01, float m10, float m11)
 {
 	m->M00 = m00; m->M01 = m01;
@@ -604,36 +615,229 @@ void MATRIX_INVERSE_2X2(LPMATRIX_2X2 m, LPMATRIX_2X2 mi)
 	mi->M11 =  m->M00 * det_inv;
 }
 
-
-void SOLVE_SYSTEM_2X2(LPMATRIX_2X2 ma, LPMATRIX_2X2 mx, LPMATRIX_2X2 mb)
+void  SOLVE_SYSTEM_2X2(LPMATRIX_1X2 mx, LPMATRIX_2X2 ma, LPMATRIX_1X2 mb)
 {
+	float det_a = MATRIX_DET_2X2(ma);
+	MATRIX_2X2 temp_matrix;
+
+	MATRIX_COPY_2X2(&temp_matrix, ma);
+	MATRIX_ROW_SWAP_2X2(&temp_matrix, 0, mb);
+	mx->M00 = MATRIX_DET_2X2(&temp_matrix) / det_a;
+
+	MATRIX_COPY_2X2(&temp_matrix, ma);
+	MATRIX_ROW_SWAP_2X2(&temp_matrix, 1, mb);
+	mx->M01 = MATRIX_DET_2X2(&temp_matrix) / det_a;
+}
 
 
+//////////////////////////////////////////////////////////////////////////////
+               
+/*                     All 3D Matrix Functions                             */
+
+//////////////////////////////////////////////////////////////////////////////
 void MATRIX_INIT_3X3(LPMATRIX_3X3 m,
 					  float m00, float m01, float m02,
 					  float m10, float m11, float m12,
-					  float m20, float m21, float m22);
-void MATRIX_PRINT_3X3(LPMATRIX_3X3 m, char* name);
-float MATRIX_DET_3X3(LPMATRIX_3X3 m);
-void MATRIX_ADD_3X3(LPMATRIX_3X3 ma, LPMATRIX_3X3 mb, LPMATRIX_3X3 msum);
-void MATRIX_MUL_1X2_3X2(LPMATRIX_1X2 ma, LPMATRIX_3X2 mb, LPMATRIX_1X2 mprod);
-void MATRIX_MUL_1X3_3X3(LPMATRIX_1X3 ma, LPMATRIX_3X3 mb, LPMATRIX_1X3 mprod);
-void MATRIX_MUL_3X3(LPMATRIX_3X3 ma, LPMATRIX_3X3 mb, LPMATRIX_3X3 mprod);
-void MATRIX_INVERSE_3X3(LPMATRIX_3X3 m, LPMATRIX_3X3 mi);
-void SOLVE_SYSTEM_3X3(LPMATRIX_3X3 ma, LPMATRIX_3X3 mx, LPMATRIX_3X3 mb);
+					  float m20, float m21, float m22)
+{
+	m->M00 = m00; m->M01 = m01; m->M02 = m02;
+	m->M10 = m10; m->M11 = m11; m->M12 = m12;
+	m->M20 = m20; m->M21 = m21; m->M22 = m22;
+}
 
+void MATRIX_PRINT_3X3(LPMATRIX_3X3 m, char* name)
+{
+	Write_Error("\n%s=\n", name);
+	for (int row = 0; row < 3; row++, Write_Error("\n"))
+	{
+		for (int col = 0; col < 3; col)
+		{
+			Write_Error("%f ", m->M[row][col]);
+		}
+	}
+}
+
+float MATRIX_DET_3X3(LPMATRIX_3X3 m)
+{
+	return m->M00 * (m->M11 * m->M22 - m->M12 * m->M21) - 
+		   m->M01 * (m->M10 * m->M22 - m->M12 * m->M20) + 
+		   m->M02 * (m->M10 * m->M21 - m->M11 * m->M20);
+} 
+
+void MATRIX_ADD_3X3(LPMATRIX_3X3 ma, LPMATRIX_3X3 mb, LPMATRIX_3X3 msum)
+{
+	for (int row = 0; row < 3; row++)
+	{
+		for (int col = 0; col < 3; col++)
+		{
+			msum->M[row][col] = ma->M[row][col] + ma->M[row][col];
+		}
+	}
+}
+
+void MATRIX_MUL_1X2_3X2(LPMATRIX_1X2 ma, LPMATRIX_3X2 mb, LPMATRIX_1X2 mprod)
+{
+	mprod->M00 = ma->M00 * mb->M00 + ma->M01 * mb->M10 + mb->M20;
+	mprod->M01 = ma->M00 * mb->M01 + ma->M01 * mb->M11 + mb->M21;
+}
+
+void MATRIX_MUL_1X3_3X3(LPMATRIX_1X3 ma, LPMATRIX_3X3 mb, LPMATRIX_1X3 mprod)
+{
+	for (int col = 0; col < 3; col++)
+	{
+		float temp_sum = 0.0;
+		for (int row = 0; row < 3; row++)
+		{
+			temp_sum += ma->M[row] * mb->M[row][col];
+		}
+		mprod->M[col] = temp_sum;
+	}
+}
+
+void MATRIX_MUL_3X3(LPMATRIX_3X3 ma, LPMATRIX_3X3 mb, LPMATRIX_3X3 mprod)
+{
+	for (int row = 0; row < 3; row++)
+	{
+		for (int col = 0; col < 3; col++)
+		{
+			mprod->M[row][col] = ma->M[row][0] * mb->M[0][col] +  ma->M[row][1] * mb->M[1][col] +  ma->M[row][2] * mb->M[2][col];
+		}
+	}
+}
+
+void MATRIX_INVERSE_3X3(LPMATRIX_3X3 m, LPMATRIX_3X3 mi)
+{
+	float det = m->M00 * (m->M11 * m->M22 - m->M12 * m->M21) - 
+		        m->M01 * (m->M10 * m->M22 - m->M12 * m->M20) + 
+		        m->M02 * (m->M10 * m->M21 - m->M11 * m->M20);
+	float det_inv = 1.0 / det;
+
+	mi->M00 =  det_inv * (m->M11 * m->M22 - m->M12 * m->M21);
+	mi->M10 = -det_inv * (m->M10 * m->M22 - m->M12 * m->M20);
+	mi->M20 =  det_inv * (m->M10 * m->M21 - m->M11 * m->M20);
+
+	mi->M01 = -det_inv * (m->M01 * m->M22 - m->M02 * m->M21);
+	mi->M11 =  det_inv * (m->M00 * m->M22 - m->M02 * m->M20);
+	mi->M21 = -det_inv * (m->M00 * m->M21 - m->M01 * m->M20);
+
+	mi->M02 =  det_inv * (m->M01 * m->M12 - m->M02 * m->M11);
+	mi->M12 = -det_inv * (m->M00 * m->M12 - m->M02 * m->M10);
+	mi->M22 =  det_inv * (m->M00 * m->M11 - m->M01 * m->M10);
+}
+
+void SOLVE_SYSTEM_3X3(LPMATRIX_1X3 mx, LPMATRIX_3X3 ma, LPMATRIX_1X3 mb)
+{
+	float det = ma->M00 * (ma->M11 * ma->M22 - ma->M12 * ma->M21) - 
+		        ma->M01 * (ma->M10 * ma->M22 - ma->M12 * ma->M20) + 
+		        ma->M02 * (ma->M10 * ma->M21 - ma->M11 * ma->M20);
+	MATRIX_3X3 temp_matrix;
+
+	MATRIX_COPY_3X3(&temp_matrix, ma);
+	MATRIX_ROW_SWAP_3X3(&temp_matrix, 0, mb);
+	mx->M00 = MATRIX_DET_3X3(&temp_matrix) / det;
+
+	MATRIX_COPY_3X3(&temp_matrix, ma);
+	MATRIX_ROW_SWAP_3X3(&temp_matrix, 1, mb);
+	mx->M00 = MATRIX_DET_3X3(&temp_matrix) / det;
+
+	MATRIX_COPY_3X3(&temp_matrix, ma);
+	MATRIX_ROW_SWAP_3X3(&temp_matrix, 2, mb);
+	mx->M00 = MATRIX_DET_3X3(&temp_matrix) / det;
+}
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+               
+/*                     All 4D Matrix Functions                             */
+
+//////////////////////////////////////////////////////////////////////////////
 void MATRIX_INIT_4X4(LPMATRIX_4X4 m, float m00, float m01, float m02, float m03,
 					                  float m10, float m11, float m12, float m13,
 									  float m20, float m21, float m22, float m23,
-									  float m30, float m31, float m32, float m33);
-void MATRIX_PRINT_4X4(LPMATRIX_4X4 m, char* name);
-float MATRIX_DET_4X4(LPMATRIX_4X4 m);
-void MATRIX_ADD_4X4(LPMATRIX_4X4 va, LPMATRIX_4X4 vb, LPMATRIX_4X4 vsum);
-void MATRIX_MUL_4X4(LPMATRIX_4X4 va, LPMATRIX_4X4 vb, LPMATRIX_4X4 vprod);
-void MATRIX_MUL_1X4_4X4(LPMATRIX_1X4 va, LPMATRIX_4X4, LPMATRIX_4X4 vprod);
-void MATRIX_MUL_VECTOR3D_4X4(LPVECTOR3D va);
-void MATRIX_INVERSE_4X4(LPMATRIX_4X4 m, LPMATRIX_4X4 mi);
-void SOLVE_SYSTEM_4X4(LPMATRIX_4X4 a, LPMATRIX_4X4 x, LPMATRIX_4X4 b);
+									  float m30, float m31, float m32, float m33)
+{
+	m->M00 = m00; m->M01 = m01; m->M02 = m02; m->M03 = m03;
+	m->M10 = m10; m->M11 = m11; m->M12 = m12; m->M13 = m13;
+	m->M20 = m20; m->M21 = m21; m->M22 = m22; m->M23 = m23;
+	m->M30 = m30; m->M31 = m31; m->M32 = m32; m->M33 = m33;
+}
+
+void MATRIX_PRINT_4X4(LPMATRIX_4X4 m, char* name)
+{
+	Write_Error("\n%s=\n", name);
+	for (int row = 0; row < 4; row++, Write_Error("\n"))
+	{
+		for (int col = 0; col < 4; col)
+		{
+			Write_Error("%f ", m->M[row][col]);
+		}
+	}
+}
+
+float MATRIX_DET_4X4(LPMATRIX_4X4 m)
+{
+
+}
+void MATRIX_ADD_4X4(LPMATRIX_4X4 va, LPMATRIX_4X4 vb, LPMATRIX_4X4 vsum)
+{
+	for (int row = 0; row < 4; row++)
+	{
+		for (int col = 0; col < 4; col++)
+		{
+			vsum->M[row][col] = va->M[row][col] + vb->M[row][col];
+		}
+	}
+}
+
+void MATRIX_MUL_4X4(LPMATRIX_4X4 ma, LPMATRIX_4X4 mb, LPMATRIX_4X4 mprod)
+{
+	for (int row = 0; row < 4; row++)
+	{
+		for (int col = 0; col < 4; col++)
+		{
+			mprod->M[row][col] = ma->M[row][0] * mb->M[0][col] +  ma->M[row][1] * mb->M[1][col] +  
+				                 ma->M[row][2] * mb->M[2][col] + ma->M[row][3] * mb->M[3][col];
+		}
+	}
+}
+
+void MATRIX_MUL_1X4_4X4(LPMATRIX_1X4 ma, LPMATRIX_4X4 mb, LPMATRIX_1X4 mprod)
+{
+	for (int col = 0; col < 4; col++)
+	{
+		float temp_sum = 0.0;
+		for (int row = 0; row < 4; row++)
+		{
+			temp_sum += ma->M[row] * mb->M[row][col];
+		}
+		mprod->M[col] = temp_sum;
+	}
+}
+
+void MATRIX_MUL_1X3_4X4(LPMATRIX_1X3 ma, LPMATRIX_4X4 mb, LPMATRIX_1X3 mprod)
+{
+	for (int col = 0; col < 3; col++)
+	{
+		float temp_sum = 0.0;
+		int row;
+		for (row = 0; row < 3; row++)
+		{
+			temp_sum += ma->M[row] * mb->M[row][col];
+		}
+		temp_sum += mb->M[row][col];
+		mprod->M[col] = temp_sum;
+	}
+}
+
+void MATRIX_INVERSE_4X4(LPMATRIX_4X4 m, LPMATRIX_4X4 mi)
+{
+
+}
+void SOLVE_SYSTEM_4X4(LPMATRIX_1X4 mx, LPMATRIX_4X4 ma, LPMATRIX_1X4 mb)
+{
+
+}
 
 
 
