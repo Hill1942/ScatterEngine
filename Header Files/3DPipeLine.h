@@ -81,7 +81,7 @@ typedef struct POLYF4DV1_TYP
 
 }POLYF4DV1, *LPPOLYF4DV1;
 
-typedef struct OBJECT4DV1_TYPtg
+typedef struct OBJECT4DV1_TYP
 {
 	int   id;
 	char  name[64];
