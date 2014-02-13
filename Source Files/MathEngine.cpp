@@ -752,7 +752,7 @@ void SOLVE_SYSTEM_3X3(LPMATRIX_1X3 mx, LPMATRIX_3X3 ma, LPMATRIX_1X3 mb)
 /*                     All 4D Matrix Functions                             */
 
 //////////////////////////////////////////////////////////////////////////////
-void MATRIX_INIT_4X4(LPMATRIX_4X4 m, float m00, float m01, float m02, float m03,
+void MATRIX_INIT_4X4(LPMATRIX_4X4 m,  float m00, float m01, float m02, float m03,
 					                  float m10, float m11, float m12, float m13,
 									  float m20, float m21, float m22, float m23,
 									  float m30, float m31, float m32, float m33)
@@ -815,6 +815,19 @@ void MATRIX_MUL_1X4_4X4(LPMATRIX_1X4 ma, LPMATRIX_4X4 mb, LPMATRIX_1X4 mprod)
 	}
 }
 
+void MATRIX_MUL_1X4_4X4(LPVECTOR4D va, LPMATRIX_4X4 m, LPVECTOR4D vres)
+{
+	for (int col = 0; col < 4; col++)
+	{
+		float temp_sum = 0.0;
+		for (int row = 0; row < 4; row++)
+		{
+			temp_sum += va->M[row] * m->M[row][col];
+		}
+		vres->M[col] = temp_sum;
+	}
+}
+
 void MATRIX_MUL_1X3_4X4(LPMATRIX_1X3 ma, LPMATRIX_4X4 mb, LPMATRIX_1X3 mprod)
 {
 	for (int col = 0; col < 3; col++)
@@ -827,6 +840,21 @@ void MATRIX_MUL_1X3_4X4(LPMATRIX_1X3 ma, LPMATRIX_4X4 mb, LPMATRIX_1X3 mprod)
 		}
 		temp_sum += mb->M[row][col];
 		mprod->M[col] = temp_sum;
+	}
+}
+
+void MATRIX_MUL_1X3_4X4(LPVECTOR3D va, LPMATRIX_4X4 m, LPVECTOR3D vres)
+{
+	for (int col = 0; col < 3; col++)
+	{
+		float temp_sum = 0.0;
+		int row;
+		for (row = 0; row < 3; row++)
+		{
+			temp_sum += va->M[row] * m->M[row][col];
+		}
+		temp_sum += m->M[row][col];
+		vres->M[col] = temp_sum;
 	}
 }
 

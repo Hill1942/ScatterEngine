@@ -81,7 +81,7 @@ typedef struct POLYF4DV1_TYP
 
 }POLYF4DV1, *LPPOLYF4DV1;
 
-typedef struct OBJECT4DV1_TYP
+typedef struct OBJECT4DV1_TYPtg
 {
 	int   id;
 	char  name[64];
@@ -121,6 +121,9 @@ typedef struct CAM4DV1_TYP
 
 	float viewDistance;
 	float fov;
+
+	float nearClipZ;
+	float farClipZ;
 
 	PLANE3D rightClipPlane;
 	PLANE3D leftClipPlane;

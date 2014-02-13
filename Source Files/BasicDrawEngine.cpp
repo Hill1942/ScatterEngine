@@ -6,6 +6,8 @@
 #include <ddraw.h>
 #include "BasicDrawEngine.h"
 
+using namespace std;
+
 extern HWND mainWindowHandle;
 extern HINSTANCE windowInstance;
 
@@ -51,6 +53,24 @@ int ddPixelFormat  = DD_PIXEL_FORMAT565;
 int windowClientX = 0;
 int windowClientY = 0;
 
+USHORT (*RGB16BIT)(int r, int g, int b) = NULL;
+
+USHORT RGB16BIT565(int r, int g, int b)
+{
+	r >>= 3;
+	g >>= 2;
+	b >>= 3;
+	return _RGB16BIT_565((r), (g), (b));
+}
+
+USHORT RGB16BIT555(int r, int g, int b)
+{
+	r >>= 3;
+	g >>= 3;
+	b >>= 3;
+	return _RGB16BIT_555((r), (g), (b));
+}
+
 int DDraw_Init(int width, int height, int bpp, int windowed = 0)
 {
 	int index;
@@ -94,9 +114,17 @@ int DDraw_Init(int width, int height, int bpp, int windowed = 0)
 
 	lpdd->CreateSurface(&ddsd, &lpddsPrimary, NULL);
 	DDPIXELFORMAT ddpf;
-	DDraw_Init_Structure(ddpf);
+	DDRAW_INIT_STRUCT(ddpf);
 
 	lpddsPrimary->GetPixelFormat(&ddpf);
+
+	ddPixelFormat = ddpf.dwRGBBitCount;
+
+	cerr << "pixel format" << ddPixelFormat <<endl;
+	/*
+	if (ddPixelFormat == DD_PIXEL_FORMAT555)
+	{*/
+		
 
 	return 0;
 

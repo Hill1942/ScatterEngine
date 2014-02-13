@@ -4,7 +4,16 @@
 #include <cstring>
 
 
-#define PI  (float)3.141592654f
+#define PI       ((float)3.141592654f)
+#define PI2      ((float)6.283185307f)
+#define PI_DIV_2 ((float)1.570796327f)
+#define PI_DIV_4 ((float)0.785398163f)
+#define PI_INV   ((float)0.318309886f)
+
+#define EPSILON_E4 (float)(1E-4)
+#define EPSILON_E5 (float)(1E-5)
+#define EPSILON_E6 (float)(1E-6)
+
 
 #define MIN(a, b) (((a) < b) ? (a): (b))
 #define MAX(a, b) (((a) > b) ? (a): (b))
@@ -286,10 +295,10 @@ const MATRIX_2X2 IMAT_2X2 = {1, 0,
 #define MATRIX_ZERO_4X4(m) { memset((void*)(m), 0, sizeof(MATRIX_4X4)); }
 #define MATRIX_ZERO_4X3(m) { memset((void*)(m), 0, sizeof(MATRIX_4X3)); }
 
-#define MATRIX_ZERO_2X2(m) { memcpy((void*)(m), (void*)&IMAT_2X2, sizeof(MATRIX_2X2)); }
-#define MATRIX_ZERO_3X3(m) { memcpy((void*)(m), (void*)&IMAT_3X3, sizeof(MATRIX_3X3)); }
-#define MATRIX_ZERO_4X4(m) { memcpy((void*)(m), (void*)&IMAT_4X4, sizeof(MATRIX_4X4)); }
-#define MATRIX_ZERO_4X3(m) { memcpy((void*)(m), (void*)&IMAT_4X3, sizeof(MATRIX_4X3)); }
+#define MATRIX_IDENTITY_2X2(m) { memcpy((void*)(m), (void*)&IMAT_2X2, sizeof(MATRIX_2X2)); }
+#define MATRIX_IDENTITY_3X3(m) { memcpy((void*)(m), (void*)&IMAT_3X3, sizeof(MATRIX_3X3)); }
+#define MATRIX_IDENTITY_4X4(m) { memcpy((void*)(m), (void*)&IMAT_4X4, sizeof(MATRIX_4X4)); }
+#define MATRIX_IDENTITY_4X3(m) { memcpy((void*)(m), (void*)&IMAT_4X3, sizeof(MATRIX_4X3)); }
 
 #define MATRIX_COPY_2X2(mDest, mSour) { memcpy((void*)(mDest), (void*)(mSour), sizeof(MATRIX_2X2)); }
 #define MATRIX_COPY_3X3(mDest, mSour) { memcpy((void*)(mDest), (void*)(mSour), sizeof(MATRIX_3X3)); }
@@ -498,7 +507,9 @@ float MATRIX_DET_4X4(LPMATRIX_4X4 m);
 void  MATRIX_ADD_4X4(LPMATRIX_4X4 ma, LPMATRIX_4X4 mb, LPMATRIX_4X4 msum);
 void  MATRIX_MUL_4X4(LPMATRIX_4X4 ma, LPMATRIX_4X4 mb, LPMATRIX_4X4 mprod);
 void  MATRIX_MUL_1X4_4X4(LPMATRIX_1X4 ma, LPMATRIX_4X4 mb, LPMATRIX_1X4 mprod);
+void  MATRIX_MUL_1X4_4X4(LPVECTOR4D va, LPMATRIX_4X4 m, LPVECTOR4D vres);
 void  MATRIX_MUL_1X3_4X4(LPMATRIX_1X3 ma, LPMATRIX_4X4 mb, LPMATRIX_1X3 mprod);
+void  MATRIX_MUL_1X3_4X4(LPVECTOR3D va, LPMATRIX_4X4 m, LPVECTOR3D vres);
 void  MATRIX_INVERSE_4X4(LPMATRIX_4X4 m, LPMATRIX_4X4 mi);
 void  SOLVE_SYSTEM_4X4(LPMATRIX_1X4 mx, LPMATRIX_4X4 ma, LPMATRIX_1X4 mb);
 
@@ -517,6 +528,23 @@ void  QUAT_INVERSE(LPQUAT q, LPQUAT qi);
 void  QUAT_INVERSE(LPQUAT q);
 void  QUAT_MUL(LPQUAT qa, LPQUAT qb, LPQUAT qprod);
 void  QUAT_TRIPLE_PRODUCT(LPQUAT qa, LPQUAT qb, LPQUAT qc, LPQUAT qprod);
+void  VECTOR3D_THETA_TO_QUAT(LPQUAT q, LPVECTOR3D v, float theta);
+void  VECTOR4D_THETA_TO_QUAT(LPQUAT q, LPVECTOR4D v, float theta);
+void  EULERZYX_TO_QUAT(LPQUAT q, float theta_z, float theta_y, float theta_x);
+void  QUAT_TO_VECTOR3D_THETA(LPQUAT q, LPVECTOR3D v, float* theta);
+void  QUAT_PRINT(LPQUAT q, char* name);
+
+void  Init_Param_line2D(LPPOINT2D pInit, LPPOINT2D pTerm, LPPARAM_LINE2D pLine);
+void  Compute_Param_Line2D(LPPARAM_LINE2D pLine, float t, LPPOINT2D pPoint);
+int   Intersect_Param_Lines2D(LPPARAM_LINE2D pLine1, LPPARAM_LINE2D pLine2, float* t1, float* t2);
+int   Intersect_Param_Lines2D(LPPARAM_LINE2D pLine1, LPPARAM_LINE2D pLine2, LPPOINT2D pPoint);
+
+void  Init_Param_Line3D(LPPOINT3D pInit, LPPOINT3D pTerm, LPPARAM_LINE3D pLine);
+void  Compute_Param_Line3D(LPPARAM_LINE3D pLine, float t, LPPOINT3D pPoint);
+
+void  Plane3D_Init(LPPLANE3D pPlane, LPPOINT3D pPoint, LPVECTOR3D pNormal, int normalize);
+float Compute_Point_In_Plan3D(LPPOINT3D pPoint, LPPLANE3D pPlane);
+int   Intersect_Param_Line3D_Plane3D(LPPARAM_LINE3D pLine, LPPLANE3D pPlane, float* t, LPPOINT3D pPoint);
 
 
 
