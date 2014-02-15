@@ -368,6 +368,454 @@ void Model_To_Word_OBJECT4DV1(LPOBJECT4DV1 obj, int coordinate)
 	}
 }
 
+int Cull_OBJEC4DV1(LPOBJECT4DV1 obj, 
+				   LPCAM4DV1    cam,
+				   int          cullFlags)
+{
+	POINT4D boundingCenter;
+
+	MATRIX_MUL_1X4_4X4(&obj->worldPos, &cam->mWordToCam, &boundingCenter);
+
+	if (cullFlags & CULL_OBJECT_Z_PLANE)
+	{
+		if ( (boundingCenter.z - obj->maxRadius) > cam->farClipZ ||
+			(boundingCenter.z + obj->maxRadius) < cam->nearClipZ )
+		{
+			SET_BIT(obj->state, OBJECT4DV1_STATE_CULLED);
+			return 1;
+		}
+	}
+
+	if (cullFlags & CULL_OBJECT_X_PLANE)
+	{
+		float left_right_half = 0.5 * cam->viewPlaneWidth * boundingCenter.z / cam->viewDistance;
+		if ( (boundingCenter.x - obj->maxRadius) > left_right_half ||
+			 (boundingCenter.x + obj->maxRadius) < -left_right_half )
+		{
+			SET_BIT(obj->state, OBJECT4DV1_STATE_CULLED);
+			return 1;
+		}
+	}
+
+	if (cullFlags & CULL_OBJECT_Y_PLANE)
+	{
+		float top_bottom_half = 0.5 * cam->viewPlaneHeight * boundingCenter.z / cam->viewDistance;
+		if ( (boundingCenter.y - obj->maxRadius) > top_bottom_half || 
+			 (boundingCenter.y + obj->maxRadius) < -top_bottom_half )
+		{
+			SET_BIT(obj->state, OBJECT4DV1_STATE_CULLED);
+			return 1;
+		}
+	}
+	return 0;
+}
+
+void Remove_Backfaces_OBJECT4DV1(LPOBJECT4DV1 obj, LPCAM4DV1 cam)
+{
+	if (obj->state & OBJECT4DV1_STATE_CULLED)
+		return;
+
+	for (int poly = 0; obj->numPolys; poly++)
+	{
+		LPPOLY4DV1 currentPoly = &obj->polyList[poly];
+
+		if ( !(currentPoly->state & POLY4DV1_STATE_ACTIVE)  ||
+			  (currentPoly->state & POLY4DV1_STATE_CLIPPED) || 
+			  (currentPoly->attr  & POLY4DV1_ATTR_2SIDED)   ||
+			  (currentPoly->state & POLY4DV1_STATE_BACKFACE))
+	        continue;
+
+		int v0 = currentPoly->vert[0];
+		int v1 = currentPoly->vert[1];
+		int v2 = currentPoly->vert[2];
+
+		VECTOR4D u;
+		VECTOR4D v;
+		VECTOR4D n;
+
+		VECTOR4D_BUILD(&obj->vTransList[v0], &obj->vTransList[v1], &u);
+		VECTOR4D_BUILD(&obj->vTransList[v0], &obj->vTransList[v2], &v);
+
+		VECTOR4D_CROSS(&u, &v, &n);
+
+		VECTOR4D view;
+		VECTOR4D_BUILD(&obj->vTransList[v0], &cam->pos, &n);
+
+		if (VECTOR4D_DOT(&n, &view) <= 0.0)
+			SET_BIT(currentPoly->state, POLY4DV1_STATE_BACKFACE);
+	}
+}
+
+void Remove_Backfaces_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPCAM4DV1 cam)
+{
+	for (int poly = 0; poly < renderList->numPolys; poly++)
+	{
+		LPPOLYF4DV1 currentPoly = renderList->polyPointer[poly];
+
+		if ( (currentPoly == NULL)                        ||
+			!(currentPoly->state & POLY4DV1_STATE_ACTIVE) ||
+			 (currentPoly->attr  & POLY4DV1_ATTR_2SIDED)  ||
+			 (currentPoly->state & POLY4DV1_STATE_BACKFACE))
+		    continue;
+
+		VECTOR4D u;
+		VECTOR4D v;
+		VECTOR4D n;
+
+		VECTOR4D_BUILD(&currentPoly->vTranList[0], &currentPoly->vTranList[1], &u);
+		VECTOR4D_BUILD(&currentPoly->vTranList[0], &currentPoly->vTranList[2], &v);
+
+		VECTOR4D_CROSS(&u, &v, &n);
+
+		VECTOR4D view;
+		VECTOR4D_BUILD(&currentPoly->vTranList[0], &cam->pos, &view);
+
+		if (VECTOR4D_DOT(&n, &view))
+			SET_BIT(currentPoly->state, POLY4DV1_STATE_BACKFACE);
+	}
+}
+
+void World_To_Camera_OBJECT4DV1(LPOBJECT4DV1 obj, LPCAM4DV1 cam)
+{
+	for (int vertex = 0; vertex < obj->numVertics; vertex++)
+	{
+		POINT4D pResult;
+		MATRIX_MUL_1X4_4X4(&obj->vTransList[vertex], &cam->mWordToCam, &pResult);
+		VECTOR4D_COPY(&obj->vTransList[vertex], &pResult);
+	}
+}
+
+void Camera_To_Perspective_OBJECT4DV1(LPOBJECT4DV1 obj, LPCAM4DV1 cam)
+{
+	for(int vertex = 0; vertex < obj->numVertics; vertex++)
+	{
+		float z = obj->vTransList[vertex].z;
+
+		obj->vTransList[vertex].x = cam->viewDistance * obj->vTransList[vertex].x / z;
+		obj->vTransList[vertex].y = cam->viewDistance * obj->vTransList[vertex].y / (z * cam->aspectRatio);
+	}
+}
+
+void Camera_To_Perspective_Screen_OBJECT4DV1(LPOBJECT4DV1 obj, LPCAM4DV1 cam)
+{
+	float alpha = 0.5 * cam->viewPlaneWidth  - 0.5;
+	float beta  = 0.5 * cam->viewPlaneHeight - 0.5;
+
+	for (int vertex = 0; vertex < obj->numVertics; vertex++)
+	{
+		float z = obj->vTransList[vertex].z;
+
+		obj->vTransList[vertex].x = cam->viewDistance * obj->vTransList[vertex].x / z;
+		obj->vTransList[vertex].y = cam->viewDistance * obj->vTransList[vertex].y / z;
+
+		obj->vTransList[vertex].x =  obj->vTransList[vertex].x + alpha;
+		obj->vTransList[vertex].y = -obj->vTransList[vertex].y + beta;
+	}
+}
+
+void Perspective_To_Screen_OBJECT4DV1(LPOBJECT4DV1 obj, LPCAM4DV1 cam)
+{
+	float alpha = 0.5 * cam->viewPortWidth  - 0.5;
+	float beta  = 0.5 * cam->viewPortHeight - 0.5;
+
+	for (int vertex = 0; vertex < obj->numVertics; vertex++)
+	{
+		obj->vTransList[vertex].x = alpha + alpha * obj->vTransList[vertex].x;
+		obj->vTransList[vertex].y = beta  - beta  * obj->vTransList[vertex].y;
+	}
+}
+
+void Convert_From_Homogeneous4D_OBJECT4DV1(LPOBJECT4DV1 obj)
+{
+	for (int vertex = 0; vertex < obj->numVertics; vertex++)
+	{
+		VECTOR4D_DIV_BY_W(&obj->vTransList[vertex]);
+	}
+}
+
+void Transform_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, 
+							  LPMATRIX_4X4     pmTransform,
+							  int              coordinate)
+{
+	switch (coordinate)
+	{
+	case TRANSFORM_LOCAL_ONLY:
+		for (int poly = 0; poly < renderList->numPolys; poly++)
+		{
+			LPPOLYF4DV1 currentPoly = renderList->polyPointer[poly];
+
+			if ( (currentPoly == NULL)                         ||
+				!(currentPoly->state & POLY4DV1_STATE_ACTIVE)  ||
+				 (currentPoly->state & POLY4DV1_STATE_CLIPPED) ||
+				 (currentPoly->state & POLY4DV1_STATE_BACKFACE) )
+			    continue;
+
+			for (int vertex = 0; vertex < 3; vertex++)
+			{
+				POINT4D pResult;
+				MATRIX_MUL_1X4_4X4(&currentPoly->vList[vertex], pmTransform, &pResult);
+				VECTOR4D_COPY(&currentPoly->vList[vertex], &pResult);
+			}
+		}
+		break;
+
+	case TRANSFORM_TRANS_ONLY:
+		for (int poly = 0; poly < renderList->numPolys; poly++)
+		{
+			LPPOLYF4DV1 currentPoly = renderList->polyPointer[poly];
+
+			if ( (currentPoly == NULL)                         ||
+				!(currentPoly->state & POLY4DV1_STATE_ACTIVE)  ||
+				 (currentPoly->state & POLY4DV1_STATE_CLIPPED) ||
+				 (currentPoly->state & POLY4DV1_STATE_BACKFACE) )
+			    continue;
+
+			for (int vertex = 0; vertex < 3; vertex++)
+			{
+				POINT4D pResult;
+				MATRIX_MUL_1X4_4X4(&currentPoly->vTranList[vertex], pmTransform, &pResult);
+				VECTOR4D_COPY(&currentPoly->vTranList[vertex], &pResult);
+			}
+		}
+		break;
+
+	case TRANSFORM_LOCAL_TO_TRANS:
+		for (int poly = 0; poly < renderList->numPolys; poly++)
+		{
+			LPPOLYF4DV1 currentPoly = renderList->polyPointer[poly];
+
+			if ( (currentPoly == NULL)                         ||
+				!(currentPoly->state & POLY4DV1_STATE_ACTIVE)  ||
+				 (currentPoly->state & POLY4DV1_STATE_CLIPPED) ||
+				 (currentPoly->state & POLY4DV1_STATE_BACKFACE) )
+			    continue;
+
+			for (int vertex = 0; vertex < 3; vertex++)
+			{
+				POINT4D pResult;
+				MATRIX_MUL_1X4_4X4(&currentPoly->vList[vertex], pmTransform, &currentPoly->vTranList[vertex]);
+			}
+		}
+		break;
+
+	default:
+		break;
+	}
+}
+
+void Model_To_World_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, 
+								   LPPOINT4D        worldPos,
+								   int              coordinate)
+{
+	if (coordinate == TRANSFORM_LOCAL_TO_TRANS)
+	{
+		for (int poly = 0; poly < renderList->numPolys; poly++)
+		{
+			LPPOLYF4DV1 currentPoly = renderList->polyPointer[poly];
+
+			if ( (currentPoly == NULL)                         ||
+				!(currentPoly->state & POLY4DV1_STATE_ACTIVE)  ||
+				 (currentPoly->state & POLY4DV1_STATE_CLIPPED) ||
+				 (currentPoly->state & POLY4DV1_STATE_BACKFACE) )
+			    continue;
+
+			for (int vertex = 0; vertex < 3; vertex++)
+			{
+				VECTOR4D_ADD(&currentPoly->vList[vertex], worldPos, &currentPoly->vTranList[vertex]);
+			}
+		}
+	}
+	else
+	{
+		for (int poly = 0; poly < renderList->numPolys; poly++)
+		{
+			LPPOLYF4DV1 currentPoly = renderList->polyPointer[poly];
+
+			if ( (currentPoly == NULL)                         ||
+				!(currentPoly->state & POLY4DV1_STATE_ACTIVE)  ||
+				 (currentPoly->state & POLY4DV1_STATE_CLIPPED) ||
+				 (currentPoly->state & POLY4DV1_STATE_BACKFACE) )
+			    continue;
+
+			for (int vertex = 0; vertex < 3; vertex++)
+			{
+				VECTOR4D_ADD(&currentPoly->vTranList[vertex], worldPos, &currentPoly->vTranList[vertex]);
+			}
+		}
+	}
+}
+
+void Convert_From_Homogeneous4D_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList)
+{
+	for (int poly = 0; poly < renderList->numPolys; poly++)
+	{
+		LPPOLYF4DV1 currentPoly = renderList->polyPointer[poly];
+
+		if ( (currentPoly == NULL)                         ||
+			!(currentPoly->state & POLY4DV1_STATE_ACTIVE)  ||
+			 (currentPoly->state & POLY4DV1_STATE_CLIPPED) ||
+			 (currentPoly->state & POLY4DV1_STATE_BACKFACE) )
+		    continue;
+
+		for (int vertex = 0; vertex < 3; vertex++)
+		{
+			VECTOR4D_DIV_BY_W(&currentPoly->vTranList[vertex]);
+		}
+	}
+}
+
+void World_To_Camera_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPCAM4DV1 cam)
+{
+	for (int poly = 0; poly < renderList->numPolys; poly++)
+	{
+		LPPOLYF4DV1 currentPoly = renderList->polyPointer[poly];
+
+		if ( (currentPoly == NULL) ||
+			!(currentPoly->state & POLY4DV1_STATE_ACTIVE)  ||
+			 (currentPoly->state & POLY4DV1_STATE_CLIPPED) ||
+			 (currentPoly->state & POLY4DV1_STATE_BACKFACE) )
+		    continue;
+
+		for (int vertex = 0; vertex < 3; vertex++)
+		{
+			POINT4D pResult;
+			MATRIX_MUL_1X4_4X4(&currentPoly->vTranList[vertex], 
+				               &cam->mWordToCam, 
+							   &pResult);
+			VECTOR4D_COPY(&currentPoly->vTranList[vertex], &pResult);
+		}
+	}
+}
+
+void Camera_To_Perspective_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPCAM4DV1 cam)
+{
+	for (int poly = 0; poly < renderList->numPolys; poly++)
+	{
+		LPPOLYF4DV1 currentPoly = renderList->polyPointer[poly];
+
+		if ( (currentPoly == NULL) ||
+			!(currentPoly->state & POLY4DV1_STATE_ACTIVE)  ||
+			 (currentPoly->state & POLY4DV1_STATE_CLIPPED) ||
+			 (currentPoly->state & POLY4DV1_STATE_BACKFACE) )
+		    continue;
+
+		for (int vertex = 0; vertex < 3; vertex++)
+		{
+			float z = currentPoly->vTranList[vertex].z;
+			currentPoly->vTranList[vertex].x = 
+				cam->viewDistance * currentPoly->vTranList[vertex].x / z;
+			currentPoly->vTranList[vertex].y = 
+				cam->viewDistance * currentPoly->vTranList[vertex].y / (z * cam->aspectRatio);
+		}
+	}
+}
+
+void Camera_To_Perspective_Screen_OBJECT4DV1(LPRENDERLIST4DV1 renderList, LPCAM4DV1 cam)
+{
+	for (int poly = 0; poly < renderList->numPolys; poly++)
+	{
+		LPPOLYF4DV1 currentPoly = renderList->polyPointer[poly];
+
+		if ( (currentPoly == NULL) ||
+			!(currentPoly->state & POLY4DV1_STATE_ACTIVE)  ||
+			 (currentPoly->state & POLY4DV1_STATE_CLIPPED) ||
+			 (currentPoly->state & POLY4DV1_STATE_BACKFACE) )
+		    continue;
+
+		float alpha = 0.5 * cam->viewPortWidth  - 0.5;
+		float beta  = 0.5 * cam->viewPortHeight - 0.5;
+
+		for (int vertex = 0; vertex < 3; vertex++)
+		{
+			float z = currentPoly->vTranList[vertex].z;
+			currentPoly->vTranList[vertex].x = cam->viewDistance * currentPoly->vTranList[vertex].x / z;
+			currentPoly->vTranList[vertex].y = cam->viewDistance * currentPoly->vTranList[vertex].y / z;
+
+			currentPoly->vTranList[vertex].x = currentPoly->vTranList[vertex].x + alpha;
+			currentPoly->vTranList[vertex].y = currentPoly->vTranList[vertex].y + beta;
+		}
+	}
+}
+
+void Perspective_To_Screen_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPCAM4DV1 cam)
+{
+	for (int poly = 0; poly < renderList->numPolys; poly++)
+	{
+		LPPOLYF4DV1 currentPoly = renderList->polyPointer[poly];
+
+		if ( (currentPoly == NULL) ||
+			!(currentPoly->state & POLY4DV1_STATE_ACTIVE)  ||
+			 (currentPoly->state & POLY4DV1_STATE_CLIPPED) ||
+			 (currentPoly->state & POLY4DV1_STATE_BACKFACE) )
+		    continue;
+
+		float alpha = 0.5 * cam->viewPortWidth  - 0.5;
+		float beta  = 0.5 * cam->viewPortHeight - 0.5;
+
+		for (int vertex = 0; vertex < 3; vertex++)
+		{
+			currentPoly->vTranList[vertex].x = alpha + alpha * currentPoly->vTranList[vertex].x;
+			currentPoly->vTranList[vertex].y = beta  - beta  * currentPoly->vTranList[vertex].y;
+		}
+	}
+}
+
+void Reset_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList)
+{
+	renderList->numPolys = 0;
+}
+
+void Reset_OBJECT4DV1(LPOBJECT4DV1 obj)
+{
+	RESET_BIT(obj->state, OBJECT4DV1_STATE_CULLED);
+
+	for (int poly = 0; poly < obj->numPolys; poly++)
+	{
+		LPPOLY4DV1 currentPoly = &obj->polyList[poly];
+		if (!currentPoly->state & POLY4DV1_STATE_ACTIVE)
+			continue;
+		
+		RESET_BIT(currentPoly->state, POLY4DV1_STATE_CLIPPED);
+		RESET_BIT(currentPoly->state, POLY4DV1_STATE_BACKFACE);
+	}
+}
+
+int Insert_POLY4DV1_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPPOLY4DV1 poly)
+{
+	if (renderList->numPolys >= RENDERLIST4DV1_MAX_POLYS)
+		return 0;
+
+	renderList->polyPointer[renderList->numPolys] = &renderList->polyData[renderList->numPolys];
+
+	renderList->polyData[renderList->numPolys].state = poly->state;
+	renderList->polyData[renderList->numPolys].attr  = poly->attr;
+	renderList->polyData[renderList->numPolys].color = poly->color;
+
+	VECTOR4D_COPY(&renderList->polyData[renderList->numPolys].vTranList[0], &poly->vList[poly->vert[0]]);
+	VECTOR4D_COPY(&renderList->polyData[renderList->numPolys].vTranList[1], &poly->vList[poly->vert[1]]);
+	VECTOR4D_COPY(&renderList->polyData[renderList->numPolys].vTranList[2], &poly->vList[poly->vert[2]]);
+	
+	VECTOR4D_COPY(&renderList->polyData[renderList->numPolys].vList[0], &poly->vList[poly->vert[0]]);
+	VECTOR4D_COPY(&renderList->polyData[renderList->numPolys].vList[1], &poly->vList[poly->vert[1]]);
+	VECTOR4D_COPY(&renderList->polyData[renderList->numPolys].vList[2], &poly->vList[poly->vert[2]]);
+
+	if (renderList->numPolys == 0)
+	{
+		renderList->polyData[0].next = NULL;
+		renderList->polyData[0].prev = NULL;
+	}
+	else
+	{
+		renderList->polyData[renderList->numPolys].next = NULL;
+		renderList->polyData[renderList->numPolys].prev = &renderList->polyData[renderList->numPolys - 1];
+
+		renderList->polyData[renderList->numPolys - 1].next = &renderList->polyData[renderList->numPolys];
+	}
+
+	renderList->numPolys++;
+
+	return 1;
+}
 
 
 

@@ -179,7 +179,7 @@ void  Rotate_XYZ_OBJECT4DV1(LPOBJECT4DV1 obj, float xTheta, float yTheta, float 
 
 void  Model_To_Word_OBJECT4DV1(LPOBJECT4DV1 obj, int coordinate = TRANSFORM_LOCAL_TO_TRANS);
 
-void  Cull_OBJEC4DV1(LPOBJECT4DV1 obj, LPCAM4DV1 cam, int cullFlags);
+int   Cull_OBJEC4DV1(LPOBJECT4DV1 obj, LPCAM4DV1 cam, int cullFlags);
 
 void  Remove_Backfaces_OBJECT4DV1(LPOBJECT4DV1 obj, LPCAM4DV1 cam);
 

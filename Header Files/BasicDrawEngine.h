@@ -34,8 +34,8 @@
 #define _RGB24BIT_888(a, r, g, b)  ((b) + ((g) << 8) + ((r) << 16))
 #define _RGB32BIT_8888(a, r, g, b) ((b) + ((g) << 8) + ((r) << 16) + ((a) << 24))
 
-#define SET_BIT(word, bit_flag) ((word) = ((word) | (big_flag)))
-#define RESET_BIT(word, bit_flag) ((word) = ((word) & (~big_flag)))
+#define SET_BIT(word, bit_flag) ((word) = ((word) | (bit_flag)))
+#define RESET_BIT(word, bit_flag) ((word) = ((word) & (~bit_flag)))
 
 #define DDRAW_INIT_STRUCT(ddstruct) { memset(&ddstruct, 0, sizeof(ddstruct)); ddstruct.dwSize = sizeof(ddstruct); }
 
