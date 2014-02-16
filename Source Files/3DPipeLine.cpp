@@ -817,8 +817,353 @@ int Insert_POLY4DV1_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPPOLY4DV1 poly)
 	return 1;
 }
 
+int Insert_POLYF4DV1_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPPOLYF4DV1 poly)
+{
+	if (renderList->numPolys >= RENDERLIST4DV1_MAX_POLYS)
+		return 0;
+
+	renderList->polyPointer[renderList->numPolys] = &renderList->polyData[renderList->numPolys];
+
+	memcpy((void*)&renderList->polyData[renderList->numPolys], (void*)poly, sizeof(POLYF4DV1));
+
+	if (renderList->numPolys == 0)
+	{
+		renderList->polyData[0].next = NULL;
+		renderList->polyData[0].prev = NULL;
+	}
+	else
+	{
+		renderList->polyData[renderList->numPolys].next = NULL;
+		renderList->polyData[renderList->numPolys].prev = &renderList->polyData[renderList->numPolys - 1];
+	    renderList->polyData[renderList->numPolys - 1].next = &renderList->polyData[renderList->numPolys];
+	}
+	renderList->numPolys++;
+
+	return 1;
+}
+
+int Insert_OBJECT4DV1_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList,
+									 LPOBJECT4DV1     obj,
+									 int              insertLocale)
+{
+	if (!(obj->state & OBJECT4DV1_STATE_ACTIVE) ||
+		 (obj->state & OBJECT4DV1_STATE_CULLED) ||
+		!(obj->state & OBJECT4DV1_STATE_VISIBLE))
+	    return 0;
+
+	for (int poly = 0; poly < obj->numPolys; poly++)
+	{
+		LPPOLY4DV1 currentPoly = &obj->polyList[poly];
+
+		if (!(currentPoly->state == POLY4DV1_STATE_ACTIVE)  ||
+			 (currentPoly->state == POLY4DV1_STATE_CLIPPED) ||
+			 (currentPoly->state == POLY4DV1_STATE_BACKFACE))
+		    continue;
+
+		LPPOINT4D vOldList = currentPoly->vList;
+
+		if (insertLocale)
+			currentPoly->vList = obj->vLocalList;
+		else
+			currentPoly->vList = obj->vTransList;
+
+		if (!Insert_POLY4DV1_RENDERLIST4DV1(renderList, currentPoly))
+		{
+			currentPoly->vList = vOldList;
+			return 0;
+		}
+		currentPoly->vList = vOldList;
+	}
+
+	return 1;
+}
 
 
+void Draw_OBJECT4DV1_Wire(LPOBJECT4DV1 obj, 
+						  UCHAR*       videoBuffer,
+						  int          lPitch)
+{
+	for (int poly = 0; poly < obj->numPolys; poly++)
+	{
+		if (!(obj->polyList[poly].state & POLY4DV1_STATE_ACTIVE)  ||
+			 (obj->polyList[poly].state & POLY4DV1_STATE_CLIPPED) ||
+			 (obj->polyList[poly].state & POLY4DV1_STATE_BACKFACE))
+		    continue;
+
+		int v0 = obj->polyList[poly].vert[0];
+		int v1 = obj->polyList[poly].vert[1];
+		int v2 = obj->polyList[poly].vert[2];
+
+		Draw_Clip_Line(obj->vTransList[v0].x,
+			           obj->vTransList[v0].y,
+					   obj->vTransList[v1].x,
+					   obj->vTransList[v1].y,
+					   obj->polyList[poly].color,
+					   videoBuffer,
+					   lPitch);
+
+		Draw_Clip_Line(obj->vTransList[v1].x,
+			           obj->vTransList[v1].y,
+					   obj->vTransList[v2].x,
+					   obj->vTransList[v2].y,
+					   obj->polyList[poly].color,
+					   videoBuffer,
+					   lPitch);
+
+		Draw_Clip_Line(obj->vTransList[v2].x,
+			           obj->vTransList[v2].y,
+					   obj->vTransList[v0].x,
+					   obj->vTransList[v0].y,
+					   obj->polyList[poly].color,
+					   videoBuffer,
+					   lPitch);
+	}
+}
+
+void Draw_RENDERLIST4DV1_Wire(LPRENDERLIST4DV1 renderList, 
+							  UCHAR*           videoBuffer,
+							  int              lPitch)
+{
+	for (int poly = 0; poly < renderList->numPolys; poly++)
+	{
+		if (!(renderList->polyPointer[poly]->state & POLY4DV1_STATE_ACTIVE)  ||
+			 (renderList->polyPointer[poly]->state & POLY4DV1_STATE_CLIPPED) ||
+			 (renderList->polyPointer[poly]->state & POLY4DV1_STATE_BACKFACE))
+		    continue;
+
+		
+		Draw_Clip_Line(renderList->polyPointer[poly]->vTranList[0].x,
+			           renderList->polyPointer[poly]->vTranList[0].y,
+					   renderList->polyPointer[poly]->vTranList[1].x,
+					   renderList->polyPointer[poly]->vTranList[1].y,
+					   renderList->polyPointer[poly]->color,
+					   videoBuffer,
+					   lPitch);
+
+		Draw_Clip_Line(renderList->polyPointer[poly]->vTranList[1].x,
+			           renderList->polyPointer[poly]->vTranList[1].y,
+					   renderList->polyPointer[poly]->vTranList[2].x,
+					   renderList->polyPointer[poly]->vTranList[2].y,
+					   renderList->polyPointer[poly]->color,
+					   videoBuffer,
+					   lPitch);
+
+		Draw_Clip_Line(renderList->polyPointer[poly]->vTranList[2].x,
+			           renderList->polyPointer[poly]->vTranList[2].y,
+					   renderList->polyPointer[poly]->vTranList[0].x,
+					   renderList->polyPointer[poly]->vTranList[0].y,
+					   renderList->polyPointer[poly]->color,
+					   videoBuffer,
+					   lPitch);		
+	}
+}
+
+void Draw_OBJECT4DV1_Wire16(LPOBJECT4DV1 obj,
+							UCHAR*       videoBuffer,
+							int          lPitch)
+{
+	for (int poly = 0; poly < obj->numPolys; poly++)
+	{
+		if (!(obj->polyList[poly].state & POLY4DV1_STATE_ACTIVE)  ||
+			 (obj->polyList[poly].state & POLY4DV1_STATE_CLIPPED) ||
+			 (obj->polyList[poly].state & POLY4DV1_STATE_BACKFACE))
+		    continue;
+
+		int v0 = obj->polyList[poly].vert[0];
+		int v1 = obj->polyList[poly].vert[1];
+		int v2 = obj->polyList[poly].vert[2];
+
+		Draw_Clip_Line16(obj->vTransList[v0].x,
+			             obj->vTransList[v0].y,
+					     obj->vTransList[v1].x,
+					     obj->vTransList[v1].y,
+					     obj->polyList[poly].color,
+					     videoBuffer,
+					     lPitch);
+
+		Draw_Clip_Line16(obj->vTransList[v1].x,
+			             obj->vTransList[v1].y,
+					     obj->vTransList[v2].x,
+					     obj->vTransList[v2].y,
+					     obj->polyList[poly].color,
+					     videoBuffer,
+					     lPitch);
+
+		Draw_Clip_Line16(obj->vTransList[v2].x,
+			             obj->vTransList[v2].y,
+					     obj->vTransList[v0].x,
+					     obj->vTransList[v0].y,
+					     obj->polyList[poly].color,
+					     videoBuffer,
+					     lPitch);
+	}
+}
+
+void Draw_RENDERLIST4DV1_Wire16(LPRENDERLIST4DV1 renderList, 
+							    UCHAR*           videoBuffer,
+							    int              lPitch)
+{
+	for (int poly = 0; poly < renderList->numPolys; poly++)
+	{
+		if (!(renderList->polyPointer[poly]->state & POLY4DV1_STATE_ACTIVE)  ||
+			 (renderList->polyPointer[poly]->state & POLY4DV1_STATE_CLIPPED) ||
+			 (renderList->polyPointer[poly]->state & POLY4DV1_STATE_BACKFACE))
+		    continue;
+
+		
+		Draw_Clip_Line16(renderList->polyPointer[poly]->vTranList[0].x,
+			             renderList->polyPointer[poly]->vTranList[0].y,
+					     renderList->polyPointer[poly]->vTranList[1].x,
+					     renderList->polyPointer[poly]->vTranList[1].y,
+					     renderList->polyPointer[poly]->color,
+					     videoBuffer,
+					     lPitch);
+
+		Draw_Clip_Line16(renderList->polyPointer[poly]->vTranList[1].x,
+			             renderList->polyPointer[poly]->vTranList[1].y,
+					     renderList->polyPointer[poly]->vTranList[2].x,
+					     renderList->polyPointer[poly]->vTranList[2].y,
+					     renderList->polyPointer[poly]->color,
+					     videoBuffer,
+					     lPitch);
+
+		Draw_Clip_Line16(renderList->polyPointer[poly]->vTranList[2].x,
+			             renderList->polyPointer[poly]->vTranList[2].y,
+					     renderList->polyPointer[poly]->vTranList[0].x,
+					     renderList->polyPointer[poly]->vTranList[0].y,
+					     renderList->polyPointer[poly]->color,
+					     videoBuffer,
+					     lPitch);		
+	}
+}
+
+void Build_CAM4DV1_Matrix_Euler(LPCAM4DV1 cam, int camRotSeq)
+{
+	MATRIX_4X4 mt_inv;
+	MATRIX_4X4 mx_inv;
+	MATRIX_4X4 my_inv;
+	MATRIX_4X4 mz_inv;
+	MATRIX_4X4 mrot;
+	MATRIX_4X4 mtmp;
+
+	MATRIX_INIT_4X4(&mt_inv,  1,           0,           0,          0,
+		                      0,           1,           0,          0,
+							  0,           0,           1,          0,
+							 -cam->pos.x, -cam->pos.y, -cam->pos.z, 1);
+
+	float xTheta = cam->dir.x;
+	float yTheta = cam->dir.y;
+	float zTheta = cam->dir.z;
+
+	float cosTheta =  Fast_Cos(xTheta);
+	float sinTheta = -Fast_Sin(xTheta);
+
+	MATRIX_INIT_4X4(&mx_inv, 1,  0,        0,        0,
+		                     0,  cosTheta, sinTheta, 0, 
+							 0, -sinTheta, cosTheta, 0, 
+							 0,  0,        0,        1);
+
+	float cosTheta =  Fast_Cos(yTheta);
+	float sinTheta = -Fast_Sin(yTheta);
+
+	MATRIX_INIT_4X4(&my_inv, cosTheta, 0, -sinTheta, 0,
+		                     0,        1,  0,        0, 
+							 sinTheta, 0,  cosTheta, 0, 
+							 0,        0,  0,        1);
+
+	float cosTheta =  Fast_Cos(zTheta);
+	float sinTheta = -Fast_Sin(zTheta);
+
+	MATRIX_INIT_4X4(&mz_inv,  cosTheta, sinTheta, 0, 0,
+		                     -sinTheta, cosTheta, 0, 0, 
+							  0,        0,        1, 0,
+							  0,        0,        0, 1);
+
+	switch (camRotSeq)
+	{
+	case CAM_ROT_SEQ_XYZ:
+		MATRIX_MUL_4X4(&mx_inv, &my_inv, &mtmp);
+		MATRIX_MUL_4X4(&mtmp,   &mz_inv, &mrot);
+		break;
+
+    case CAM_ROT_SEQ_YXZ:
+		MATRIX_MUL_4X4(&my_inv, &mx_inv, &mtmp);
+		MATRIX_MUL_4X4(&mtmp,   &mz_inv, &mrot);
+		break;
+
+	case CAM_ROT_SEQ_XZY:
+		MATRIX_MUL_4X4(&mx_inv, &mx_inv, &mtmp);
+		MATRIX_MUL_4X4(&mtmp,   &my_inv, &mrot);
+		break;
+
+	case CAM_ROT_SEQ_YZX:
+		MATRIX_MUL_4X4(&my_inv, &mz_inv, &mtmp);
+		MATRIX_MUL_4X4(&mtmp,   &mx_inv, &mrot);
+		break;
+
+	case CAM_ROT_SEQ_ZYX:
+		MATRIX_MUL_4X4(&mz_inv, &my_inv, &mtmp);
+		MATRIX_MUL_4X4(&mtmp,   &mx_inv, &mrot);
+		break;
+
+	case CAM_ROT_SEQ_ZXY:
+		MATRIX_MUL_4X4(&mz_inv, &mx_inv, &mtmp);
+		MATRIX_MUL_4X4(&mtmp,   &my_inv, &mrot);
+		break;
+
+	default:
+		break;
+	}
+
+	MATRIX_MUL_4X4(&mt_inv, &mrot, &cam->mWordToCam);
+}
+
+void Build_CAM4DV1_Matrix_UVM(LPCAM4DV1 cam, int mode)
+{
+	MATRIX_4X4 mt_inv;
+	MATRIX_4X4 mt_uvn;
+	MATRIX_4X4 mtmp;
+
+	MATRIX_INIT_4X4(&mt_inv,  1,           0,           0,          0,
+		                      0,           1,           0,          0,
+							  0,           0,           1,          0,
+							 -cam->pos.x, -cam->pos.y, -cam->pos.z, 1);
+
+	if (mode == UVN_MODE_SPHERICAL)
+	{
+		float phi   = cam->dir.x;
+		float theta = cam->dir.y;
+
+		float sin_phi   = Fast_Sin(phi);
+		float cos_phi   = Fast_Cos(phi);
+
+		float sin_theta = Fast_Sin(theta);
+		float cos_theta = Fast_Cos(theta);
+
+		cam->target.x = -1 * sin_phi * sin_theta;
+		cam->target.y =  1 * cos_phi;
+		cam->target.z =  1 * sin_phi * cos_theta;
+	}
+
+	VECTOR4D_BUILD(&cam->pos, &cam->target, &cam->n);
+
+	VECTOR4D_INITXYZ(&cam->v, 0, 1, 0);
+
+	VECTOR4D_CROSS(&cam->v, &cam->n, &cam->u);
+
+	VECTOR4D_CROSS(&cam->n, &cam->u, &cam->v);
+
+	VECTOR4D_NORMALIZE(&cam->u);
+	VECTOR4D_NORMALIZE(&cam->v);
+	VECTOR4D_NORMALIZE(&cam->n);
+
+	MATRIX_INIT_4X4(&mt_uvn, cam->u.x, cam->v.x, cam->n.x, 0, 
+		                     cam->u.y, cam->v.y, cam->n.y, 0, 
+							 cam->u.z, cam->v.z, cam->n.z, 0, 
+							 0,        0,        0,        1);
+
+	MATRIX_MUL_4X4(&mt_inv, &mt_uvn, &cam->mWordToCam);
+}
 
 void Init_CAM4DV1(LPCAM4DV1  cam,
 				  int        attr,
