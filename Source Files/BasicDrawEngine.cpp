@@ -442,6 +442,10 @@ int Draw_Line(int    x0,
 
 	if (dy >=0)
 	{
+		yinc = lPitch;	
+	}
+	else
+	{
 		yinc = -lPitch;
 		dy   = -dy;
 	}
@@ -518,7 +522,11 @@ int Draw_Line16(int    x0,
 
 	if (dy >=0)
 	{
-		yinc = -lPitch;
+		yinc = lPitch_2;
+	}
+	else
+	{
+		yinc = -lPitch_2;
 		dy   = -dy;
 	}
 
@@ -530,7 +538,7 @@ int Draw_Line16(int    x0,
 		error = dy2 - dx;
 		for (int i = 0; i < dx; i++)
 		{
-			*buffer = color;
+			*buffer = (USHORT)color;
 			if (error >= 0)
 			{
 				error -= dx2;
@@ -545,7 +553,7 @@ int Draw_Line16(int    x0,
 		error = dx2 - dy;
 		for (int i = 0; i < dy; i++)
 		{
-			*buffer = color;
+			*buffer = (USHORT)color;
 			if (error >= 0)
 			{
 				error -= dy2;
