@@ -425,12 +425,138 @@ int Draw_Line(int    x0,
 	int error;
 	int index;
 
-	buffer = buffer _ x0 + y0 * lPitch;
+	buffer = buffer + x0 + y0 * lPitch;
 
 	dx = x1 - x0;
 	dy = y1 - y0;
 
+	if (dx >= 0)
+	{
+		xinc = 1;
+	}
+	else
+	{
+		xinc = -1;
+		dx   = -dx;
+	}
 
+	if (dy >=0)
+	{
+		yinc = -lPitch;
+		dy   = -dy;
+	}
+
+	dx2 = dx << 1;
+	dy2 = dy << 1;
+
+	if (dx > dy)
+	{
+		error = dy2 - dx;
+		for (int i = 0; i < dx; i++)
+		{
+			*buffer = color;
+			if (error >= 0)
+			{
+				error -= dx2;
+				buffer += yinc;
+			}
+			error += dy2;
+			buffer += xinc;
+		}
+	}
+	else
+	{
+		error = dx2 - dy;
+		for (int i = 0; i < dy; i++)
+		{
+			*buffer = color;
+			if (error >= 0)
+			{
+				error -= dy2;
+				buffer += xinc;
+			}
+			error += dx2;
+			buffer += xinc;
+		}
+	}
+
+	return 1;
+}
+
+int Draw_Line16(int    x0, 
+			  int    y0, 
+			  int    x1, 
+			  int    y1,
+			  int    color,
+			  UCHAR* buffer,
+			  int    lPitch)
+{
+	int dx;
+	int dy;
+	int dx2;
+	int dy2;
+	int xinc;
+	int yinc;
+	int error;
+	int index;
+
+	int lPitch_2 = lPitch >> 1;
+	USHORT* buffer2 = (USHORT*)buffer + x0 + y0 * lPitch_2;
+
+	dx = x1 - x0;
+	dy = y1 - y0;
+
+	if (dx >= 0)
+	{
+		xinc = 1;
+	}
+	else
+	{
+		xinc = -1;
+		dx   = -dx;
+	}
+
+	if (dy >=0)
+	{
+		yinc = -lPitch;
+		dy   = -dy;
+	}
+
+	dx2 = dx << 1;
+	dy2 = dy << 1;
+
+	if (dx > dy)
+	{
+		error = dy2 - dx;
+		for (int i = 0; i < dx; i++)
+		{
+			*buffer = color;
+			if (error >= 0)
+			{
+				error -= dx2;
+				buffer += yinc;
+			}
+			error += dy2;
+			buffer += xinc;
+		}
+	}
+	else
+	{
+		error = dx2 - dy;
+		for (int i = 0; i < dy; i++)
+		{
+			*buffer = color;
+			if (error >= 0)
+			{
+				error -= dy2;
+				buffer += xinc;
+			}
+			error += dx2;
+			buffer += xinc;
+		}
+	}
+
+	return 1;
 }
 
 int Draw_Clip_Line16(int    x0, 
