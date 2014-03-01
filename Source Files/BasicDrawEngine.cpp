@@ -156,18 +156,303 @@ int DDraw_Init(int width, int height, int bpp, int windowed = 0)
 		Load_Palette_From_File(DEFAULT_PALETTE_FILE, palette);
 		if (screenWindowed)
 		{
-			//for (int index = 0; 
+			for (int index = 0; index < 10; index++)
+			{
+				palette[index].peFlags = palette[index + 246].peFlags = PC_EXPLICIT;
+			}
+			if (FAILED(lpdd->CreatePalette(DDPCAPS_8BIT | DDPCAPS_INITIALIZE,
+				                           palette,
+										   &lpddPalette,
+										   NULL)))
+				return 0;
 		}
+		else
+		{
+			if(FAILED(lpdd->CreatePalette(DDPCAPS_8BIT | DDPCAPS_INITIALIZE,
+				                          palette,
+										  &lpddPalette,
+										  NULL)))
+				return 0;
+		}
+		if (FAILED(lpddsPrimary->SetPalette(lpddPalette)))
+			return 0;
 	}
 
-	return 0;
+	if (screenWindowed)
+	{
+		DDraw_Fill_Surface(lpddsBack, 0);
+	}
+	else
+	{
+		DDraw_Fill_Surface(lpddsPrimary, 0);
+		DDraw_Fill_Surface(lpddsBack,    0);
+	}
+
+	minClipX = 0;
+	maxClipX = screenWidth - 1;
+	minClipY = 0;
+	maxClipY = screenHeight - 1;
+
+	RECT screenRect = 
+	{
+		0,
+		0,
+		screenWidth,
+		screenHeight
+	};
+
+	lpddClipper = DDraw_Attach_Clipper(lpddsBack, 1, &screenRect);
+
+	if (screenWindowed)
+	{
+		if (FAILED(lpdd->CreateClipper(0, &lpddClipperWin, NULL)))
+			return 0;
+		if (FAILED(lpddClipperWin->SetHWnd(0, mainWindowHandle)))
+			return 0;
+		if (FAILED(lpddsPrimary->SetClipper(lpddClipper)))
+			return 0;
+	}
+
+	return 1;
 
 }
 
 int DDraw_ShutDown()
 {
+	if (lpddClipper)
+		lpddClipper->Release();
 
+	if (lpddClipperWin)
+		lpddClipperWin->Release();
+
+	if (lpddPalette)
+		lpddPalette->Release();
+
+	if (lpddsBack)
+		lpddsBack->Release();
+
+	if (lpddsPrimary)
+		lpddsPrimary->Release();
+
+	if (lpdd)
+		lpdd->Release();
+
+	return 0;
 }
+
+LPDIRECTDRAWCLIPPER DDraw_Attach_Clipper(LPDIRECTDRAWSURFACE7 lpdds,
+										 int                  numRects,
+										 LPRECT               clipList)
+{
+	int index;
+	LPDIRECTDRAWCLIPPER lpddClipper;
+	LPRGNDATA regionData;
+
+	if (FAILED(lpdd->CreateClipper(0, &lpddClipper, NULL)))
+		return NULL;
+
+	regionData = (LPRGNDATA)malloc(sizeof(RGNDATAHEADER) + numRects * sizeof(RECT));
+
+	memcpy(regionData->Buffer, clipList, sizeof(RECT) * numRects);
+
+	regionData->rdh.dwSize         = sizeof(RGNDATAHEADER);
+	regionData->rdh.iType          = RDH_RECTANGLES;
+	regionData->rdh.nCount         = numRects;
+	regionData->rdh.nRgnSize       = numRects * sizeof(RECT);
+
+	regionData->rdh.rcBound.left   =  64000;
+	regionData->rdh.rcBound.top    =  64000;
+	regionData->rdh.rcBound.right  = -64000;
+	regionData->rdh.rcBound.bottom = -64000;
+
+	for (int index = 0; index < numRects; index++)
+	{
+		if(clipList[index].left < regionData->rdh.rcBound.left)
+			regionData->rdh.rcBound.left = clipList[index].left;
+
+		if(clipList[index].right < regionData->rdh.rcBound.right)
+			regionData->rdh.rcBound.right = clipList[index].right;
+
+		if(clipList[index].top < regionData->rdh.rcBound.top)
+			regionData->rdh.rcBound.top = clipList[index].top;
+
+		if(clipList[index].bottom < regionData->rdh.rcBound.bottom)
+			regionData->rdh.rcBound.bottom = clipList[index].bottom;
+	}
+
+	if (FAILED(lpddClipper->SetClipList(regionData, 0)))
+	{
+		free(regionData);
+		return NULL;
+	}
+
+	if (FAILED(lpdds->SetClipper(lpddClipper)))
+	{
+		free(regionData);
+		return NULL;
+	}
+
+	free(regionData);
+
+	return lpddClipper;
+}
+
+LPDIRECTDRAWSURFACE7 DDraw_Create_Surface(int    width,
+										  int    height, 
+										  int    flags,
+										  USHORT colorKeyValue)
+{
+	DDSURFACEDESC2 ddsd;
+	LPDIRECTDRAWSURFACE7 lpdds;
+	memset(&ddsd, 0, sizeof(ddsd));
+	ddsd.dwSize   = sizeof(ddsd);
+	ddsd.dwFlags  = DDSD_CAPS | DDSD_WIDTH | DDSD_HEIGHT;
+	ddsd.dwWidth  = width;
+	ddsd.dwHeight = height;
+
+	ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | flags;
+
+	if (FAILED(lpdd->CreateSurface(&ddsd, &lpdds, NULL)))
+		return NULL;
+
+	DDCOLORKEY colorKey;
+	colorKey.dwColorSpaceLowValue  = colorKeyValue;
+	colorKey.dwColorSpaceHighValue = colorKeyValue;
+
+	lpdds->SetColorKey(DDCKEY_SRCBLT, &colorKey);
+
+	return lpdds;
+}
+
+int DDraw_Flip()
+{
+	if (primaryBuffer || backBuffer)
+		return 0;
+
+	if (!screenWindowed)
+		while(FAILED(lpddsPrimary->Flip(NULL, DDFLIP_WAIT)));
+	else
+	{
+		RECT rect;
+		GetWindowRect(mainWindowHandle, &rect);
+
+		rect.left  += windowClientX;
+		rect.top   += windowClientY;
+
+		rect.right  = rect.left + screenWidth  - 1;
+		rect.bottom = rect.top  + screenHeight - 1;
+
+		if (FAILED(lpddsPrimary->Blt(&rect, lpddsBack, NULL, DDBLT_WAIT, NULL)))
+			return 0;
+	}
+
+	return 1;
+}
+
+int DDraw_Wait_For_Vsync()
+{
+	lpdd->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, 0);
+
+	return 1;
+}
+
+int DDraw_Fill_Surface(LPDIRECTDRAWSURFACE7 lpdds, USHORT color, RECT *client)
+{
+	DDBLTFX ddbltfx;
+
+	DDRAW_INIT_STRUCT(ddbltfx);
+
+	ddbltfx.dwFillColor = color;
+
+	lpdds->Blt(client,
+		       NULL,
+			   NULL,
+			   DDBLT_COLORFILL | DDBLT_WAIT,
+			   &ddbltfx);
+
+	return 1;
+}
+
+UCHAR* DDraw_Lock_Surface(LPDIRECTDRAWSURFACE7 lpdds, int *lPitch)
+{
+	if (!lpdds)
+		return NULL;
+
+	DDRAW_INIT_STRUCT(ddsd);
+	lpdds->Lock(NULL, &ddsd, DDLOCK_WAIT|DDLOCK_SURFACEMEMORYPTR, NULL);
+
+	if (lPitch)
+		*lPitch = ddsd.lPitch;
+
+	return (UCHAR*)ddsd.lpSurface;
+}
+
+int DDraw_Unlock_Surface(LPDIRECTDRAWSURFACE7 lpdds)
+{
+	if (!lpdds)
+		return 0;
+
+	lpdds->Unlock(NULL);
+
+	return 1;
+}
+
+UCHAR* DDraw_Lock_Primary_Surface()
+{
+	if (primaryBuffer)
+		return primaryBuffer;
+
+	DDRAW_INIT_STRUCT(ddsd);
+	lpddsPrimary->Lock(NULL, &ddsd, DDLOCK_WAIT|DDLOCK_SURFACEMEMORYPTR, NULL);
+
+	primaryBuffer = (UCHAR*)ddsd.lpSurface;
+	primaryLPitch = ddsd.lPitch;
+
+	return primaryBuffer;
+}
+
+int DDraw_Unlock_Primary_Surface()
+{
+	if (!primaryBuffer)
+		return 0;
+
+	lpddsPrimary->Unlock(NULL);
+
+	primaryBuffer = NULL;
+	primaryLPitch = 0;
+
+	return 1;
+}
+
+UCHAR* DDraw_Lock_Back_Surface()
+{
+	if (backBuffer)
+		return backBuffer;
+
+	DDRAW_INIT_STRUCT(ddsd);
+	lpddsBack->Lock(NULL, &ddsd, DDLOCK_WAIT|DDLOCK_SURFACEMEMORYPTR, NULL);
+
+	backBuffer = (UCHAR*)ddsd.lpSurface;
+	backLPitch = ddsd.lPitch;
+
+	return backBuffer;
+}
+
+int DDraw_Unlock_Back_Surface()
+{
+	if (!backBuffer)
+		return 0;
+
+	lpddsBack->Unlock(NULL);
+	
+	backBuffer = NULL;
+	backLPitch = 0;
+
+	return 1;
+}
+
+
+		 
 
 DWORD Get_Clock()
 {
