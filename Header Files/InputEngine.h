@@ -14,20 +14,7 @@ void DInput_Release_Mouse();
 void DInput_Release_Keyboard();
 
 
-extern HWND                 mainWindowHandle;
-extern HINSTANCE            mainInstance;
 
-extern LPDIRECTINPUT8       lpDInput;
-extern LPDIRECTINPUTDEVICE8 lpDInputKeyboard;
-extern LPDIRECTINPUTDEVICE8 lpDInputMouse;
-extern LPDIRECTINPUTDEVICE8 lpDInputJoystick;
-extern GUID                 joystickGUID;
-extern char                 joystickName[80];
-
-extern UCHAR                keyboardState[256];
-extern DIMOUSESTATE         mouseState;
-extern DIJOYSTATE           joystickState;
-extern int                  joystickFound;
  
 
 #endif

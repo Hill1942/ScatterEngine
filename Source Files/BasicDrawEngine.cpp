@@ -1,10 +1,15 @@
 #include <Windows.h>
+
 #include <cmath>
 #include <iostream>
 #include <cstring>
 
 #include <ddraw.h>
+
 #include "BasicDrawEngine.h"
+
+#pragma comment(lib, "ddraw.lib")
+#pragma comment(lib, "dxguid.lib")
 
 using namespace std;
 
@@ -53,10 +58,7 @@ int ddPixelFormat  = DD_PIXEL_FORMAT565;
 int windowClientX = 0;
 int windowClientY = 0;
 
-int minClipX = 0;
-int maxClipX = SCREEN_WIDDTH - 1;
-int minClipY = 0;
-int maxClipY = SCREEN_HEIGHT - 1;
+
 
 
 USHORT (*RGB16BIT)(int r, int g, int b) = NULL;
@@ -77,7 +79,7 @@ USHORT RGB16BIT555(int r, int g, int b)
 	return _RGB16BIT_555((r), (g), (b));
 }
 
-int DDraw_Init(int width, int height, int bpp, int windowed = 0)
+int DDraw_Init(int width, int height, int bpp, int windowed)
 {
 	int index;
 	if (FAILED(DirectDrawCreateEx(NULL, (void**)&lpdd, IID_IDirectDraw7, NULL)))
@@ -125,7 +127,7 @@ int DDraw_Init(int width, int height, int bpp, int windowed = 0)
 	lpddsPrimary->GetPixelFormat(&ddpf);
 
 	ddPixelFormat = ddpf.dwRGBBitCount;
-
+	/*
 	cerr << "pixel format" << ddPixelFormat <<endl;
 	
 	if (ddPixelFormat == DD_PIXEL_FORMAT555)
@@ -137,7 +139,7 @@ int DDraw_Init(int width, int height, int bpp, int windowed = 0)
 	{
 		RGB16BIT = RGB16BIT565;
 		cerr << "pixel format = 5.6.5" << endl;
-	}
+	}*/
 
 	if (!screenWindowed)
 	{
@@ -149,7 +151,7 @@ int DDraw_Init(int width, int height, int bpp, int windowed = 0)
 	{
 		lpddsBack = DDraw_Create_Surface(width, height, DDSCAPS_SYSTEMMEMORY);
 	}
-
+	/*
 	if (screenBpp == DD_PIXEL_FORMAT8)
 	{
 		memset(palette, 0, MAX_COLORS_PALETEE * sizeof(PALETTEENTRY));
@@ -176,7 +178,7 @@ int DDraw_Init(int width, int height, int bpp, int windowed = 0)
 		}
 		if (FAILED(lpddsPrimary->SetPalette(lpddPalette)))
 			return 0;
-	}
+	}*/
 
 	if (screenWindowed)
 	{
@@ -447,6 +449,14 @@ int DDraw_Unlock_Back_Surface()
 	
 	backBuffer = NULL;
 	backLPitch = 0;
+
+	return 1;
+}
+
+int Set_Palette_Entry(int color_index, LPPALETTEENTRY color)
+{
+	lpddPalette->SetEntries(0, color_index, 1, color);
+	memcpy(&palette[color_index], color, sizeof(PALETTEENTRY));
 
 	return 1;
 }
@@ -886,6 +896,35 @@ int Draw_Clip_Line(int    x0,
 
 	if (Clip_Line(xc0, yc0, xc1, yc1))
 		Draw_Line(xc0, yc0, xc1, yc1, color, buffer, lPitch);
+
+	return 1;
+}
+
+int Draw_Rectangle(int                  x1,
+				   int                  y1,
+				   int                  x2,
+				   int                  y2,
+				   int                  color,
+				   LPDIRECTDRAWSURFACE7 lpdds)
+{
+
+	DDBLTFX ddbltfx;
+	RECT    rect;
+
+	DDRAW_INIT_STRUCT(ddbltfx);
+
+	ddbltfx.dwFillColor = color;
+
+	rect.top    = y1;
+	rect.left   = x1;
+	rect.bottom = y2;
+	rect.right  = x2;
+
+	lpdds->Blt(&rect,
+		       NULL, 
+			   NULL,
+			   DDBLT_COLORFILL|DDBLT_WAIT,
+			   &ddbltfx);
 
 	return 1;
 }

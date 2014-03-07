@@ -4,16 +4,18 @@
 #include <Windows.h>
 #include <ddraw.h>
 
-#include "3DPipeLine.h"
-#include "MathEngine.h"
+
 #include "BasicDrawEngine.h"
+#include "MathEngine.h"
+#include "3DPipeLine.h"
 
 
+/*
 char* Get_Line_PLG(char* buffer, int maxLength, FILE* fp)
 {
 
-}
-
+}*/
+/*
 int Load_OBJECT4DV1_PLG(LPOBJECT4DV1 obj, 
 						char*        filename, 
 						LPVECTOR4D   scale, 
@@ -21,7 +23,7 @@ int Load_OBJECT4DV1_PLG(LPOBJECT4DV1 obj,
 						LPVECTOR4D   rot)
 {
 
-}
+}*/
 
 float Compute_OBJECT4DV1_Radius(LPOBJECT4DV1 obj)
 {
@@ -1063,16 +1065,16 @@ void Build_CAM4DV1_Matrix_Euler(LPCAM4DV1 cam, int camRotSeq)
 							 0, -sinTheta, cosTheta, 0, 
 							 0,  0,        0,        1);
 
-	float cosTheta =  Fast_Cos(yTheta);
-	float sinTheta = -Fast_Sin(yTheta);
+	cosTheta =  Fast_Cos(yTheta);
+	sinTheta = -Fast_Sin(yTheta);
 
 	MATRIX_INIT_4X4(&my_inv, cosTheta, 0, -sinTheta, 0,
 		                     0,        1,  0,        0, 
 							 sinTheta, 0,  cosTheta, 0, 
 							 0,        0,  0,        1);
 
-	float cosTheta =  Fast_Cos(zTheta);
-	float sinTheta = -Fast_Sin(zTheta);
+	cosTheta =  Fast_Cos(zTheta);
+	sinTheta = -Fast_Sin(zTheta);
 
 	MATRIX_INIT_4X4(&mz_inv,  cosTheta, sinTheta, 0, 0,
 		                     -sinTheta, cosTheta, 0, 0, 

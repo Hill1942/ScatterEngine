@@ -3,6 +3,21 @@
 
 #include <cmath>
 
+
+float cos_look[361];
+float sin_look[361];
+
+
+void Build_Sin_Cos_Tables()
+{
+	for (int ang = 0; ang < 360; ang++)
+	{
+		float theta = (float)ang * PI / (float)180;
+		cos_look[ang] = cos(theta);
+		sin_look[ang] = sin(theta);
+	}
+}
+
 float Fast_Sin(float theta)
 {
 	theta = fmodf(theta, 360);
@@ -35,8 +50,27 @@ int Fast_Distance_2D(int x, int y)
 	return x + y - min>>1 - min>>2 + min>>4;
 }
 
-float Fast_Distance_3D(float x, float y, float z)
+float Fast_Distance_3D(float fx, float fy, float fz)
 {
+	int temp;  // used for swaping
+    int x,y,z; // used for algorithm
+
+// make sure values are all positive
+    x = fabs(fx) * 1024;
+    y = fabs(fy) * 1024;
+    z = fabs(fz) * 1024;
+
+// sort values
+    if (y < x) SWAP(x,y,temp)
+
+    if (z < y) SWAP(y,z,temp)
+
+    if (y < x) SWAP(x,y,temp)
+
+    int dist = (z + 11 * (y >> 5) + (x >> 2) );
+
+// compute distance with 8% error
+    return((float)(dist >> 10));
 
 }
 
@@ -313,14 +347,14 @@ float VECTOR2D_COSTH(LPVECTOR2D va, LPVECTOR2D vb)
 {
 	return VECTOR2D_DOT(va, vb) / (VECTOR2D_LENGTH(va) * VECTOR2D_LENGTH(vb));
 }
-
+/*
 void VECTOR2D_PRINT(LPVECTOR2D va, char* name = "v")
 {
 	Write_Error("\n%s=[", name);
 	for (int index = 0; index < 2; index++)
 		Write_Error("%f, ", va->M[index]);
 	Write_Error("]");
-}
+}*/
 
 //////////////////  Vector3D Functions  ///////////////////
 void VECTOR3D_ADD(LPVECTOR3D va, LPVECTOR3D vb, LPVECTOR3D vsum)
@@ -426,14 +460,14 @@ float VECTOR3D_COSTH(LPVECTOR3D va, LPVECTOR3D vb)
 {
 	return VECTOR3D_DOT(va, vb) / (VECTOR3D_LENGTH(va) * VECTOR3D_LENGTH(vb));
 }
-
+/*
 void  VECTOR3D_PRINT(LPVECTOR3D va, char* name = "v")
 {
 	Write_Error("\n%s=[", name);
 	for (int index = 0; index < 3; index++)
 		Write_Error("%f, ",va->M[index]);
 	Write_Error("]");
-}
+}*/
 
 ////////////////// Vector4D Functions  /////////////////
 void VECTOR4D_ADD(LPVECTOR4D va, LPVECTOR4D vb, LPVECTOR4D vsum)
@@ -550,14 +584,14 @@ float VECTOR4D_COSTH(LPVECTOR4D va, LPVECTOR4D vb)
 {
 	return VECTOR4D_DOT(va, vb) / (VECTOR4D_LENGTH(va) * VECTOR4D_LENGTH(vb));
 }
-
+/*
 void VECTOR4D_PRINT(LPVECTOR4D va, char* name = "v")
 {
 	Write_Error("\n%s[", name);
 	for (int index = 0; index < 4; index++)
 		 Write_Error("%f, ", va->M[index]);
 	Write_Error("]");
-}
+}*/
 
 
 
@@ -571,7 +605,7 @@ void MATRIX_INIT_2X2(LPMATRIX_2X2 m, float m00, float m01, float m10, float m11)
 	m->M00 = m00; m->M01 = m01;
 	m->M10 = m10; m->M11 = m11;
 }
-
+/*
 void MATRIX_PRINT_2X2(LPMATRIX_2X2 m, char* name = "M")
 {
 	Write_Error("\n%s=\n", name);
@@ -582,7 +616,7 @@ void MATRIX_PRINT_2X2(LPMATRIX_2X2 m, char* name = "M")
 			Write_Error("%f ", m->M[r][c]);
 		}
 	}
-}
+}*/
 
 float MATRIX_DET_2X2(LPMATRIX_2X2 m)
 {
@@ -644,7 +678,7 @@ void MATRIX_INIT_3X3(LPMATRIX_3X3 m,
 	m->M10 = m10; m->M11 = m11; m->M12 = m12;
 	m->M20 = m20; m->M21 = m21; m->M22 = m22;
 }
-
+/*
 void MATRIX_PRINT_3X3(LPMATRIX_3X3 m, char* name)
 {
 	Write_Error("\n%s=\n", name);
@@ -655,7 +689,7 @@ void MATRIX_PRINT_3X3(LPMATRIX_3X3 m, char* name)
 			Write_Error("%f ", m->M[row][col]);
 		}
 	}
-}
+}*/
 
 float MATRIX_DET_3X3(LPMATRIX_3X3 m)
 {
@@ -762,7 +796,7 @@ void MATRIX_INIT_4X4(LPMATRIX_4X4 m,  float m00, float m01, float m02, float m03
 	m->M20 = m20; m->M21 = m21; m->M22 = m22; m->M23 = m23;
 	m->M30 = m30; m->M31 = m31; m->M32 = m32; m->M33 = m33;
 }
-
+/*
 void MATRIX_PRINT_4X4(LPMATRIX_4X4 m, char* name)
 {
 	Write_Error("\n%s=\n", name);
@@ -773,12 +807,12 @@ void MATRIX_PRINT_4X4(LPMATRIX_4X4 m, char* name)
 			Write_Error("%f ", m->M[row][col]);
 		}
 	}
-}
-
+}*/
+/*
 float MATRIX_DET_4X4(LPMATRIX_4X4 m)
 {
 
-}
+}*/
 void MATRIX_ADD_4X4(LPMATRIX_4X4 va, LPMATRIX_4X4 vb, LPMATRIX_4X4 vsum)
 {
 	for (int row = 0; row < 4; row++)
@@ -871,8 +905,135 @@ void SOLVE_SYSTEM_4X4(LPMATRIX_1X4 mx, LPMATRIX_4X4 ma, LPMATRIX_1X4 mb)
 
 
 
+void  Init_line2D(LPPOINT2D pInit, 
+				  LPPOINT2D pTerm, 
+				  LPLINE2D  pLine)
+{
+	VECTOR2D_INIT(&(pLine->p0), pInit);
+	VECTOR2D_INIT(&(pLine->p1), pTerm);
+	VECTOR2D_BUILD(pInit, pTerm, &(pLine->v));
+}
+void  Compute_Line2D(LPLINE2D  pLine, 
+					 float     t, 
+					 LPPOINT2D pPoint)
+{
+	pPoint->x = pLine->p0.x + pLine->v.x * t;
+	pPoint->y = pLine->p0.y + pLine->v.y * t;
+}
+int   Intersect_Lines2D(LPLINE2D pLine1,
+						LPLINE2D pLine2, 
+						float*   t1, 
+						float*   t2)
+{
+	float det = pLine1->v.x * pLine2->v.y - pLine1->v.y * pLine2->v.x;
+
+	if (det <= EPSILON_E5)
+		return LINE_NO_INTERSECT;
+
+	*t1 = ((pLine1->p0.y - pLine2->p0.y) * pLine2->v.x - (pLine1->p0.x - pLine2->p0.x) * pLine2->v.y) / det;
+	*t2 = (pLine1->v.x * (pLine1->p0.y - pLine2->p0.y) - (pLine1->p0.x - pLine2->p0.x) * pLine1->v.y) / det;
+
+	if ((*t1 >= 0) && (*t1 <= 1) && (*t2 >= 0) && (*t2 <= 1))
+		return LINE_INTERSECT_IN_SEGMENT;
+	else
+		return LINE_INTERSECT_OUT_SEGMENT;
+}
+
+int   Intersect_Lines2D(LPLINE2D pLine1, 
+						LPLINE2D pLine2,
+						LPPOINT2D pPoint)
+{
+	float det = pLine1->v.x * pLine2->v.y - pLine1->v.y * pLine2->v.x;
+
+	if (det <= EPSILON_E5)
+		return LINE_NO_INTERSECT;
+
+	float t1 = ((pLine1->p0.y - pLine2->p0.y) * pLine2->v.x - (pLine1->p0.x - pLine2->p0.x) * pLine2->v.y) / det;
+	float t2 = (pLine1->v.x * (pLine1->p0.y - pLine2->p0.y) - (pLine1->p0.x - pLine2->p0.x) * pLine1->v.y) / det;
+
+	pPoint->x = pLine1->p0.x + t1 * pLine1->v.x;
+	pPoint->y = pLine1->p0.y + t1 * pLine1->v.y;
+
+	if ((t1 >= 0) && (t1 <= 1) && (t2 >= 0) && (t2 <= 1))
+		return LINE_INTERSECT_IN_SEGMENT;
+	else
+		return LINE_INTERSECT_OUT_SEGMENT;
+}
+
+void  Init_Line3D(LPPOINT3D pInit,
+				  LPPOINT3D pTerm, 
+				  LPLINE3D pLine)
+{
+	VECTOR3D_INIT(&(pLine->p0), pInit);
+	VECTOR3D_INIT(&(pLine->p1), pTerm);
+	VECTOR3D_BUILD(pInit, pTerm, &(pLine->v));
+}
+void  Compute_Line3D(LPLINE3D pLine, 
+					 float t,
+					 LPPOINT3D pPoint)
+{
+	pPoint->x = pLine->p0.x + pLine->v.x * t;
+	pPoint->y = pLine->p0.y + pLine->v.y * t;
+	pPoint->z = pLine->p0.z + pLine->v.z * t;
+}
 
 
+// if normalize is 1, then pNormal is not a normal vector, we should normalize it 
+void  Plane3D_Init(LPPLANE3D pPlane,
+				   LPPOINT3D pPoint, 
+				   LPVECTOR3D pNormal, 
+				   int normalize)
+{
+	POINT3D_COPY(&pPlane->p0, pPoint);
+
+	if (normalize)
+		VECTOR3D_NORMALIZE(pNormal, &pPlane->v);
+	else
+		VECTOR3D_COPY(&pPlane->v, pNormal);
+}
+
+float Compute_Point_In_Plane3D(LPPOINT3D pPoint,
+							  LPPLANE3D pPlane)
+{
+	float test = 
+		pPlane->v.x * (pPoint->x - pPlane->p0.x) + 
+		pPlane->v.x * (pPoint->x - pPlane->p0.x) + 
+		pPlane->v.x * (pPoint->x - pPlane->p0.x);
+
+	return test;
+}
+int   Intersect_Line3D_Plane3D(LPLINE3D pLine,
+							   LPPLANE3D pPlane, 
+							   float* t, 
+							   LPPOINT3D pPoint)
+{
+	float plane_dot_line = VECTOR3D_DOT(&pLine->v, &pPlane->v);
+
+	if (fabs(plane_dot_line) <= EPSILON_E5)
+	{
+		if (Compute_Point_In_Plane3D(&pLine->p0, pPlane) <= EPSILON_E5)
+			return LINE_INTERSECT_EVERYWHERE;
+		else
+			return LINE_NO_INTERSECT;
+	}
+
+	*t =  -(pLine->p0.x  * pPlane->v.x + 
+	        pLine->p0.y  * pPlane->v.y + 
+	        pLine->p0.z  * pPlane->v.z -
+	        pPlane->p0.x * pPlane->v.x -
+	        pPlane->p0.y * pPlane->v.y -
+	        pPlane->p0.z * pPlane->v.z) / plane_dot_line;
+
+	pPoint->x = pLine->p0.x + pLine->v.x * (*t);
+	pPoint->y = pLine->p0.y + pLine->v.y * (*t);
+	pPoint->z = pLine->p0.z + pLine->v.z * (*t);
+
+	if ((*t >= 0) && (*t <= 1))
+		return LINE_INTERSECT_IN_SEGMENT;
+	else
+		return LINE_INTERSECT_OUT_SEGMENT;
+
+}
 
 
 

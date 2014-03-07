@@ -14,6 +14,10 @@
 #define EPSILON_E5 (float)(1E-5)
 #define EPSILON_E6 (float)(1E-6)
 
+#define LINE_NO_INTERSECT          0
+#define LINE_INTERSECT_IN_SEGMENT  1
+#define LINE_INTERSECT_OUT_SEGMENT 2
+#define LINE_INTERSECT_EVERYWHERE  3
 
 #define MIN(a, b) (((a) < b) ? (a): (b))
 #define MAX(a, b) (((a) > b) ? (a): (b))
@@ -21,9 +25,6 @@
 #define RAD_TO_DEG(rad) ((rad) * 180.0 / PI)
 #define SWAP(a, b, t) {t = a; a = b; b = t;}
 
-
-float cos_look[361];
-float sin_look[361];
 
 ///////Point and Vector///////////////////////////////////////////////
 typedef struct VECTOR2D_TYP
@@ -66,19 +67,19 @@ typedef struct VECTOR4D_TYP
 
 
 ///////Line////////////////////////////////////////////////////////
-typedef struct PARAM_LINE2D_TYP
+typedef struct LINE2D_TYP
 {
 	POINT2D  p0;
 	POINT2D  p1;
 	VECTOR2D v;
-}PARAM_LINE2D, *LPPARAM_LINE2D;
+}LINE2D, *LPLINE2D;
 
-typedef struct PARAM_LINE3D_TYP
+typedef struct LINE3D_TYP
 {
 	POINT3D  p0;
 	POINT3D  p1;
 	VECTOR3D v;
-}PARAM_LINE3D, *LPPARAM_LINE3D;
+}LINE3D, *LPLINE3D;
 
 
 
@@ -359,6 +360,7 @@ inline void QUAT_COPY(LPQUAT pDest, LPQUAT pSour) { pDest->x = pSour->x; pDest->
 
 ///////////////////Function Prototypes///////////////////////
 
+void Build_Sin_Cos_Tables();
 
 float Fast_Sin(float theta);
 float Fast_Cos(float theta);
@@ -535,17 +537,17 @@ void  EULERZYX_TO_QUAT(LPQUAT q, float theta_z, float theta_y, float theta_x);
 void  QUAT_TO_VECTOR3D_THETA(LPQUAT q, LPVECTOR3D v, float* theta);
 void  QUAT_PRINT(LPQUAT q, char* name);
 
-void  Init_Param_line2D(LPPOINT2D pInit, LPPOINT2D pTerm, LPPARAM_LINE2D pLine);
-void  Compute_Param_Line2D(LPPARAM_LINE2D pLine, float t, LPPOINT2D pPoint);
-int   Intersect_Param_Lines2D(LPPARAM_LINE2D pLine1, LPPARAM_LINE2D pLine2, float* t1, float* t2);
-int   Intersect_Param_Lines2D(LPPARAM_LINE2D pLine1, LPPARAM_LINE2D pLine2, LPPOINT2D pPoint);
+void  Init_line2D(LPPOINT2D pInit, LPPOINT2D pTerm, LPLINE2D pLine);
+void  Compute_Line2D(LPLINE2D pLine, float t, LPPOINT2D pPoint);
+int   Intersect_Lines2D(LPLINE2D pLine1, LPLINE2D pLine2, float* t1, float* t2);
+int   Intersect_Lines2D(LPLINE2D pLine1, LPLINE2D pLine2, LPPOINT2D pPoint);
 
-void  Init_Param_Line3D(LPPOINT3D pInit, LPPOINT3D pTerm, LPPARAM_LINE3D pLine);
-void  Compute_Param_Line3D(LPPARAM_LINE3D pLine, float t, LPPOINT3D pPoint);
+void  Init_Line3D(LPPOINT3D pInit, LPPOINT3D pTerm, LPLINE3D pLine);
+void  Compute_Line3D(LPLINE3D pLine, float t, LPPOINT3D pPoint);
 
 void  Plane3D_Init(LPPLANE3D pPlane, LPPOINT3D pPoint, LPVECTOR3D pNormal, int normalize);
-float Compute_Point_In_Plan3D(LPPOINT3D pPoint, LPPLANE3D pPlane);
-int   Intersect_Param_Line3D_Plane3D(LPPARAM_LINE3D pLine, LPPLANE3D pPlane, float* t, LPPOINT3D pPoint);
+float Compute_Point_In_Plane3D(LPPOINT3D pPoint, LPPLANE3D pPlane);
+int   Intersect_Line3D_Plane3D(LPLINE3D pLine, LPPLANE3D pPlane, float* t, LPPOINT3D pPoint);
 
 
 

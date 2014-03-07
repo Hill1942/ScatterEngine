@@ -112,6 +112,7 @@ typedef struct POLYGON2D_TYP
 int DDraw_Init(int width, int height, int bpp, int windowed = 0);
 int DDraw_ShutDown();
 
+
 LPDIRECTDRAWCLIPPER  DDraw_Attach_Clipper(LPDIRECTDRAWSURFACE7 lpdds, int numRect, LPRECT clipList);
 LPDIRECTDRAWSURFACE7 DDraw_Create_Surface(int width, int height, int memFlags = 0, USHORT colorKeyValue = 0);
 

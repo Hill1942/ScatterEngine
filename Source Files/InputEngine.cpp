@@ -1,11 +1,18 @@
+
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <Windows.h>
 #include <cstring>
 #include <dinput.h>
 
 #include "InputEngine.h"
 
+
+#pragma comment(lib, "dinput8.lib")
+
 extern HWND          mainWindowHandle;
-extern HINSTANCE     mainInstance;
+extern HINSTANCE     windowInstance;
+
 
 LPDIRECTINPUT8       lpDInput = NULL;
 LPDIRECTINPUTDEVICE8 lpDInputKeyboard = NULL;
@@ -20,6 +27,9 @@ DIMOUSESTATE         mouseState;
 DIJOYSTATE           joystickState;
 int                  joystickFound = 0;
 
+
+
+
 BOOL CALLBACK DInput_Enum_Joysticks(LPCDIDEVICEINSTANCE lpddi, LPVOID pGUID)
 {
 	*(GUID*)pGUID = lpddi->guidInstance;
@@ -29,7 +39,7 @@ BOOL CALLBACK DInput_Enum_Joysticks(LPCDIDEVICEINSTANCE lpddi, LPVOID pGUID)
 
 int DInput_Init()
 {
-	if (FAILED(DirectInput8Create(mainInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&lpDInput, NULL)))
+	if (FAILED(DirectInput8Create(windowInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&lpDInput, NULL)))
 		return 0;
 
 	return 1;
