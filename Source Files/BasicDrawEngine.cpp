@@ -833,14 +833,14 @@ int Draw_Line16(int    x0,
 		error = dy2 - dx;
 		for (int i = 0; i < dx; i++)
 		{
-			*buffer = (USHORT)color;
+			*buffer2 = (USHORT)color;
 			if (error >= 0)
 			{
 				error -= dx2;
-				buffer += yinc;
+				buffer2 += yinc;
 			}
 			error += dy2;
-			buffer += xinc;
+			buffer2 += xinc;
 		}
 	}
 	else
@@ -848,14 +848,95 @@ int Draw_Line16(int    x0,
 		error = dx2 - dy;
 		for (int i = 0; i < dy; i++)
 		{
-			*buffer = (USHORT)color;
+			*buffer2 = (USHORT)color;
 			if (error >= 0)
 			{
 				error -= dy2;
-				buffer += xinc;
+				buffer2 += xinc;
 			}
 			error += dx2;
-			buffer += xinc;
+			buffer2 += xinc;
+		}
+	}
+
+	return 1;
+}
+
+
+int Draw_Line32(int    x0, 
+			  int    y0, 
+			  int    x1, 
+			  int    y1,
+			  int    color,
+			  UCHAR* buffer,
+			  int    lPitch)
+{
+	int dx;
+	int dy;
+	int dx2;
+	int dy2;
+	int xinc;
+	int yinc;
+	int error;
+	int index;
+
+	int lPitch_2 = lPitch >> 2;
+	UINT* buffer2 = (UINT*)buffer + x0 + y0 * lPitch_2;
+
+	dx = x1 - x0;
+	dy = y1 - y0;
+
+	if (dx >= 0)
+	{
+		xinc = 1;
+	}
+	else
+	{
+		xinc = -1;
+		dx   = -dx;
+	}
+
+	if (dy >=0)
+	{
+		yinc = lPitch_2;
+	}
+	else
+	{
+		yinc = -lPitch_2;
+		dy   = -dy;
+	}
+
+	dx2 = dx << 1;
+	dy2 = dy << 1;
+
+	if (dx > dy)
+	{
+		error = dy2 - dx;
+		for (int i = 0; i < dx; i++)
+		{
+			*buffer2 = (UINT)color;
+			if (error >= 0)
+			{
+				error -= dx2;
+				buffer2 += yinc;
+			}
+			error += dy2;
+			buffer2 += xinc;
+		}
+	}
+	else
+	{
+		error = dx2 - dy;
+		for (int i = 0; i < dy; i++)
+		{
+			*buffer2 = (UINT)color;
+			if (error >= 0)
+			{
+				error -= dy2;
+				buffer2 += xinc;
+			}
+			error += dx2;
+			buffer2 += xinc;
 		}
 	}
 
@@ -877,6 +958,25 @@ int Draw_Clip_Line16(int    x0,
 
 	if (Clip_Line(xc0, yc0, xc1, yc1))
 		Draw_Line16(xc0, yc0, xc1, yc1, color, buffer, lPitch);
+
+	return 1;
+}
+
+int Draw_Clip_Line32(int    x0, 
+					 int    y0, 
+					 int    x1, 
+					 int    y1,
+					 int    color,
+					 UCHAR* buffer, 
+					 int    lPitch)
+{
+	int xc0 = x0;
+	int yc0 = y0;
+	int xc1 = x1;
+	int yc1 = y1;
+
+	if (Clip_Line(xc0, yc0, xc1, yc1))
+		Draw_Line32(xc0, yc0, xc1, yc1, color, buffer, lPitch);
 
 	return 1;
 }

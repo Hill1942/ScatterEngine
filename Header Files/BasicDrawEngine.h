@@ -146,9 +146,12 @@ int Draw_Pixel16(int x, int y, int color, UCHAR* vedeoBuffer, int lPitch);
 
 int Draw_Clip_Line(int x0, int y0, int x1, int y1, int color, UCHAR* destBuffer, int lPitch);
 int Draw_Clip_Line16(int x0, int y0, int x1, int y1, int color, UCHAR* destBuffer, int lPitch);
+int Draw_Clip_Line32(int x0, int y0, int x1, int y1, int color, UCHAR* destBuffer, int lPitch);
+
 int Clip_Line(int& x1, int& y1, int& x2, int & y2);
 int Draw_Line(int x0, int y0, int x1, int y1, int color, UCHAR* vbStart, int lPitch);
 int Draw_Line16(int x0, int y0, int x1, int y1, int color, UCHAR* vbStart, int lPitch);
+int Draw_Line32(int x0, int y0, int x1, int y1, int color, UCHAR* vbStart, int lPitch);
 
 void HLine(int x1, int x2, int y, int color, UCHAR* vBuffer, int lPitch);
 void VLine(int y1, int y2, int x, int color, UCHAR& vBuffer, int lPitch);

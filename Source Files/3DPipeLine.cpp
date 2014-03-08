@@ -1039,6 +1039,44 @@ void Draw_RENDERLIST4DV1_Wire16(LPRENDERLIST4DV1 renderList,
 	}
 }
 
+void Draw_RENDERLIST4DV1_Wire32(LPRENDERLIST4DV1 renderList, 
+							    UCHAR*           videoBuffer,
+							    int              lPitch)
+{
+	for (int poly = 0; poly < renderList->numPolys; poly++)
+	{
+		if (!(renderList->polyPointer[poly]->state & POLY4DV1_STATE_ACTIVE)  ||
+			 (renderList->polyPointer[poly]->state & POLY4DV1_STATE_CLIPPED) ||
+			 (renderList->polyPointer[poly]->state & POLY4DV1_STATE_BACKFACE))
+		    continue;
+
+		
+		Draw_Clip_Line32(renderList->polyPointer[poly]->vTranList[0].x,
+			             renderList->polyPointer[poly]->vTranList[0].y,
+					     renderList->polyPointer[poly]->vTranList[1].x,
+					     renderList->polyPointer[poly]->vTranList[1].y,
+					     renderList->polyPointer[poly]->color,
+					     videoBuffer,
+					     lPitch);
+
+		Draw_Clip_Line32(renderList->polyPointer[poly]->vTranList[1].x,
+			             renderList->polyPointer[poly]->vTranList[1].y,
+					     renderList->polyPointer[poly]->vTranList[2].x,
+					     renderList->polyPointer[poly]->vTranList[2].y,
+					     renderList->polyPointer[poly]->color,
+					     videoBuffer,
+					     lPitch);
+
+		Draw_Clip_Line32(renderList->polyPointer[poly]->vTranList[2].x,
+			             renderList->polyPointer[poly]->vTranList[2].y,
+					     renderList->polyPointer[poly]->vTranList[0].x,
+					     renderList->polyPointer[poly]->vTranList[0].y,
+					     renderList->polyPointer[poly]->color,
+					     videoBuffer,
+					     lPitch);		
+	}
+}
+
 void Build_CAM4DV1_Matrix_Euler(LPCAM4DV1 cam, int camRotSeq)
 {
 	MATRIX_4X4 mt_inv;

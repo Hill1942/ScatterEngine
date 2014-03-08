@@ -231,6 +231,9 @@ void  Draw_OBJECT4DV1_Wire16(LPOBJECT4DV1 obj, UCHAR* videoBuffer, int lPitch);
 void  Draw_RENDERLIST4DV1_Wire16(LPRENDERLIST4DV1 renderList, UCHAR* videoBuffer, 
 								 int lPitch);
 
+void  Draw_RENDERLIST4DV1_Wire32(LPRENDERLIST4DV1 renderList, UCHAR* videoBuffer, 
+								 int lPitch);
+
 void  Build_Model_To_World_Matrix4X4(LPVECTOR4D pvPos, LPMATRIX_4X4 pm);
 
 void  Build_Camera_To_Perspective_Matrix4X4(LPCAM4DV1 cam, LPMATRIX_4X4 pm);
