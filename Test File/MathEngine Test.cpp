@@ -26,7 +26,6 @@ void test_VECTOR2D_ZERO()
 		cout << endl;
 	}
 }
-
 void test_VECTOR3D_ZERO()
 {
 	VECTOR3D test = 
@@ -48,7 +47,6 @@ void test_VECTOR3D_ZERO()
 		cout << endl;
 	}
 }
-
 void test_VECTOR4D_ZERO()
 {
 	VECTOR4D test = 
@@ -73,34 +71,369 @@ void test_VECTOR4D_ZERO()
 }
 
 
+void test_VECTOR2D_INITXY()
+{
+	VECTOR2D test;
+	VECTOR2D_INITXY(&test, 10, 10);
 
-void test_VECTOR2D_INITXY();
-void test_VECTOR3D_INITXYZ();
-void test_VECTOR4D_INITXYZ();
+	if (test.x == 10 && test.y == 10)
+	{
+		cout << "VECTOR2D_INITXY have passed the test" << endl;
+		cout << endl;
+	}
+	else
+	{
+		cout << "VECTOR2D_INITXY failed to pass the test" << endl;
+		cout << endl;
+	}
+}
+void test_VECTOR3D_INITXYZ()
+{
+	VECTOR3D test;
+	VECTOR3D_INITXYZ(&test, 10, 10, 10);
+
+	if (test.x == 10 && test.y == 10 && test.z == 10)
+	{
+		cout << "VECTOR3D_INITXYZ have passed the test" << endl;
+		cout << endl;
+	}
+	else
+	{
+		cout << "VECTOR3D_INITXYZ failed to pass the test" << endl;
+		cout << endl;
+	}
+}
+void test_VECTOR4D_INITXYZ()
+{
+	VECTOR4D test;
+	VECTOR4D_INITXYZ(&test, 10, 10, 10);
+
+	if (test.x == 10 && test.y == 10 && test.z == 10 && test.w == 1.0)
+	{
+		cout << "VECTOR4D_INITXYZ have passed the test" << endl;
+		cout << endl;
+	}
+	else
+	{
+		cout << "VECTOR4D_INITXYZ failed to pass the test" << endl;
+		cout << endl;
+	}
+}
 
 
-void test_VECTOR2D_INIT();
-void test_VECTOR3D_INIT();
-void test_VECTOR4D_INIT();
-void test_VECTOR2D_COPY();
-void test_VECTOR3D_COPY();
-void test_VECTOR4D_COPY();
+void test_VECTOR2D_INIT()
+{
+	VECTOR2D dest;
+	VECTOR2D sour = 
+	{
+		10, 10
+	};
+
+	VECTOR2D_INIT(&dest, &sour);
+
+	if (dest.x == 10 && dest.y == 10)
+	{
+		cout << "VECTOR2D_INIT have passed the test" << endl;
+		cout << endl;
+	}
+	else
+	{
+		cout << "VECTOR2D_INIT failed to pass the test" << endl;
+		cout << endl;
+	}
+}
+void test_VECTOR3D_INIT()
+{
+	VECTOR3D dest;
+	VECTOR3D sour = 
+	{
+		10, 10, 10
+	};
+
+	VECTOR3D_INIT(&dest, &sour);
+
+	if (dest.x == 10 && dest.y == 10 && dest.z == 10)
+	{
+		cout << "VECTOR3D_INIT have passed the test" << endl;
+		cout << endl;
+	}
+	else
+	{
+		cout << "VECTOR3D_INIT failed to pass the test" << endl;
+		cout << endl;
+	}
+}
+void test_VECTOR4D_INIT()
+{
+	VECTOR4D dest;
+	VECTOR4D sour = 
+	{
+		10, 10, 10, 10
+	};
+
+	VECTOR4D_INIT(&dest, &sour);
+
+	if (dest.x == 10 && dest.y == 10 && dest.z == 10 && dest.w == 10)
+	{
+		cout << "VECTOR3D_INIT have passed the test" << endl;
+		cout << endl;
+	}
+	else
+	{
+		cout << "VECTOR3D_INIT failed to pass the test" << endl;
+		cout << endl;
+	}
+}
+void test_VECTOR2D_COPY()
+{
+	VECTOR2D dest;
+	VECTOR2D sour = 
+	{
+		10, 10
+	};
+
+	VECTOR2D_COPY(&dest, &sour);
+
+	if (dest.x == 10 && dest.y == 10)
+	{
+		cout << "VECTOR2D_COPY have passed the test" << endl;
+		cout << endl;
+	}
+	else
+	{
+		cout << "VECTOR2D_COPY failed to pass the test" << endl;
+		cout << endl;
+	}
+}
+void test_VECTOR3D_COPY()
+{
+	VECTOR3D dest;
+	VECTOR3D sour = 
+	{
+		10, 10, 10
+	};
+
+	VECTOR3D_COPY(&dest, &sour);
+
+	if (dest.x == 10 && dest.y == 10 && dest.z == 10)
+	{
+		cout << "VECTOR3D_COPY have passed the test" << endl;
+		cout << endl;
+	}
+	else
+	{
+		cout << "VECTOR3D_COPY failed to pass the test" << endl;
+		cout << endl;
+	}
+}
+void test_VECTOR4D_COPY()
+{
+	VECTOR4D dest;
+	VECTOR4D sour = 
+	{
+		10, 10, 10, 10
+	};
+
+	VECTOR4D_COPY(&dest, &sour);
+
+	if (dest.x == 10 && dest.y == 10 && dest.z == 10 && dest.w == 10)
+	{
+		cout << "VECTOR4D_COPY have passed the test" << endl;
+		cout << endl;
+	}
+	else
+	{
+		cout << "VECTOR4D_COPY failed to pass the test" << endl;
+		cout << endl;
+	}
+}
 
 
-void test_VECTOR4D_DIV_BY_W();
-void test_VECTOR4D_DIV_BY_W_VECTOR3D();
+void test_VECTOR4D_DIV_BY_W()
+{
+	VECTOR4D test = 
+	{
+		10, 10, 10, 5
+	};
+	VECTOR4D_DIV_BY_W(&test);
+	if (test.x == 2 && test.y == 2 && test.z == 2)
+	{
+		cout << "VECTOR4D_DIV_BY_W have passed the test" << endl;
+		cout << endl;
+	}
+	else
+	{
+		cout << "VECTOR4D_DIV_BY_W failed to pass the test" << endl;
+		cout << endl;
+	}
+}
+void test_VECTOR4D_DIV_BY_W_VECTOR3D()
+{
+	VECTOR4D test = 
+	{
+		10, 10, 10, 5
+	};
+	VECTOR3D result;
+	VECTOR4D_DIV_BY_W_VECTOR3D(&test, &result);
+	if (result.x == 2 && result.y == 2 && result.z == 2)
+	{
+		cout << "VECTOR4D_DIV_BY_W_VECTOR3D have passed the test" << endl;
+		cout << endl;
+	}
+	else
+	{
+		cout << "VECTOR4D_DIV_BY_W_VECTOR3D failed to pass the test" << endl;
+		cout << endl;
+	}
+}
 
 
-void test_POINT2D_INIT();
-void test_POINT3D_INIT();
-void test_POINT4D_INIT();
-void test_POINT2D_COPY();
-void test_POINT3D_COPY();
-void test_POINT4D_COPY();
+void test_POINT2D_INIT()
+{
+	POINT2D dest;
+	POINT2D sour = 
+	{
+		10, 10
+	};
+
+	POINT2D_INIT(&dest, &sour);
+	if (dest.x == 10 && dest.y == 10)
+	{
+		cout << "POINT2D_INIT have passed the test" << endl;
+		cout << endl;
+	}
+	else
+	{
+		cout << "POINT2D_INIT failed to pass the test" << endl;
+		cout << endl;
+	}
+}
+void test_POINT3D_INIT()
+{
+	POINT3D dest;
+	POINT3D sour = 
+	{
+		10, 10, 10
+	};
+
+	POINT3D_INIT(&dest, &sour);
+	if (dest.x == 10 && dest.y == 10 && dest.z == 10)
+	{
+		cout << "POINT3D_INIT have passed the test" << endl;
+		cout << endl;
+	}
+	else
+	{
+		cout << "POINT3D_INIT failed to pass the test" << endl;
+		cout << endl;
+	}
+}
+void test_POINT4D_INIT()
+{
+	POINT4D dest;
+	POINT4D sour = 
+	{
+		10, 10, 10, 10
+	};
+
+	POINT4D_INIT(&dest, &sour);
+	if (dest.x == 10 && dest.y == 10 && dest.z == 10 && dest.z == 10)
+	{
+		cout << "POINT4D_INIT have passed the test" << endl;
+		cout << endl;
+	}
+	else
+	{
+		cout << "POINT4D_INIT failed to pass the test" << endl;
+		cout << endl;
+	}
+}
+void test_POINT2D_COPY()
+{
+	POINT2D dest;
+	POINT2D sour = 
+	{
+		10, 10
+	};
+
+	POINT2D_COPY(&dest, &sour);
+	if (dest.x == 10 && dest.y == 10)
+	{
+		cout << "POINT2D_COPY have passed the test" << endl;
+		cout << endl;
+	}
+	else
+	{
+		cout << "POINT2D_COPY failed to pass the test" << endl;
+		cout << endl;
+	}
+}
+void test_POINT3D_COPY()
+{
+	POINT3D dest;
+	POINT3D sour = 
+	{
+		10, 10, 10
+	};
+
+	POINT3D_COPY(&dest, &sour);
+	if (dest.x == 10 && dest.y == 10 && dest.z == 10)
+	{
+		cout << "POINT3D_COPY have passed the test" << endl;
+		cout << endl;
+	}
+	else
+	{
+		cout << "POINT3D_COPY failed to pass the test" << endl;
+		cout << endl;
+	}
+}
+void test_POINT4D_COPY()
+{
+	POINT4D dest;
+	POINT4D sour = 
+	{
+		10, 10, 10, 10
+	};
+
+	POINT4D_COPY(&dest, &sour);
+	if (dest.x == 10 && dest.y == 10 && dest.z == 10 && dest.z == 10)
+	{
+		cout << "POINT4D_COPY have passed the test" << endl;
+		cout << endl;
+	}
+	else
+	{
+		cout << "POINT4D_COPY failed to pass the test" << endl;
+		cout << endl;
+	}
+}
 
 
 
-void test_MATRIX_ZERO_2X2();
+void test_MATRIX_ZERO_2X2()
+{
+	MATRIX_2X2 m = 
+	{
+		10, 10,
+		10, 10
+	};
+	MATRIX_ZERO_2X2(&m);
+	for (int i = 0; i < 2; i++)
+	{
+		for (int j = 0; j < 2; j++)
+		{
+			if (m.M[i][j] != 0)
+			{
+			    cout << "MATRIX_ZERO_2X2 failed to pass the test" << endl;
+			    cout << endl;
+			    return;
+			}
+		}	
+	}
+	cout << "MATRIX_ZERO_2X2 have passed the test" << endl;
+	cout << endl;
+}
 void test_MATRIX_ZERO_3X3();
 void test_MATRIX_ZERO_4X4();
 void test_MATRIX_ZERO_4X3();
@@ -257,9 +590,37 @@ void test_MATRIX_INIT_4X4();
 void test_MATRIX_PRINT_4X4();
 void test_MATRIX_DET_4X4();
 void test_MATRIX_ADD_4X4();
-void test_MATRIX_MUL_4X4();
-void test_MATRIX_MUL_1X4_4X4();
-void test_MATRIX_MUL_1X4_4X4();
+void test_MATRIX_MUL_4X4()
+{
+
+}
+void test_MATRIX_MUL_1X4_4X4_M();
+void test_MATRIX_MUL_1X4_4X4_V()
+{
+	MATRIX_4X4 m = 
+	{
+		1, 2, 3, 4,
+		2, 3, 4, 1,
+		3, 4, 1, 2,
+		4, 1, 2, 3
+	};
+	VECTOR4D v = 
+	{
+		1, 2, 3, 4
+	};
+	VECTOR4D result;
+	MATRIX_MUL_1X4_4X4(&v, &m, &result);
+	if (result.x == 30 && result.y == 24 && result.z == 22 && result.w == 24)
+	{
+		cout << "MATRIX_MUL_1X4_4X4_V have passed the test" << endl;
+		cout << endl;
+	}
+	else
+	{
+		cout << "MATRIX_MUL_1X4_4X4_V failed to pass the test" << endl;
+		cout << endl;
+	}
+}
 void test_MATRIX_MUL_1X3_4X4();
 void test_MATRIX_MUL_1X3_4X4();
 void test_MATRIX_INVERSE_4X4();
@@ -293,6 +654,8 @@ int main()
 	test_POINT2D_COPY();
 	test_POINT3D_COPY();
 	test_POINT4D_COPY();
+
+	/*
 
 	test_MATRIX_ZERO_2X2();
 	test_MATRIX_ZERO_3X3();
@@ -436,9 +799,9 @@ int main()
 	test_MATRIX_MUL_1X3_4X4();
 	test_MATRIX_MUL_1X3_4X4();
 	test_MATRIX_INVERSE_4X4();
-	test_SOLVE_SYSTEM_4X4();
+	test_SOLVE_SYSTEM_4X4();*/
 	
 	
-	
+	test_MATRIX_MUL_1X4_4X4_V();
 }	
 	
