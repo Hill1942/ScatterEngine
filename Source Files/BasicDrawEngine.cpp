@@ -5,11 +5,13 @@
 #include <cstring>
 
 #include <ddraw.h>
+//#include <d3d9.h>
 
 #include "BasicDrawEngine.h"
 
 #pragma comment(lib, "ddraw.lib")
 #pragma comment(lib, "dxguid.lib")
+//#pragma comment(lib, "d3d9.lib")
 
 using namespace std;
 
@@ -25,6 +27,8 @@ LPDIRECTDRAWSURFACE7 lpddsBack = NULL;
 LPDIRECTDRAWPALETTE  lpddPalette = NULL;
 LPDIRECTDRAWCLIPPER  lpddClipper = NULL;
 LPDIRECTDRAWCLIPPER  lpddClipperWin = NULL;
+
+
 
 PALETTEENTRY   palette[MAX_COLORS_PALETEE];
 PALETTEENTRY   savePalette[MAX_COLORS_PALETEE];
@@ -99,9 +103,9 @@ int DDraw_Init(int width, int height, int bpp, int windowed)
 			return 0;
 	}
 
-	screenHeight = height;
-	screenWidth = width;
-	screenBpp = bpp;
+	screenHeight   = height;
+	screenWidth    = width;
+	screenBpp      = bpp;
 	screenWindowed = windowed;
 	
 	memset(&ddsd, 0, sizeof(ddsd));
@@ -194,6 +198,7 @@ int DDraw_Init(int width, int height, int bpp, int windowed)
 	maxClipX = screenWidth - 1;
 	minClipY = 0;
 	maxClipY = screenHeight - 1;
+	
 	/*
 	RECT screenRect = 
 	{
@@ -201,19 +206,24 @@ int DDraw_Init(int width, int height, int bpp, int windowed)
 		0,
 		screenWidth,
 		screenHeight
-	};
+	};*/
 
-	lpddClipper = DDraw_Attach_Clipper(lpddsBack, 1, &screenRect);
+
+	//lpddClipper = DDraw_Attach_Clipper(lpddsBack, 1, &screenRect);
+
+
 
 	if (screenWindowed)
 	{
-		if (FAILED(lpdd->CreateClipper(0, &lpddClipperWin, NULL)))
+	
+		if (FAILED(lpdd->CreateClipper(0, &lpddClipper, NULL)))
+		//if (FAILED(lpdd->CreateClipper(0, &lpddClipperWin, NULL)))
 			return 0;
-		if (FAILED(lpddClipperWin->SetHWnd(0, mainWindowHandle)))
+		if (FAILED(lpddClipper->SetHWnd(0, mainWindowHandle)))
 			return 0;
 		if (FAILED(lpddsPrimary->SetClipper(lpddClipper)))
 			return 0;
-	}*/
+	}
 
 	return 1;
 	
@@ -503,6 +513,17 @@ int Draw_Pixel16(int    x,
 	return 1;
 }
 
+int Draw_Pixel32(int    x,
+			     int    y,
+			     int    color,
+			     UCHAR* buffer,
+			     int    lPitch)
+{
+	((UINT*) buffer)[x + y * (lPitch >> 2)] = color;
+
+	return 1;
+}
+
 
 int Clip_Line(int &x1, int &y1, int &x2, int &y2)
 {
@@ -775,7 +796,7 @@ int Draw_Line(int    x0,
 				buffer += xinc;
 			}
 			error += dx2;
-			buffer += xinc;
+			buffer += yinc;
 		}
 	}
 
@@ -855,7 +876,7 @@ int Draw_Line16(int    x0,
 				buffer2 += xinc;
 			}
 			error += dx2;
-			buffer2 += xinc;
+			buffer2 += yinc;
 		}
 	}
 

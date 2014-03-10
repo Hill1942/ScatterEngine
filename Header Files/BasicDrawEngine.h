@@ -138,12 +138,13 @@ DWORD Get_Clock();
 DWORD Start_Clock();
 DWORD Wait_Clock(DWORD count);
 
-int   Collision_Test(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
-int   Collision_Scan(int x1, int y1, int x2, int y2, UCHAR scanStart, UCHAR scanEnd, UCHAR *scanBuffer, int scanLPitch);
-int   Collision_Scan16(int x1, int y1, int x2, int y2, USHORT scanStart, USHORT scanEnd, UCHAR *scanBuffer, int scanLPitch);
+int Collision_Test(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
+int Collision_Scan(int x1, int y1, int x2, int y2, UCHAR scanStart, UCHAR scanEnd, UCHAR *scanBuffer, int scanLPitch);
+int Collision_Scan16(int x1, int y1, int x2, int y2, USHORT scanStart, USHORT scanEnd, UCHAR *scanBuffer, int scanLPitch);
 
 int Draw_Pixel(int x, int y, int color, UCHAR* vedeoBuffer, int lPitch);
 int Draw_Pixel16(int x, int y, int color, UCHAR* vedeoBuffer, int lPitch);
+int Draw_Pixel32(int x, int y, int color, UCHAR* vedeoBuffer, int lPitch);
 
 int Draw_Clip_Line(int x0, int y0, int x1, int y1, int color, UCHAR* destBuffer, int lPitch);
 int Draw_Clip_Line16(int x0, int y0, int x1, int y1, int color, UCHAR* destBuffer, int lPitch);
@@ -158,8 +159,10 @@ void HLine(int x1, int x2, int y, int color, UCHAR* vBuffer, int lPitch);
 void VLine(int y1, int y2, int x, int color, UCHAR& vBuffer, int lPitch);
 void HLine16(int x1, int x2, int y, int color, UCHAR* vBuffer, int lPitch);
 void VLine16(int y1, int y2, int x, int color, UCHAR* vBuffer, int lPitch);
+void HLine32(int x1, int x2, int y, int color, UCHAR* vBuffer, int lPitch);
+void VLine32(int y1, int y2, int x, int color, UCHAR* vBuffer, int lPitch);
 
-int Draw_Rectangle(int x1, int y1, int x2, int y2, int color, LPDIRECTDRAWSURFACE7 lpdds);
+int  Draw_Rectangle(int x1, int y1, int x2, int y2, int color, LPDIRECTDRAWSURFACE7 lpdds);
 void Screen_Transitions(int effect, UCHAR* vBuffer, int lPitch);
 
 int Set_Palette_Entry(int colorIndex, LPPALETTEENTRY color);
