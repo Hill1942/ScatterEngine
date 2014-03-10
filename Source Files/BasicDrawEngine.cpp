@@ -194,7 +194,7 @@ int DDraw_Init(int width, int height, int bpp, int windowed)
 	maxClipX = screenWidth - 1;
 	minClipY = 0;
 	maxClipY = screenHeight - 1;
-
+	/*
 	RECT screenRect = 
 	{
 		0,
@@ -213,10 +213,10 @@ int DDraw_Init(int width, int height, int bpp, int windowed)
 			return 0;
 		if (FAILED(lpddsPrimary->SetClipper(lpddClipper)))
 			return 0;
-	}
+	}*/
 
 	return 1;
-
+	
 }
 
 int DDraw_ShutDown()
@@ -249,7 +249,7 @@ LPDIRECTDRAWCLIPPER DDraw_Attach_Clipper(LPDIRECTDRAWSURFACE7 lpdds,
 	int index;
 	LPDIRECTDRAWCLIPPER lpddClipper;
 	LPRGNDATA regionData;
-
+			
 	if (FAILED(lpdd->CreateClipper(0, &lpddClipper, NULL)))
 		return NULL;
 
@@ -912,7 +912,7 @@ int Draw_Line32(int    x0,
 	if (dx > dy)
 	{
 		error = dy2 - dx;
-		for (int i = 0; i < dx; i++)
+		for (int i = 0; i <= dx; i++)
 		{
 			*buffer2 = (UINT)color;
 			if (error >= 0)
@@ -927,7 +927,7 @@ int Draw_Line32(int    x0,
 	else
 	{
 		error = dx2 - dy;
-		for (int i = 0; i < dy; i++)
+		for (int i = 0; i <= dy; i++)
 		{
 			*buffer2 = (UINT)color;
 			if (error >= 0)
@@ -936,7 +936,7 @@ int Draw_Line32(int    x0,
 				buffer2 += xinc;
 			}
 			error += dx2;
-			buffer2 += xinc;
+			buffer2 += yinc;
 		}
 	}
 

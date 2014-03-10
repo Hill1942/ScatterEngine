@@ -264,7 +264,7 @@ inline void VECTOR2D_COPY(LPVECTOR2D pDest, LPVECTOR2D pSour) { pDest->x = pSour
 inline void VECTOR3D_COPY(LPVECTOR3D pDest, LPVECTOR3D pSour) { pDest->x = pSour->x; pDest->y = pSour->y; pDest->z = pSour->z; }
 inline void VECTOR4D_COPY(LPVECTOR4D pDest, LPVECTOR4D pSour) { pDest->x = pSour->x; pDest->y = pSour->y; pDest->z = pSour->z; pDest->w = pSour->w; }
 inline void VECTOR4D_DIV_BY_W(LPVECTOR4D v) { v->x /= v->w; v->y /= v->w; v->z /= v->w; }
-inline void VECTOR4D_DIV_BY_W_VECTOR3D(LPVECTOR4D v4, LPVECTOR3D v3) { v3->x = v4->x / v4->w; v3->y = v4->y / v4->w; v3->z = v4->z / v4->z; }
+inline void VECTOR4D_DIV_BY_W_VECTOR3D(LPVECTOR4D v4, LPVECTOR3D v3) { v3->x = v4->x / v4->w; v3->y = v4->y / v4->w; v3->z = v4->z / v4->w; }
 
 
 ////inline function about Point

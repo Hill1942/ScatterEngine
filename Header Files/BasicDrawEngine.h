@@ -136,7 +136,8 @@ int    DDraw_Unlock_Back_Surface();
 ***************************************************************************/
 DWORD Get_Clock();
 DWORD Start_Clock();
-DWORD Wait_Clock();
+DWORD Wait_Clock(DWORD count);
+
 int   Collision_Test(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 int   Collision_Scan(int x1, int y1, int x2, int y2, UCHAR scanStart, UCHAR scanEnd, UCHAR *scanBuffer, int scanLPitch);
 int   Collision_Scan16(int x1, int y1, int x2, int y2, USHORT scanStart, USHORT scanEnd, UCHAR *scanBuffer, int scanLPitch);

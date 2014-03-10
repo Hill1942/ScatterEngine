@@ -17,13 +17,14 @@
 
 
 #define WINDOW_CLASS_NAME "WIN3DCLASS"
+
 #define WINDOW_TITLE      "Scatter Engine"
 #define WINDOW_WIDTH      640
 #define WINDOW_HEIGHT     480
+ 
+#define WINDOW_BPP        32
 
-#define WINDOW_BPP        16
-
-#define WINDOWED_APP      1 
+#define WINDOWED_APP      1
 
 #define KEY_DOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000) ? 1:0)
 #define KEY_UP(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000) ? 0:1)
@@ -58,6 +59,9 @@ extern LPDIRECTDRAWSURFACE7 lpddsBack;
 extern UCHAR* backBuffer;
 
 extern int backLPitch;
+
+extern int windowClientX;
+extern int windowClientY;
 
 LRESULT WINAPI WinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -112,9 +116,30 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR sCmdLine,
 
 	if (mainWindowHandle == NULL)
 		return 0;
+
 	windowInstance = hInstance;
 
-	ShowWindow(mainWindowHandle, nCmdShow);
+	if (WINDOWED_APP)
+	{
+		RECT windowRect = {0, 0, WINDOW_WIDTH - 1, WINDOW_HEIGHT - 1};
+		AdjustWindowRectEx(&windowRect,
+			               GetWindowLong(mainWindowHandle, GWL_STYLE),
+						   NULL,
+						   GetWindowLong(mainWindowHandle, GWL_EXSTYLE));
+
+		windowClientX = -windowRect.left;
+		windowClientY = -windowRect.top;
+		
+
+		MoveWindow(mainWindowHandle,
+			       0,
+				   0,
+				   windowRect.right - windowRect.left,
+				   windowRect.bottom - windowRect.top,
+				   FALSE);
+
+		ShowWindow(mainWindowHandle, SW_SHOW);
+	}
 
 	Game_Init();
 
@@ -253,7 +278,7 @@ int Game_Main(void *param)
     DDraw_Lock_Back_Surface();
     
     // render the polygon list
-    Draw_RENDERLIST4DV1_Wire16(&rend_list, backBuffer, backLPitch);
+    Draw_RENDERLIST4DV1_Wire32(&rend_list, backBuffer, backLPitch);
     
     // unlock the back buffer
     DDraw_Unlock_Back_Surface();
@@ -262,7 +287,7 @@ int Game_Main(void *param)
     DDraw_Flip();
     
     // sync to 30ish fps
-   // Wait_Clock(30);
+    Wait_Clock(30);
     
     // check of user is trying to exit
 	if (KEY_DOWN(VK_ESCAPE))

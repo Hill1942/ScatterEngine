@@ -707,12 +707,13 @@ void Camera_To_Perspective_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPCAM4DV1
 			currentPoly->vTranList[vertex].x = 
 				cam->viewDistance * currentPoly->vTranList[vertex].x / z;
 			currentPoly->vTranList[vertex].y = 
-				cam->viewDistance * currentPoly->vTranList[vertex].y / (z * cam->aspectRatio);
+				//cam->viewDistance * currentPoly->vTranList[vertex].y / (z * cam->aspectRatio);
+				cam->viewDistance * currentPoly->vTranList[vertex].y / z;
 		}
 	}
 }
 
-void Camera_To_Perspective_Screen_OBJECT4DV1(LPRENDERLIST4DV1 renderList, LPCAM4DV1 cam)
+void Camera_To_Perspective_Screen_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPCAM4DV1 cam)
 {
 	for (int poly = 0; poly < renderList->numPolys; poly++)
 	{
