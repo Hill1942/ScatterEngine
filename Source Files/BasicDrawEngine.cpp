@@ -19,7 +19,7 @@ extern HWND mainWindowHandle;
 extern HINSTANCE windowInstance;
 
 FILE* fp_error;
-char error_fillname[80];
+char  error_fillname[80];
 
 LPDIRECTDRAW7        lpdd = NULL;
 LPDIRECTDRAWSURFACE7 lpddsPrimary = NULL;
@@ -214,8 +214,7 @@ int DDraw_Init(int width, int height, int bpp, int windowed)
 
 
 	if (screenWindowed)
-	{
-	
+	{	
 		if (FAILED(lpdd->CreateClipper(0, &lpddClipper, NULL)))
 		//if (FAILED(lpdd->CreateClipper(0, &lpddClipperWin, NULL)))
 			return 0;
