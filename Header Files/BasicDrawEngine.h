@@ -107,14 +107,41 @@ typedef struct POLYGON2D_TYP
 }POLYGON2D, *LPPOLYGON2D;
 
 
+inline void memset_word(void* dest, USHORT data, int count)
+{
+	_asm
+	{
+		mov edi, dest
+		mov ecx, count
+		mov ax,  data
+		rep stosw
+	}
+}
+
+inline void memset_quad(void* dest, UINT data, int count)
+{
+	_asm
+	{
+		mov edi, dest
+		mov ecx, count
+		mov eax, data
+		rep stosd
+	}
+}
+
 
 
 int DDraw_Init(int width, int height, int bpp, int windowed = 0);
 int DDraw_ShutDown();
 
 
-LPDIRECTDRAWCLIPPER  DDraw_Attach_Clipper(LPDIRECTDRAWSURFACE7 lpdds, int numRect, LPRECT clipList);
-LPDIRECTDRAWSURFACE7 DDraw_Create_Surface(int width, int height, int memFlags = 0, USHORT colorKeyValue = 0);
+LPDIRECTDRAWCLIPPER  DDraw_Attach_Clipper(LPDIRECTDRAWSURFACE7 lpdds,
+										  int numRect,
+										  LPRECT clipList);
+LPDIRECTDRAWSURFACE7 DDraw_Create_Surface(int width,
+										  int height,
+										  int memFlags = 0,
+										  USHORT colorKeyValue = 0);
 
 
 /***************************************************************************
@@ -122,8 +149,11 @@ LPDIRECTDRAWSURFACE7 DDraw_Create_Surface(int width, int height, int memFlags = 
 ***************************************************************************/
 int    DDraw_Flip();
 int    DDraw_Wait_For_Vsync();
-int    DDraw_Fill_Surface(LPDIRECTDRAWSURFACE7 lpdds, USHORT color, RECT* client = NULL);
-UCHAR* DDraw_Lock_Surface(LPDIRECTDRAWSURFACE7 lpdds, int* lpitch);
+int    DDraw_Fill_Surface(LPDIRECTDRAWSURFACE7 lpdds,
+						  USHORT color,
+						  RECT* client = NULL);
+UCHAR* DDraw_Lock_Surface(LPDIRECTDRAWSURFACE7 lpdds, 
+						  int* lpitch);
 int    DDraw_Unlock_Surface(LPDIRECTDRAWSURFACE7 lpdds);
 UCHAR* DDraw_Lock_Primary_Surface();
 int    DDraw_Unlock_Primary_Surface();
@@ -138,11 +168,29 @@ DWORD Get_Clock();
 DWORD Start_Clock();
 DWORD Wait_Clock(DWORD count);
 
-int Collision_Test(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
-int Collision_Scan(int x1, int y1, int x2, int y2, UCHAR scanStart, UCHAR scanEnd, UCHAR *scanBuffer, int scanLPitch);
-int Collision_Scan16(int x1, int y1, int x2, int y2, USHORT scanStart, USHORT scanEnd, UCHAR *scanBuffer, int scanLPitch);
+int Collision_Test(int x1, int y1,
+				   int w1, int h1, 
+				   int x2, int y2,
+				   int w2, int h2);
 
-int Draw_Pixel(int x, int y, int color, UCHAR* vedeoBuffer, int lPitch);
+int Collision_Scan(int x1, int y1,
+				   int x2, int y2,
+				   UCHAR scanStart,
+				   UCHAR scanEnd, 
+				   UCHAR *scanBuffer,
+				   int scanLPitch);
+
+int Collision_Scan16(int x1, int y1, 
+					 int x2, int y2, 
+					 USHORT scanStart, 
+					 USHORT scanEnd,
+					 UCHAR *scanBuffer,
+					 int scanLPitch);
+
+int Draw_Pixel(int x, int y, 
+			   int color,
+			   UCHAR* vedeoBuffer,
+			   int lPitch);
 int Draw_Pixel16(int x, int y, int color, UCHAR* vedeoBuffer, int lPitch);
 int Draw_Pixel32(int x, int y, int color, UCHAR* vedeoBuffer, int lPitch);
 
@@ -161,6 +209,70 @@ void HLine16(int x1, int x2, int y, int color, UCHAR* vBuffer, int lPitch);
 void VLine16(int y1, int y2, int x, int color, UCHAR* vBuffer, int lPitch);
 void HLine32(int x1, int x2, int y, int color, UCHAR* vBuffer, int lPitch);
 void VLine32(int y1, int y2, int x, int color, UCHAR* vBuffer, int lPitch);
+
+void Draw_Top_Triangle(int x1, int y1,
+					   int x2, int y2, 
+					   int x3, int y3,
+					   int color, 
+					   UCHAR* buffer,
+					   int lPitch);
+
+void Draw_Top_Triangle16(int x1, int y1,
+					     int x2, int y2, 
+					     int x3, int y3,
+					     int color, 
+					     UCHAR* buffer,
+					     int lPitch);
+
+void Draw_Top_Triangle32(int x1, int y1,
+					     int x2, int y2, 
+					     int x3, int y3,
+					     int color, 
+					     UCHAR* buffer,
+					     int lPitch);
+
+void Draw_Bottom_Triangle(int x1, int y1,
+					      int x2, int y2, 
+					      int x3, int y3,
+					      int    color, 
+					      UCHAR* buffer,
+					      int    lPitch);
+
+void Draw_Bottom_Triangle16(int x1, int y1,
+					        int x2, int y2, 
+					        int x3, int y3,
+					        int    color, 
+					        UCHAR* buffer,
+					        int lPitch);
+
+void Draw_Bottom_Triangle32(int x1, int y1,
+					        int x2, int y2, 
+					        int x3, int y3,
+					        int    color, 
+					        UCHAR* buffer,
+					        int    lPitch);
+
+void Draw_2D_Triangle(int x1, int y1,
+					  int x2, int y2, 
+					  int x3, int y3,
+					  int    color, 
+					  UCHAR* buffer,
+					  int    lPitch);
+
+void Draw_2D_Triangle16(int x1, int y1,
+					    int x2, int y2, 
+					    int x3, int y3,
+					    int    color, 
+					    UCHAR* buffer,
+					    int    lPitch);
+
+void Draw_2D_Triangle32(int x1, int y1,
+					    int x2, int y2, 
+					    int x3, int y3,
+					    int    color, 
+					    UCHAR* buffer,
+					    int    lPitch);
+
 
 int  Draw_Rectangle(int x1, int y1, int x2, int y2, int color, LPDIRECTDRAWSURFACE7 lpdds);
 void Screen_Transitions(int effect, UCHAR* vBuffer, int lPitch);
