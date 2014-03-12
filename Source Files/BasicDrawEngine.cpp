@@ -1020,6 +1020,558 @@ int Draw_Clip_Line(int    x0,
 	return 1;
 }
 
+
+
+/* fucking amazing */
+void Draw_Top_Triangle(int x1, int y1,
+					   int x2, int y2, 
+					   int x3, int y3,
+					   int    color, 
+					   UCHAR* buffer,
+					   int    lPitch)
+{
+	float k_right;
+	float k_left;
+	float xStart;
+	float xEnd;
+
+	int   clip_right;
+	int   clip_left;
+
+	UCHAR* destAddr = NULL;
+
+	int temp;
+	if (x2 < x1)
+	{
+		temp = x2;
+		x2 = x1;
+		x1 = temp;
+	}
+
+	k_left   = (x3 - x1) / (y3 - y1);
+	k_right  = (x3 - x2) / (y3 - y1);
+
+	xStart = (float)x1;
+	xEnd   = (float)x2 + 0.5f;
+
+	if (y1 < minClipY)
+	{
+		xStart = xStart + k_left  * (minClipY - y1);
+		xEnd   = xEnd   + k_right * (minClipY - y1);
+		y1 = minClipY;
+	}
+
+	if (y3 > maxClipY)
+		y3 = maxClipY;
+
+	destAddr = buffer + y1 * lPitch;
+
+	if (x1 >= minClipX && x1 <= maxClipX &&
+		x2 >= minClipX && x2 <= maxClipX &&
+		x3 >= minClipX && x3 <= maxClipX)
+	{
+		for (int i = y1; i <= y3; i++, destAddr += lPitch)
+		{
+			memset((UCHAR*)destAddr + (UINT)xStart, 
+				   color,
+				   (UINT)(xEnd - xStart + 1));
+			xStart += k_left;
+			xEnd   += k_right;
+		}
+	}
+	else
+	{
+		for (int i = y1; i <= y3; i++, destAddr += lPitch)
+		{
+			clip_left  = (int)xStart;
+			clip_right = (int)xEnd;
+
+			xStart += k_left;
+			xEnd   += k_right;
+
+			if (clip_left < minClipX)
+			{
+				clip_left = minClipX;
+				if (clip_right < minClipX)
+					continue;
+			}
+			if (clip_right > maxClipX)
+			{
+				clip_right = maxClipX;
+				if (clip_left > maxClipX)
+					continue;
+			}
+			memset((UCHAR*)destAddr + (UINT)clip_left,
+				   color,
+				   (UINT)(clip_right - clip_left + 1));
+		}		
+	}
+}
+
+void Draw_Top_Triangle16(int x1, int y1,
+					     int x2, int y2, 
+					     int x3, int y3,
+					     int color, 
+					     UCHAR* buffer,
+					     int lPitch)
+{
+	float k_right;
+	float k_left;
+	float xStart;
+	float xEnd;
+
+	int   clip_right;
+	int   clip_left;
+
+	USHORT* buffer16   = (USHORT*)buffer;
+	USHORT* destAddr = NULL;
+
+	int lPitch_16 = lPitch >> 1;
+
+	int temp;
+	if (x2 < x1)
+	{
+		temp = x2;
+		x2 = x1;
+		x1 = temp;
+	}
+
+	k_left   = (x3 - x1) / (y3 - y1);
+	k_right  = (x3 - x2) / (y3 - y1);
+
+	xStart = (float)x1;
+	xEnd   = (float)x2 + 0.5f;
+
+	if (y1 < minClipY)
+	{
+		xStart = xStart + k_left  * (minClipY - y1);
+		xEnd   = xEnd   + k_right * (minClipY - y1);
+		y1 = minClipY;
+	}
+
+	if (y3 > maxClipY)
+		y3 = maxClipY;
+
+	destAddr = buffer16 + y1 * lPitch_16;
+
+	if (x1 >= minClipX && x1 <= maxClipX &&
+		x2 >= minClipX && x2 <= maxClipX &&
+		x3 >= minClipX && x3 <= maxClipX)
+	{
+		for (int i = y1; i <= y3; i++, destAddr += lPitch)
+		{
+			memset_word(destAddr + (UINT)xStart, 
+				        color,
+				        (UINT)(xEnd - xStart + 1));
+			xStart += k_left;
+			xEnd   += k_right;
+		}
+	}
+	else
+	{
+		for (int i = y1; i <= y3; i++, destAddr += lPitch)
+		{
+			clip_left  = (int)xStart;
+			clip_right = (int)xEnd;
+
+			xStart += k_left;
+			xEnd   += k_right;
+
+			if (clip_left < minClipX)
+			{
+				clip_left = minClipX;
+				if (clip_right < minClipX)
+					continue;
+			}
+			if (clip_right > maxClipX)
+			{
+				clip_right = maxClipX;
+				if (clip_left > maxClipX)
+					continue;
+			}
+			memset_word(destAddr + (UINT)clip_left,
+				        color,
+				        (UINT)(clip_right - clip_left + 1));
+		}		
+	}
+}
+
+void Draw_Top_Triangle32(int x1, int y1,
+					     int x2, int y2, 
+					     int x3, int y3,
+					     int color, 
+					     UCHAR* buffer,
+					     int lPitch)
+{
+	float k_right;
+	float k_left;
+	float xStart;
+	float xEnd;
+
+	int   clip_right;
+	int   clip_left;
+
+	UINT* destAddr = NULL;
+	UINT* buffer32 = (UINT*)buffer;
+	int   lPitch_32 = lPitch >> 2;
+
+	int temp;
+	if (x2 < x1)
+	{
+		temp = x2;
+		x2 = x1;
+		x1 = temp;
+	}
+
+	k_left   = (x3 - x1) / (y3 - y1);
+	k_right  = (x3 - x2) / (y3 - y1);
+
+	xStart = (float)x1;
+	xEnd   = (float)x2 + 0.5f;
+
+	if (y1 < minClipY)
+	{
+		xStart = xStart + k_left  * (minClipY - y1);
+		xEnd   = xEnd   + k_right * (minClipY - y1);
+		y1 = minClipY;
+	}
+
+	if (y3 > maxClipY)
+		y3 = maxClipY;
+
+	destAddr = buffer32 + y1 * lPitch_32;
+
+	if (x1 >= minClipX && x1 <= maxClipX &&
+		x2 >= minClipX && x2 <= maxClipX &&
+		x3 >= minClipX && x3 <= maxClipX)
+	{
+		for (int i = y1; i <= y3; i++, destAddr += lPitch)
+		{
+			memset_quad(destAddr + (UINT)xStart, 
+				        color,
+				        (UINT)(xEnd - xStart + 1));
+			xStart += k_left;
+			xEnd   += k_right;
+		}
+	}
+	else
+	{
+		for (int i = y1; i <= y3; i++, destAddr += lPitch)
+		{
+			clip_left  = (int)xStart;
+			clip_right = (int)xEnd;
+
+			xStart += k_left;
+			xEnd   += k_right;
+
+			if (clip_left < minClipX)
+			{
+				clip_left = minClipX;
+				if (clip_right < minClipX)
+					continue;
+			}
+			if (clip_right > maxClipX)
+			{
+				clip_right = maxClipX;
+				if (clip_left > maxClipX)
+					continue;
+			}
+			memset_quad(destAddr + (UINT)clip_left,
+				        color,
+				        (UINT)(clip_right - clip_left + 1));
+		}		
+	}
+}
+
+void Draw_Bottom_Triangle(int x1, int y1,
+					      int x2, int y2, 
+					      int x3, int y3,
+					      int    color, 
+					      UCHAR* buffer,
+					      int    lPitch)
+{
+	float k_right;
+	float k_left;
+	float xStart;
+	float xEnd;
+
+	int   clip_right;
+	int   clip_left;
+
+	UCHAR* destAddr = NULL;
+
+	int temp;
+	if (x3 < x2)
+	{
+		temp = x3;
+		x3 = x2;
+		x2 = temp;
+	}
+
+	k_left  = (x2 - x1) / (y3 - y1);
+	k_right = (x3 - x1) / (y3 - y1);
+
+	xStart = (float)x1;
+	xEnd   = (float)x1;
+
+	if (y1 < minClipY)
+	{
+		xStart = xStart + k_left  * (minClipY - y1);
+		xEnd   = xEnd   + k_right * (minClipY - y1);
+		y1 = minClipY;
+	}
+
+	if (y3 > maxClipY)
+		y3 = maxClipY;
+
+	destAddr = buffer + y1 * lPitch;
+
+	if (x1 >= minClipX && x1 <= maxClipX &&
+		x2 >= minClipX && x2 <= maxClipX &&
+		x3 >= minClipX && x3 <= maxClipX)
+	{
+		for (int i = y1; i <= y3; i++, destAddr += lPitch)
+		{
+			memset((UCHAR*)destAddr + (UINT)xStart, 
+				   color,
+				   (UINT)(xEnd - xStart + 1));
+			xStart += k_left;
+			xEnd   += k_right;
+		}
+	}
+	else
+	{
+		for (int i = y1; i <= y3; i++, destAddr += lPitch)
+		{
+			clip_left  = (int)xStart;
+			clip_right = (int)xEnd;
+
+			xStart += k_left;
+			xEnd   += k_right;
+
+			if (clip_left < minClipX)
+			{
+				clip_left = minClipX;
+				if (clip_right < minClipX)
+					continue;
+			}
+			if (clip_right > maxClipX)
+			{
+				clip_right = maxClipX;
+				if (clip_left > maxClipX)
+					continue;
+			}
+			memset((UCHAR*)destAddr + (UINT)clip_left,
+				   color,
+				   (UINT)(clip_right - clip_left + 1));
+		}		
+	}
+}
+
+void Draw_Bottom_Triangle16(int x1, int y1,
+					        int x2, int y2, 
+					        int x3, int y3,
+					        int    color, 
+					        UCHAR* buffer,
+					        int lPitch)
+{
+	float k_right;
+	float k_left;
+	float xStart;
+	float xEnd;
+
+	int   clip_right;
+	int   clip_left;
+
+	USHORT* destAddr = NULL;
+	USHORT* buffer16 = (USHORT*)buffer;
+	int lPitch_16 = lPitch >> 1;
+
+	int temp;
+	if (x3 < x2)
+	{
+		temp = x3;
+		x3 = x2;
+		x2 = temp;
+	}
+
+	k_left  = (x2 - x1) / (y3 - y1);
+	k_right = (x3 - x1) / (y3 - y1);
+
+	xStart = (float)x1;
+	xEnd   = (float)x1;
+
+	if (y1 < minClipY)
+	{
+		xStart = xStart + k_left  * (minClipY - y1);
+		xEnd   = xEnd   + k_right * (minClipY - y1);
+		y1 = minClipY;
+	}
+
+	if (y3 > maxClipY)
+		y3 = maxClipY;
+
+	destAddr = buffer16 + y1 * lPitch_16;
+
+	if (x1 >= minClipX && x1 <= maxClipX &&
+		x2 >= minClipX && x2 <= maxClipX &&
+		x3 >= minClipX && x3 <= maxClipX)
+	{
+		for (int i = y1; i <= y3; i++, destAddr += lPitch)
+		{
+			memset_word(destAddr + (UINT)xStart, 
+				        color,
+				        (UINT)(xEnd - xStart + 1));
+			xStart += k_left;
+			xEnd   += k_right;
+		}
+	}
+	else
+	{
+		for (int i = y1; i <= y3; i++, destAddr += lPitch)
+		{
+			clip_left  = (int)xStart;
+			clip_right = (int)xEnd;
+
+			xStart += k_left;
+			xEnd   += k_right;
+
+			if (clip_left < minClipX)
+			{
+				clip_left = minClipX;
+				if (clip_right < minClipX)
+					continue;
+			}
+			if (clip_right > maxClipX)
+			{
+				clip_right = maxClipX;
+				if (clip_left > maxClipX)
+					continue;
+			}
+			memset_word(destAddr + (UINT)clip_left,
+				        color,
+				        (UINT)(clip_right - clip_left + 1));
+		}		
+	}
+}
+
+void Draw_Bottom_Triangle32(int x1, int y1,
+					        int x2, int y2, 
+					        int x3, int y3,
+					        int    color, 
+					        UCHAR* buffer,
+					        int    lPitch)
+{
+	float k_right;
+	float k_left;
+	float xStart;
+	float xEnd;
+
+	int   clip_right;
+	int   clip_left;
+
+	UINT* destAddr = NULL;
+	UINT* buffer32 = (UINT*)buffer;
+	int lPitch_32 = lPitch >> 2;
+
+	int temp;
+	if (x3 < x2)
+	{
+		temp = x3;
+		x3 = x2;
+		x2 = temp;
+	}
+
+	k_left  = (x2 - x1) / (y3 - y1);
+	k_right = (x3 - x1) / (y3 - y1);
+
+	xStart = (float)x1;
+	xEnd   = (float)x1;
+
+	if (y1 < minClipY)
+	{
+		xStart = xStart + k_left  * (minClipY - y1);
+		xEnd   = xEnd   + k_right * (minClipY - y1);
+		y1 = minClipY;
+	}
+
+	if (y3 > maxClipY)
+		y3 = maxClipY;
+
+	destAddr = buffer32 + y1 * lPitch_32;
+
+	if (x1 >= minClipX && x1 <= maxClipX &&
+		x2 >= minClipX && x2 <= maxClipX &&
+		x3 >= minClipX && x3 <= maxClipX)
+	{
+		for (int i = y1; i <= y3; i++, destAddr += lPitch)
+		{
+			memset_quad(destAddr + (UINT)xStart, 
+				        color,
+				        (UINT)(xEnd - xStart + 1));
+			xStart += k_left;
+			xEnd   += k_right;
+		}
+	}
+	else
+	{
+		for (int i = y1; i <= y3; i++, destAddr += lPitch)
+		{
+			clip_left  = (int)xStart;
+			clip_right = (int)xEnd;
+
+			xStart += k_left;
+			xEnd   += k_right;
+
+			if (clip_left < minClipX)
+			{
+				clip_left = minClipX;
+				if (clip_right < minClipX)
+					continue;
+			}
+			if (clip_right > maxClipX)
+			{
+				clip_right = maxClipX;
+				if (clip_left > maxClipX)
+					continue;
+			}
+			memset_quad(destAddr + (UINT)clip_left,
+				        color,
+				        (UINT)(clip_right - clip_left + 1));
+		}		
+	}
+}
+
+void Draw_2D_Triangle(int x1, int y1,
+					  int x2, int y2, 
+					  int x3, int y3,
+					  int    color, 
+					  UCHAR* buffer,
+					  int    lPitch)
+{
+}
+
+void Draw_2D_Triangle16(int x1, int y1,
+					    int x2, int y2, 
+					    int x3, int y3,
+					    int    color, 
+					    UCHAR* buffer,
+					    int    lPitch)
+{
+}
+
+void Draw_2D_Triangle32(int x1, int y1,
+					    int x2, int y2, 
+					    int x3, int y3,
+					    int    color, 
+					    UCHAR* buffer,
+					    int    lPitch)
+{
+}
+
+
+
+
 int Draw_Rectangle(int                  x1,
 				   int                  y1,
 				   int                  x2,
