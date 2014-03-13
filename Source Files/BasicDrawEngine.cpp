@@ -1549,6 +1549,60 @@ void Draw_2D_Triangle(int x1, int y1,
 					  UCHAR* buffer,
 					  int    lPitch)
 {
+	if ((x1 == x2 && x2 == x3) || (y1 == y2 && y2 == y3))
+		return;
+
+	int tempX;
+	int tempY;
+	if (y2 < y1)
+	{
+		tempX = x2;
+		tempY = y2;
+		x2    = x1;
+		y2    = y1;
+		x1    = tempX;
+		y1    = tempY;
+	}
+
+	if (y3 < y1)
+	{
+		tempX = x3;
+		tempY = y3;
+		x3    = x1;
+		y3    = y1;
+		x1    = tempX;
+		y1    = tempY;
+	}
+
+	if (y3 < y2)
+	{
+		tempX = x2;
+		tempY = y2;
+		x2    = x3;
+		y2    = y3;
+		x3    = tempX;
+		y3    = tempY;
+	}
+
+	if ( y3 < minClipY || y1 > maxClipY ||
+		(x1 < minClipX && x2 < minClipX && x3 < minClipX) ||
+		(x1 > maxClipX && x2 > maxClipX && x3 > maxClipX))
+		return;
+
+	if (y1 == y2)
+	{
+		Draw_Top_Triangle(x1, y1, x2, y2, x3, y3, color, buffer, lPitch);
+	}
+	else if (y2 == y3)
+	{
+		Draw_Bottom_Triangle(x1, y1, x2, y2, x3, y3, color, buffer, lPitch);
+	}
+	else
+	{
+		int newX = x1 + (int)(0.5 + (float)(y2 - y1) * (float)(x3 - x1) / (float)(y3 - y1));
+		Draw_Top_Triangle(x1, y1, newX, y2, x2, y2, color, buffer, lPitch);
+		Draw_Bottom_Triangle(x2, y2, newX, y2, x3, y3, color, buffer, lPitch);
+	}
 }
 
 void Draw_2D_Triangle16(int x1, int y1,
@@ -1558,6 +1612,60 @@ void Draw_2D_Triangle16(int x1, int y1,
 					    UCHAR* buffer,
 					    int    lPitch)
 {
+		if ((x1 == x2 && x2 == x3) || (y1 == y2 && y2 == y3))
+		return;
+
+	int tempX;
+	int tempY;
+	if (y2 < y1)
+	{
+		tempX = x2;
+		tempY = y2;
+		x2    = x1;
+		y2    = y1;
+		x1    = tempX;
+		y1    = tempY;
+	}
+
+	if (y3 < y1)
+	{
+		tempX = x3;
+		tempY = y3;
+		x3    = x1;
+		y3    = y1;
+		x1    = tempX;
+		y1    = tempY;
+	}
+
+	if (y3 < y2)
+	{
+		tempX = x2;
+		tempY = y2;
+		x2    = x3;
+		y2    = y3;
+		x3    = tempX;
+		y3    = tempY;
+	}
+
+	if ( y3 < minClipY || y1 > maxClipY ||
+		(x1 < minClipX && x2 < minClipX && x3 < minClipX) ||
+		(x1 > maxClipX && x2 > maxClipX && x3 > maxClipX))
+		return;
+
+	if (y1 == y2)
+	{
+		Draw_Top_Triangle16(x1, y1, x2, y2, x3, y3, color, buffer, lPitch);
+	}
+	else if (y2 == y3)
+	{
+		Draw_Bottom_Triangle16(x1, y1, x2, y2, x3, y3, color, buffer, lPitch);
+	}
+	else
+	{
+		int newX = x1 + (int)(0.5 + (float)(y2 - y1) * (float)(x3 - x1) / (float)(y3 - y1));
+		Draw_Top_Triangle16(x1, y1, newX, y2, x2, y2, color, buffer, lPitch);
+		Draw_Bottom_Triangle16(x2, y2, newX, y2, x3, y3, color, buffer, lPitch);
+	}
 }
 
 void Draw_2D_Triangle32(int x1, int y1,
@@ -1567,6 +1675,60 @@ void Draw_2D_Triangle32(int x1, int y1,
 					    UCHAR* buffer,
 					    int    lPitch)
 {
+		if ((x1 == x2 && x2 == x3) || (y1 == y2 && y2 == y3))
+		return;
+
+	int tempX;
+	int tempY;
+	if (y2 < y1)
+	{
+		tempX = x2;
+		tempY = y2;
+		x2    = x1;
+		y2    = y1;
+		x1    = tempX;
+		y1    = tempY;
+	}
+
+	if (y3 < y1)
+	{
+		tempX = x3;
+		tempY = y3;
+		x3    = x1;
+		y3    = y1;
+		x1    = tempX;
+		y1    = tempY;
+	}
+
+	if (y3 < y2)
+	{
+		tempX = x2;
+		tempY = y2;
+		x2    = x3;
+		y2    = y3;
+		x3    = tempX;
+		y3    = tempY;
+	}
+
+	if ( y3 < minClipY || y1 > maxClipY ||
+		(x1 < minClipX && x2 < minClipX && x3 < minClipX) ||
+		(x1 > maxClipX && x2 > maxClipX && x3 > maxClipX))
+		return;
+
+	if (y1 == y2)
+	{
+		Draw_Top_Triangle32(x1, y1, x2, y2, x3, y3, color, buffer, lPitch);
+	}
+	else if (y2 == y3)
+	{
+		Draw_Bottom_Triangle32(x1, y1, x2, y2, x3, y3, color, buffer, lPitch);
+	}
+	else
+	{
+		int newX = x1 + (int)(0.5 + (float)(y2 - y1) * (float)(x3 - x1) / (float)(y3 - y1));
+		Draw_Top_Triangle32(x1, y1, newX, y2, x2, y2, color, buffer, lPitch);
+		Draw_Bottom_Triangle32(x2, y2, newX, y2, x3, y3, color, buffer, lPitch);
+	}
 }
 
 
