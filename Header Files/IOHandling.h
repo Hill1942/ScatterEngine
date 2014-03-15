@@ -1,4 +1,4 @@
-#ifndef IO_HANDLING
+﻿#ifndef IO_HANDLING
 #define IO_HANDLING
 
 
@@ -66,7 +66,7 @@ public:
 	int PatternMatch(char* string, char* pattern, ...);
 
 public:
-	FILE* fstream;
+	FILE* file;
 	char buffer[PARSER_BUFFER_SIZE];
 	int  length;
 	int  numLines;
@@ -81,6 +81,19 @@ public:
 };
 
 typedef CParser_v1 *LPCParse_v1;
+
+
+/*下面这两个函数的调用一定要注意：
+
+  传入的实参一定要是指向一个有确定
+  大小的字符数组，
+  这样在string[i] = 0这样的赋值时
+  才不会有错误
+   
+*******************************/
+char* StringDel_StartWS(char* string);
+
+char* StringDel_EndWS(char* string);
 
 int Load_OBJECT4DV1_3DSASC(LPOBJECT4DV1 obj,
 						   char*        filename,
