@@ -153,6 +153,138 @@ char* CParser_v1::Getline(int mode)
 
 int CParser_v1::PatternMatch(char* string, char* pattern, ...)
 {
+	char tokenType[PATTERN_MAX_ARGS];
+	char tokenString[PATTERN_MAX_ARGS][PATTERN_BUFFER_SIZE];
+	char tokenOperator[PATTERN_MAX_ARGS];
+	int  tokenNumric[PATTERN_MAX_ARGS];
+
+	char buffer[PARSER_BUFFER_SIZE];
+
+	if (!string || strlen(string) == 0
+		|| (!pattern || strlen(pattern) == 0))
+		return 0;
+
+	strcpy(buffer, string);
+
+	int tokenStart     = 0;
+	int tokenEnd       = 0;
+	int tokenRestart   = 0;
+	int tokenFirstPass = 0;
+	int tokenNum       = 0;
+
+	while (1)
+	{
+		while (isspace(pattern[tokenStart]))
+			tokenStart++;
+
+		if (tokenStart >= strlen(pattern))
+			break;
+		if (pattern[tokenStart] == '[')
+		{
+			switch (pattern[tokenStart + 1])
+			{
+			case PATTERN_TOKEN_FLOAT:
+				{
+					if (pattern[tokenStart + 2] != ']')
+						return 0;
+					tokenStart += 3;
+					tokenType[tokenNum]     = PATTERN_TOKEN_FLOAT;
+					strcpy(tokenString[tokenNum], "");
+					tokenOperator[tokenNum] = 0;
+					tokenNumric[tokenNum]   = 0;
+					tokenNum++;
+				}
+				break;
+			case PATTERN_TOKEN_INT:
+				{
+					if (pattern[tokenStart + 2] != ']')
+						return 0;
+					tokenStart += 3;
+					tokenType[tokenNum]     = PATTERN_TOKEN_INT;
+					strcpy(tokenString[tokenNum], "");
+					tokenOperator[tokenNum] = 0;
+					tokenNumric[tokenNum]   = 0;
+					tokenNum++;
+				}
+				break;
+			case PATTERN_TOKEN_LITERAL:
+				{
+					tokenStart += 2;
+					tokenEnd    = tokenStart;
+					while (pattern[tokenEnd] != PATTERN_TOKEN_LITERAL)
+						tokenEnd++;
+					memcpy(tokenString[tokenNum],
+						   &pattern[tokenStart],
+						   (tokenEnd - tokenStart));
+					tokenType[tokenNum] = PATTERN_TOKEN_LITERAL;
+					tokenOperator[tokenNum] = 0;
+					tokenNumric[tokenNum]   = 0;
+					tokenStart              = tokenEnd + 2;
+					tokenNum++;
+				}
+				break;
+			case PATTERN_TOKEN_STRING:
+				{
+					if (pattern[tokenStart + 2] == '=' ||
+						pattern[tokenStart + 2] == '>' ||
+						pattern[tokenStart + 2] == '<' )
+					{
+						tokenEnd = tokenStart + 3;
+						while (isdigit(pattern[tokenEnd]))
+							tokenEnd++;
+						if (pattern[tokenEnd] != ']')
+							return 0;
+						memcpy(buffer,
+							   &pattern[tokenStart + 3], 
+							   (tokenEnd - tokenStart));
+						buffer[tokenEnd - tokenStart] = 0;
+
+						tokenType[tokenNum] = PATTERN_TOKEN_STRING;
+						strcpy(tokenString[tokenNum], "");
+						tokenOperator[tokenNum] = pattern[tokenStart + 2];
+						tokenNumric[tokenNum] = atoi(buffer);
+					}
+					else
+						return 0;
+					tokenStart = tokenEnd + 1;
+					tokenNum++;
+				}
+				break;
+
+			default:
+				break;
+			}
+		}  // end if
+
+		if (tokenStart >= strlen(pattern))
+			break;
+	}  // end while
+
+	int patternState = PATTERN_STATE_INIT;
+	int currToken    = 0;
+	char token[PATTERN_BUFFER_SIZE];
+
+	while (1)
+	{
+		switch (patternState)
+		{
+		case PATTERN_STATE_INIT:
+			{
+				strcpy(buffer, string);
+				tokenStart     = 0;
+				tokenEnd       = 0;
+				tokenRestart   = 0;
+				tokenFirstPass = 1;
+				currToken      = 0;
+
+				numPInts = numPFloats = numPStrings = 0;
+
+			}
+		default:
+			break;
+		}
+	} // end while
+
 
 }
 
