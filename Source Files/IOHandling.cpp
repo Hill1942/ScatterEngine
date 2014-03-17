@@ -278,14 +278,195 @@ int CParser_v1::PatternMatch(char* string, char* pattern, ...)
 				currToken      = 0;
 
 				numPInts = numPFloats = numPStrings = 0;
+			}
+			break;
+
+		case PATTERN_STATE_RESTART:
+			{
+				currToken      = 0;
+				tokenFirstPass = 1;
+				if (tokenEnd >= strlen(buffer))
+					return 0;
+				tokenStart = tokenEnd = tokenRestart;
+				patternState = PATTERN_STATE_NEXT;
+			}
+			break;
+
+		case PATTERN_STATE_NEXT:
+			{
+				if (currToken >= tokenNum)
+				{
+					patternState = PATTERN_STATE_MATCH;
+				}
+				else
+				{
+					if (tokenEnd >= strlen(buffer))
+						return 0;
+					tokenStart = tokenEnd;
+					while (isspace(buffer[tokenStart]))
+						tokenStart++;
+					tokenEnd = tokenStart;
+					while (!isspace(buffer[tokenEnd]) && tokenEnd < strlen(buffer))
+						tokenEnd++;
+					memcpy(token, &buffer[tokenStart] , tokenEnd  - tokenStart);
+					token[tokenEnd - tokenStart];
+					if (strlen(token) == 0)
+						return 0;
+
+					if (tokenFirstPass)
+					{
+						tokenFirstPass = 0;
+						tokenRestart = tokenEnd;
+					}
+
+					switch (tokenType[currToken])
+					{
+					case PATTERN_TOKEN_FLOAT:
+						{
+							patternState = PATTERN_STATE_FLOAT;
+						}
+						break;
+					case PATTERN_TOKEN_INT:
+						{
+							patternState = PATTERN_STATE_INT;
+						}
+						break;
+					case PATTERN_TOKEN_STRING:
+						{
+							patternState = PATTERN_STATE_STRING;
+						}
+						break;
+					case PATTERN_STATE_LITERAL:
+						{
+							patternState = PATTERN_STATE_LITERAL;
+						}
+						break;
+					default:
+						break;
+					}
+				}// end else
 
 			}
+			break;
+
+		case PATTERN_STATE_FLOAT:
+			{
+				float f = IsFloat(token);
+				if (f != FLT_MIN)
+				{
+					pFloats[numPFloats] = f;
+					numPFloats++;
+					currToken++;
+					patternState = PATTERN_STATE_NEXT;
+				}
+				else
+				{
+					patternState = PATTERN_STATE_RESTART;
+				}
+			}
+			break;
+
+		case PATTERN_STATE_INT:
+			{
+				int i = IsInt(token);
+				if (i != INT_MIN)
+				{
+					pInts[numPInts] = i;
+					numPInts++;
+					currToken++;
+					patternState = PATTERN_STATE_NEXT;
+				}
+				else
+				{
+					patternState = PATTERN_STATE_RESTART;
+				}
+			}
+			break;
+
+		case PATTERN_STATE_LITERAL:
+			{
+				if (strcmp(token, tokenString[currToken]) == 0)
+				{
+					strcpy(pStrings[numPStrings], token);
+					numPStrings++;
+					currToken++;
+					patternState = PATTERN_STATE_NEXT;
+				}
+				else
+				{
+					patternState = PATTERN_STATE_RESTART;
+				}
+			}
+			break;
+
+		case PATTERN_STATE_STRING:
+			{
+				switch (tokenOperator[currToken])
+				{
+				case '=':
+					{
+						if (strlen(token) == tokenNumric[currToken])
+						{
+							strcpy(pStrings[numPStrings], token);
+							numPStrings++;
+							currToken++;
+							patternState = PATTERN_STATE_NEXT;
+						}
+						else
+						{
+							patternState = PATTERN_STATE_RESTART;
+						}
+					}
+					break;
+				case '<':
+					{
+						if (strlen(token) < tokenNumric[currToken])
+						{
+							strcpy(pStrings[numPStrings], token);
+							numPStrings++;
+							currToken++;
+							patternState = PATTERN_STATE_NEXT;
+						}
+						else
+						{
+							patternState = PATTERN_STATE_RESTART;
+						}
+					}
+					break;
+				case '>':
+					{
+						if (strlen(token) > tokenNumric[currToken])
+						{
+							strcpy(pStrings[numPStrings], token);
+							numPStrings++;
+							currToken++;
+							patternState = PATTERN_STATE_NEXT;
+						}
+						else
+						{
+							patternState = PATTERN_STATE_RESTART;
+						}
+					}
+					break;
+				default:
+					break;
+				}
+			}
+			break;
+
+		case PATTERN_STATE_MATCH:
+			{
+				return 1;
+			}
+			break;
+		case PATTERN_STATE_END:
+			{
+			}
+			break;
 		default:
 			break;
-		}
+		}  // end pattern state switch
 	} // end while
-
-
 }
 
 char* StringDel_StartWS(char* string)
@@ -315,4 +496,51 @@ char* StringDel_EndWS(char* string)
 
 	return 0;
 }
+
+float IsFloat(char* string)
+{
+	char* str = string;
+	while (isspace(*str))
+		str++;
+	if (*str == '+' || *str == '-')
+		str++;
+	while (isdigit(*str))
+		str++;
+	if (*str == '.')
+	{
+		str++;
+		while (isdigit(*str))
+			str++;
+	}
+	if (*str == 'e' || *str == 'E' || *str == 'd' || *str == 'D')
+	{
+		str++;
+		if (*str == '+' || *str == '-')
+			str++;
+		while (isdigit(*str)) 
+			str++;
+	}
+	if (strlen(string) == (int)(str - string))
+		return (atof(string));
+	else
+		return FLT_MIN;
+}
+
+int IsInt(char* string)
+{
+	char* str = string;
+	while (isspace(*str))
+		str++;
+	if (*str == '+'|| *str == '-')
+		str++;
+	while (isdigit(*str))
+		str++;
+
+	if (strlen(string) == (int)(str - string))
+		return (atoi(string));
+	else
+		return INT_MIN;
+}
+
+
 

@@ -1,4 +1,4 @@
-ï»¿#ifndef IO_HANDLING
+#ifndef IO_HANDLING
 #define IO_HANDLING
 
 
@@ -34,7 +34,7 @@ int Write_Error(char* string, ...);
 
 #define PATTERN_TOKEN_FLOAT               'f'
 #define PATTERN_TOKEN_INT                 'i'
-#define PATTERN_TOKEN_STRING              's"
+#define PATTERN_TOKEN_STRING              's'
 #define PATTERN_TOKEN_LITERAL             '\''
 
 #define PATTERN_STATE_INIT                0
@@ -83,17 +83,21 @@ public:
 typedef CParser_v1 *LPCParse_v1;
 
 
-/*ä¸‹é¢è¿™ä¸¤ä¸ªå‡½æ•°çš„è°ƒç”¨ä¸€å®šè¦æ³¨æ„ï¼š
+/*ÏÂÃæÕâÁ½¸öº¯ÊıµÄµ÷ÓÃÒ»¶¨Òª×¢Òâ£º
 
-  ä¼ å…¥çš„å®å‚ä¸€å®šè¦æ˜¯æŒ‡å‘ä¸€ä¸ªæœ‰ç¡®å®š
-  å¤§å°çš„å­—ç¬¦æ•°ç»„ï¼Œ
-  è¿™æ ·åœ¨string[i] = 0è¿™æ ·çš„èµ‹å€¼æ—¶
-  æ‰ä¸ä¼šæœ‰é”™è¯¯
+  ´«ÈëµÄÊµ²ÎÒ»¶¨ÒªÊÇÖ¸ÏòÒ»¸öÓĞÈ·¶¨
+  ´óĞ¡µÄ×Ö·ûÊı×é£¬
+  ÕâÑùÔÚstring[i] = 0ÕâÑùµÄ¸³ÖµÊ±
+  ²Å²»»áÓĞ´íÎó
    
 *******************************/
 char* StringDel_StartWS(char* string);
 
 char* StringDel_EndWS(char* string);
+
+float IsFloat(char* string);
+
+int IsInt(char* string);
 
 int Load_OBJECT4DV1_3DSASC(LPOBJECT4DV1 obj,
 						   char*        filename,
