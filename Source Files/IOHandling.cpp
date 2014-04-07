@@ -497,6 +497,138 @@ char* StringDel_EndWS(char* string)
 	return 0;
 }
 
+int StripChars(char* in_string, char* out_string, char* strip_chars, int case_on)
+{
+	int index_in  = 0;
+	int index_out = 0;
+	int index_strip;
+	int length_strip = strlen(strip_chars);
+	int strip_char_num = 0;
+
+	if (in_string == 0 || out_string == 0 || strlen(in_string) == 0)
+		return 0;
+
+	if (strip_chars == 0 || strlen(strip_chars) == 0)
+	{
+		strcpy(out_string, in_string);
+		return 0;
+	}
+
+	if (case_on)
+	{
+		while (in_string[index_in])
+		{
+			for (index_strip = 0; index_strip < length_strip; index_strip++)
+			{
+				if (in_string[index_in] == strip_chars[index_strip])
+				{
+					index_in++;
+					strip_char_num++;
+					break;
+				}
+			}
+			if (index_strip >= length_strip)
+			{
+				out_string[index_out] = in_string[index_in];
+				index_out++;
+				index_in++;
+			}
+		}
+	}
+	else
+	{
+		while (in_string[index_in])
+		{
+			for (index_strip = 0; index_strip < length_strip; index_strip++)
+			{
+				if (toupper(in_string[index_in]) == toupper(strip_chars[index_strip]))
+				{
+					index_in++;
+					strip_char_num++;
+					break;
+				}
+			}
+			if (index_strip >= length_strip)
+			{
+				out_string[index_out] = in_string[index_in];
+				index_out++;
+				index_in++;
+			}
+		}
+	}
+	out_string[index_out] = 0;
+	return strip_char_num;
+}
+
+int ReplaceChars(char* in_string, 
+				 char* out_string, 
+				 char* replace_chars, 
+				 char replaceChar,
+				 int case_on = 1)
+{
+	int index_in  = 0;
+	int index_out = 0;
+	int index_strip;
+	int length_replace = strlen(replace_chars);
+	int replace_char_num = 0;
+
+	if (in_string == 0 || out_string == 0 || strlen(in_string) == 0)
+		return 0;
+
+	if (replace_chars == 0 || strlen(replace_chars) == 0)
+	{
+		strcpy(out_string, in_string);
+		return 0;
+	}
+
+	if (case_on)
+	{
+		while (in_string[index_in])
+		{
+			for (index_strip = 0; index_strip < length_replace; index_strip++)
+			{
+				if (in_string[index_in] == replace_chars[index_strip])
+				{
+					out_string[index_out] = replaceChar;
+					index_in++;
+					replace_char_num++;
+					break;
+				}
+			}
+			if (index_strip >= length_replace)
+			{
+				out_string[index_out] = in_string[index_in];
+				index_out++;
+				index_in++;
+			}
+		}
+	}
+	else
+	{
+		while (in_string[index_in])
+		{
+			for (index_strip = 0; index_strip < length_replace; index_strip++)
+			{
+				if (toupper(in_string[index_in]) == toupper(replace_chars[index_strip]))
+				{
+					out_string[index_out] = replaceChar;
+					index_in++;
+					replace_char_num++;
+					break;
+				}
+			}
+			if (index_strip >= length_replace)
+			{
+				out_string[index_out] = in_string[index_in];
+				index_out++;
+				index_in++;
+			}
+		}
+	}
+	out_string[index_out] = 0;
+	return replace_char_num;
+}
+
 float IsFloat(char* string)
 {
 	char* str = string;
@@ -526,6 +658,11 @@ float IsFloat(char* string)
 		return FLT_MIN;
 }
 
+
+/*************************************************************
+
+
+***************************************************************/
 int IsInt(char* string)
 {
 	char* str = string;
@@ -540,6 +677,215 @@ int IsInt(char* string)
 		return (atoi(string));
 	else
 		return INT_MIN;
+}
+
+
+int Load_OBJECT4DV1_3DSASC(LPOBJECT4DV1 obj,
+						   char*        filename,
+						   LPVECTOR4D   scale,
+						   LPVECTOR4D   postion,
+						   LPVECTOR4D   rotation,
+						   int          flags)
+{
+	CParser_v1 parser;
+
+	char seperators[16];
+	char tokenBuffer[256];
+	char* token;
+
+	int r;
+	int g;
+	int b;
+
+	memset(obj, 0, sizeof(OBJECT4DV1));
+
+	obj->state = OBJECT4DV1_STATE_ACTIVE | OBJECT4DV1_STATE_VISIBLE;
+
+	if (postion)
+	{
+		obj->worldPos.x = postion->x;
+		obj->worldPos.y = postion->y;
+		obj->worldPos.z = postion->z;
+		obj->worldPos.w = postion->w;
+	}
+	else
+	{
+		obj->worldPos.x = 0;
+		obj->worldPos.y = 0;
+		obj->worldPos.z = 0;
+		obj->worldPos.w = 1;
+	}
+
+	if (!parser.Open(filename))
+	{
+		MessageBox(NULL, "Couldn't open .asc file", "Error", MB_OK);
+		return 0;
+	}
+	while (1)
+	{
+		if (!parser.Getline(PARSER_STRIP_EMPTY_LINES | PARSER_STRIP_WS_ENDS))
+		{
+			MessageBox(NULL, "No name in .asc file", "Error", MB_OK);
+			return 0;
+		}
+		if (parser.PatternMatch(parser.buffer, "['Named'] ['object:']"))
+		{
+			strcpy(tokenBuffer, parser.buffer);
+			strcpy(seperators, "\"");
+			strtok(tokenBuffer, seperators);
+			token = strtok(NULL, seperators);
+			strcpy(obj->name, token);
+			break;
+		}
+	}
+
+	while (1)
+	{
+		if (!parser.Getline(PARSER_STRIP_COMMENTS | PARSER_STRIP_WS_ENDS))
+		{
+			MessageBox(NULL, "No Tri-mesh line in .asc file", "Error", MB_OK);
+			return 0;
+		}
+		if (parser.PatternMatch(parser.buffer, "['Tri-mesh,'] ['Vertices:'] [i] ['Faces:'] [i]"))
+		{
+			obj->numVertics = parser.pInts[0];
+			obj->numPolys   = parser.pInts[1];
+			//MessageBox(NULL, "No Tri-mesh line in .asc file", "Error", MB_OK);
+			break;
+		}
+	}
+
+	while (1)
+	{
+		if (!parser.Getline(PARSER_STRIP_COMMENTS | PARSER_STRIP_WS_ENDS))
+		{
+			MessageBox(NULL, "No 'Vertex list' line in .asc file", "Error", MB_OK);
+			return 0;
+		}
+		if (parser.PatternMatch(parser.buffer, "['Vertex'] ['list:']"))
+		{
+			break;
+		}
+	}
+
+	for (int vertex = 0; vertex < obj->numVertics; vertex++)
+	{
+		while (1)
+		{
+			if (!parser.Getline(PARSER_STRIP_COMMENTS | PARSER_STRIP_WS_ENDS))
+			{
+				MessageBox(NULL, "Vertex list end abruptly", "Error", MB_OK);
+				return 0;
+			}
+			StripChars(parser.buffer, parser.buffer, ":XYZ");
+			if (parser.PatternMatch(parser.buffer, "['Vertex'] [i] [f] [f] [f]"))
+			{
+				obj->vLocalList[vertex].x = parser.pFloats[0];
+				obj->vLocalList[vertex].y = parser.pFloats[1];
+				obj->vLocalList[vertex].z = parser.pFloats[2];
+				obj->vLocalList[vertex].w = 1;
+			
+
+				float temp;
+			
+				if (flags & VERTEX_FLAGS_INVERT_X)
+					obj->vLocalList[vertex].x = -obj->vLocalList[vertex].x;
+
+				if (flags & VERTEX_FLAGS_INVERT_Y)
+					obj->vLocalList[vertex].y = -obj->vLocalList[vertex].y;
+
+				if (flags & VERTEX_FLAGS_INVERT_Z)
+					obj->vLocalList[vertex].z = -obj->vLocalList[vertex].z;
+
+				if (flags & VERTEX_FLAGS_SWAP_XY)
+					SWAP(obj->vLocalList[vertex].x, obj->vLocalList[vertex].y, temp);
+
+				if (flags & VERTEX_FLAGS_SWAP_YZ)
+					SWAP(obj->vLocalList[vertex].y, obj->vLocalList[vertex].z, temp);
+
+				if (flags & VERTEX_FLAGS_SWAP_XZ)
+					SWAP(obj->vLocalList[vertex].x, obj->vLocalList[vertex].z, temp);
+				
+				if (scale)
+				{
+					obj->vLocalList[vertex].x *= scale->x;
+					obj->vLocalList[vertex].y *= scale->y;
+					obj->vLocalList[vertex].z *= scale->z;
+				}
+				break;
+			}
+		}  // end while
+	}  // end for
+
+	Compute_OBJECT4DV1_Radius(obj);
+
+	while (1)
+	{
+		if (!parser.Getline(PARSER_STRIP_EMPTY_LINES | PARSER_STRIP_WS_ENDS))
+		{
+			MessageBox(NULL, "Face list not found", "Error", MB_OK);
+			return 0;
+		}
+		if (parser.PatternMatch(parser.buffer, "['Face'] ['list:']"))
+		{
+			//MessageBox(NULL, "Face list found", "OK", MB_OK);
+			break;
+		}
+	}
+
+	for (int poly = 0; poly < obj->numPolys; poly++)
+	{
+		while (1)
+		{
+			if (!parser.Getline(PARSER_STRIP_EMPTY_LINES | PARSER_STRIP_WS_ENDS))
+			{
+				MessageBox(NULL, "Face list end abruptly", "Error", MB_OK);
+				return 0;
+			}
+			StripChars(parser.buffer, parser.buffer, ":ABC");
+
+			if (parser.PatternMatch(parser.buffer, "['Face'] [i] [i] [i] [i]"))
+			{
+				if (flags & VERTEX_FLAGS_INVERT_WINDING_ORDER)
+				{
+					obj->polyList[poly].vert[0] = parser.pInts[3];
+					obj->polyList[poly].vert[1] = parser.pInts[2];
+					obj->polyList[poly].vert[2] = parser.pInts[1];
+				}
+				else
+				{
+					obj->polyList[poly].vert[0] = parser.pInts[1];
+					obj->polyList[poly].vert[1] = parser.pInts[2];
+					obj->polyList[poly].vert[2] = parser.pInts[3];
+				}
+				obj->polyList[poly].vList = obj->vLocalList;
+				break;
+			}
+		}  // end while
+
+		while (1)
+		{
+			if (!parser.Getline(PARSER_STRIP_EMPTY_LINES | PARSER_STRIP_WS_ENDS))
+			{
+				MessageBox(NULL, "Material list end abruptly", "Error", MB_OK);
+				return 0;
+			}
+			ReplaceChars(parser.buffer, parser.buffer, ":\"rgba", ' ');
+			if (parser.PatternMatch(parser.buffer, "[i] [i] [i]"))
+			{
+				r = parser.pInts[0];
+				g = parser.pInts[1];
+				b = parser.pInts[2];
+
+				obj->polyList[poly].color = _RGB24BIT_888(255, r, g, b);
+				SET_BIT(obj->polyList[poly].attr, POLY4DV1_ATTR_SHADE_MODE_FLAT);
+				obj->polyList[poly].state = POLY4DV1_STATE_ACTIVE;
+				break;
+			}
+		} // end while
+	} // end for poly
+
+	return 1;
 }
 
 

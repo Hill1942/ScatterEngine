@@ -95,6 +95,9 @@ char* StringDel_StartWS(char* string);
 
 char* StringDel_EndWS(char* string);
 
+int StripChars(char* in_string, char* out_string, char* strip_chars, int case_on = 1);
+int ReplaceChars(char* in_string, char* out_string, char* replace_chars, char replaceChar, int case_on = 1);
+
 float IsFloat(char* string);
 
 int IsInt(char* string);
