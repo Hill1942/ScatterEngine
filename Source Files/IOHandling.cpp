@@ -1,10 +1,14 @@
+#define _CRT_SECURE_NO_WARNINGS
+
+
 #include <iostream>
 #include <Windows.h>
+#include <ddraw.h>
+
 
 #include "BasicDrawEngine.h"
 #include "MathEngine.h"
 #include "3DPipeLine.h"
-
 #include "IOHandling.h"
 
 /*
@@ -181,7 +185,7 @@ int CParser_v1::PatternMatch(char* string, char* pattern, ...)
 			break;
 		if (pattern[tokenStart] == '[')
 		{
-			switch (pattern[tokenStart + 1])
+			switch (pattern[tokenStart + 1])		
 			{
 			case PATTERN_TOKEN_FLOAT:
 				{
@@ -193,6 +197,9 @@ int CParser_v1::PatternMatch(char* string, char* pattern, ...)
 					tokenOperator[tokenNum] = 0;
 					tokenNumric[tokenNum]   = 0;
 					tokenNum++;
+#ifdef PARSER_DEBUG_ON
+					printf("\nFound Float token");
+#endif
 				}
 				break;
 			case PATTERN_TOKEN_INT:
@@ -205,6 +212,9 @@ int CParser_v1::PatternMatch(char* string, char* pattern, ...)
 					tokenOperator[tokenNum] = 0;
 					tokenNumric[tokenNum]   = 0;
 					tokenNum++;
+#ifdef PARSER_DEBUG_ON
+					printf("\nFound Int token");
+#endif
 				}
 				break;
 			case PATTERN_TOKEN_LITERAL:
@@ -216,9 +226,13 @@ int CParser_v1::PatternMatch(char* string, char* pattern, ...)
 					memcpy(tokenString[tokenNum],
 						   &pattern[tokenStart],
 						   (tokenEnd - tokenStart));
+					tokenString[tokenNum][(tokenEnd - tokenStart)] = 0;
 					tokenType[tokenNum] = PATTERN_TOKEN_LITERAL;
 					tokenOperator[tokenNum] = 0;
 					tokenNumric[tokenNum]   = 0;
+#ifdef PARSER_DEBUG_ON
+					printf("\nFound Literal token = %s", tokenString[tokenNum]);
+#endif
 					tokenStart              = tokenEnd + 2;
 					tokenNum++;
 				}
@@ -246,6 +260,10 @@ int CParser_v1::PatternMatch(char* string, char* pattern, ...)
 					}
 					else
 						return 0;
+#ifdef PARSER_DEBUG_ON
+					printf("\nFound String token, comparator: %c, characters: %d", 
+						tokenOperator[tokenNum], tokenNumric[tokenNum]);
+#endif
 					tokenStart = tokenEnd + 1;
 					tokenNum++;
 				}
@@ -259,6 +277,12 @@ int CParser_v1::PatternMatch(char* string, char* pattern, ...)
 		if (tokenStart >= strlen(pattern))
 			break;
 	}  // end while
+
+#ifdef PARSER_DEBUG_ON
+	printf("\nstring to parse: %s", string);
+	printf("\nPattern to scan for: %s", pattern);
+	printf("\number of tokens found: %d", tokenNum);
+#endif
 
 	int patternState = PATTERN_STATE_INIT;
 	int currToken    = 0;
@@ -278,6 +302,7 @@ int CParser_v1::PatternMatch(char* string, char* pattern, ...)
 				currToken      = 0;
 
 				numPInts = numPFloats = numPStrings = 0;
+				patternState = PATTERN_STATE_RESTART;
 			}
 			break;
 
@@ -309,7 +334,7 @@ int CParser_v1::PatternMatch(char* string, char* pattern, ...)
 					while (!isspace(buffer[tokenEnd]) && tokenEnd < strlen(buffer))
 						tokenEnd++;
 					memcpy(token, &buffer[tokenStart] , tokenEnd  - tokenStart);
-					token[tokenEnd - tokenStart];
+					token[tokenEnd - tokenStart] = 0;
 					if (strlen(token) == 0)
 						return 0;
 
@@ -336,7 +361,7 @@ int CParser_v1::PatternMatch(char* string, char* pattern, ...)
 							patternState = PATTERN_STATE_STRING;
 						}
 						break;
-					case PATTERN_STATE_LITERAL:
+					case PATTERN_TOKEN_LITERAL:
 						{
 							patternState = PATTERN_STATE_LITERAL;
 						}
@@ -456,6 +481,9 @@ int CParser_v1::PatternMatch(char* string, char* pattern, ...)
 
 		case PATTERN_STATE_MATCH:
 			{
+#ifdef PARSER_DEBUG_ON
+				printf("\nPattern: %s matched", pattern);
+#endif
 				return 1;
 			}
 			break;
@@ -564,11 +592,11 @@ int ReplaceChars(char* in_string,
 				 char* out_string, 
 				 char* replace_chars, 
 				 char replaceChar,
-				 int case_on = 1)
+				 int case_on)
 {
 	int index_in  = 0;
 	int index_out = 0;
-	int index_strip;
+	int index_replace;
 	int length_replace = strlen(replace_chars);
 	int replace_char_num = 0;
 
@@ -585,17 +613,18 @@ int ReplaceChars(char* in_string,
 	{
 		while (in_string[index_in])
 		{
-			for (index_strip = 0; index_strip < length_replace; index_strip++)
+			for (index_replace = 0; index_replace < length_replace; index_replace++)
 			{
-				if (in_string[index_in] == replace_chars[index_strip])
+				if (in_string[index_in] == replace_chars[index_replace])
 				{
 					out_string[index_out] = replaceChar;
+					index_out++;
 					index_in++;
 					replace_char_num++;
 					break;
 				}
 			}
-			if (index_strip >= length_replace)
+			if (index_replace >= length_replace)
 			{
 				out_string[index_out] = in_string[index_in];
 				index_out++;
@@ -607,17 +636,18 @@ int ReplaceChars(char* in_string,
 	{
 		while (in_string[index_in])
 		{
-			for (index_strip = 0; index_strip < length_replace; index_strip++)
+			for (index_replace = 0; index_replace < length_replace; index_replace++)
 			{
-				if (toupper(in_string[index_in]) == toupper(replace_chars[index_strip]))
+				if (toupper(in_string[index_in]) == toupper(replace_chars[index_replace]))
 				{
 					out_string[index_out] = replaceChar;
+					index_out++;
 					index_in++;
 					replace_char_num++;
 					break;
 				}
 			}
-			if (index_strip >= length_replace)
+			if (index_replace >= length_replace)
 			{
 				out_string[index_out] = in_string[index_in];
 				index_out++;
@@ -887,6 +917,9 @@ int Load_OBJECT4DV1_3DSASC(LPOBJECT4DV1 obj,
 
 	return 1;
 }
+
+
+
 
 
 

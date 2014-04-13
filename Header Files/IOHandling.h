@@ -66,6 +66,7 @@ public:
 	int PatternMatch(char* string, char* pattern, ...);
 
 public:
+
 	FILE* file;
 	char buffer[PARSER_BUFFER_SIZE];
 	int  length;
@@ -108,6 +109,9 @@ int Load_OBJECT4DV1_3DSASC(LPOBJECT4DV1 obj,
 						   LPVECTOR4D   postion,
 						   LPVECTOR4D   rotation,
 						   int          flags);
+
+
+
 
 
 
