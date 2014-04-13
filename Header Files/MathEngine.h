@@ -3,7 +3,6 @@
 
 #include <cstring>
 
-
 #define PI       ((float)3.141592654f)
 #define PI2      ((float)6.283185307f)
 #define PI_DIV_2 ((float)1.570796327f)
@@ -548,9 +547,6 @@ void  Compute_Line3D(LPLINE3D pLine, float t, LPPOINT3D pPoint);
 void  Plane3D_Init(LPPLANE3D pPlane, LPPOINT3D pPoint, LPVECTOR3D pNormal, int normalize);
 float Compute_Point_In_Plane3D(LPPOINT3D pPoint, LPPLANE3D pPlane);
 int   Intersect_Line3D_Plane3D(LPLINE3D pLine, LPPLANE3D pPlane, float* t, LPPOINT3D pPoint);
-
-
-
 
 
 #endif

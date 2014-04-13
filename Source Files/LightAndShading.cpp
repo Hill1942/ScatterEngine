@@ -1,3 +1,4 @@
+#include <iostream>
 #include <Windows.h>
 #include <ddraw.h>
 
