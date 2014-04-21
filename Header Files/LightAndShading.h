@@ -20,7 +20,7 @@
 #define LIGHTV1_ATTR_SPOTLIGHT2  0x0010
 
 #define LIGHTV1_STATE_ON         1
-#define LIGHTV2_STATE_OFF        0
+#define LIGHTV1_STATE_OFF        0
 
 #define MAX_LIGHTS               8
 
@@ -120,24 +120,24 @@ void Draw_OBJECT4DV1_Solid32(LPOBJECT4DV1 obj, UCHAR* buffer, int lPitch);
 void Draw_RENDERLIST4DV1_Solid32(LPRENDERLIST4DV1 renderList, UCHAR* buffer, int lPitch);
 
 
-int Init_Light(int        index,
-			   int        _state,
-			   int        _attr,
-			   RGBAV1     _ambient,
-			   RGBAV1     _diffuse,
-			   RGBAV1     _specular,
-			   LPPOINT    _pos,
-			   LPVECTOR4D _dir,
-			   float      _kc,
-			   float      _kl,
-			   float      _kq,
-			   float      _spotInnerTheta,
-			   float      _spotOuterTheta,
-			   float      _pf);
+int Init_LightV1(int        index,
+			     int        _state,
+			     int        _attr,
+			     RGBAV1     _ambient,
+			     RGBAV1     _diffuse,
+			     RGBAV1     _specular,
+			     LPPOINT    _pos,
+			     LPVECTOR4D _dir,
+			     float      _kc,
+			     float      _kl,
+			     float      _kq,
+			     float      _spotInnerTheta,
+			     float      _spotOuterTheta,
+			     float      _pf);
 
-int Reset_Lights();
+int Reset_LightsV1();
 
-int Reset_Materials();
+int Reset_MaterialsV1();
 
 int Insert_OBJECT4DV1_RENDERLIST4DV2(LPRENDERLIST4DV1  renderList,
 									 LPOBJECT4DV1      obj,
