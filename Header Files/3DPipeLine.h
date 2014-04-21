@@ -62,6 +62,7 @@ typedef struct POLY4DV1_TYP
 	int state;
 	int attr;
 	int color;
+	int lightColor;
 
 	LPPOINT4D vList;
 	int       vert[3];
@@ -73,6 +74,7 @@ typedef struct POLYF4DV1_TYP
 	int state;
 	int attr;
 	int color;
+	int lightColor;
 
 	POINT4D vList[3];
 	POINT4D vTranList[3];
