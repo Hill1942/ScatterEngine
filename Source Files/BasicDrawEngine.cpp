@@ -5,13 +5,11 @@
 #include <cstring>
 
 #include <ddraw.h>
-//#include <d3d9.h>
 
 #include "BasicDrawEngine.h"
 
 #pragma comment(lib, "ddraw.lib")
 #pragma comment(lib, "dxguid.lib")
-//#pragma comment(lib, "d3d9.lib")
 
 using namespace std;
 
@@ -468,10 +466,7 @@ int Set_Palette_Entry(int color_index, LPPALETTEENTRY color)
 	memcpy(&palette[color_index], color, sizeof(PALETTEENTRY));
 
 	return 1;
-}
-
-
-		 
+}	 
 
 DWORD Get_Clock()
 {
@@ -882,7 +877,6 @@ int Draw_Line16(int    x0,
 	return 1;
 }
 
-
 int Draw_Line32(int    x0, 
 			  int    y0, 
 			  int    x1, 
@@ -1020,8 +1014,6 @@ int Draw_Clip_Line(int    x0,
 	return 1;
 }
 
-
-
 /* fucking amazing */
 void Draw_Top_Triangle(int x1, int y1,
 					   int x2, int y2, 
@@ -1048,16 +1040,16 @@ void Draw_Top_Triangle(int x1, int y1,
 		x1 = temp;
 	}
 
-	k_left   = (x3 - x1) / (y3 - y1);
-	k_right  = (x3 - x2) / (y3 - y1);
+	k_left   = (float)(x3 - x1) / (float)(y3 - y1);
+	k_right  = (float)(x3 - x2) / (float)(y3 - y1);
 
 	xStart = (float)x1;
 	xEnd   = (float)x2 + 0.5f;
 
 	if (y1 < minClipY)
 	{
-		xStart = xStart + k_left  * (minClipY - y1);
-		xEnd   = xEnd   + k_right * (minClipY - y1);
+		xStart = xStart + k_left  * (float)(minClipY - y1);
+		xEnd   = xEnd   + k_right * (float)(minClipY - y1);
 		y1 = minClipY;
 	}
 
@@ -1074,7 +1066,7 @@ void Draw_Top_Triangle(int x1, int y1,
 		{
 			memset((UCHAR*)destAddr + (UINT)xStart, 
 				   color,
-				   (UINT)(xEnd - xStart + 1));
+				   (UINT)((int)xEnd - (int)xStart + 1));
 			xStart += k_left;
 			xEnd   += k_right;
 		}
@@ -1103,7 +1095,7 @@ void Draw_Top_Triangle(int x1, int y1,
 			}
 			memset((UCHAR*)destAddr + (UINT)clip_left,
 				   color,
-				   (UINT)(clip_right - clip_left + 1));
+				   (UINT)((int)clip_right - (int)clip_left + 1));
 		}		
 	}
 }
@@ -1136,16 +1128,16 @@ void Draw_Top_Triangle16(int x1, int y1,
 		x1 = temp;
 	}
 
-	k_left   = (x3 - x1) / (y3 - y1);
-	k_right  = (x3 - x2) / (y3 - y1);
+	k_left   = (float)(x3 - x1) / (float)(y3 - y1);
+	k_right  = (float)(x3 - x2) / (float)(y3 - y1);
 
 	xStart = (float)x1;
 	xEnd   = (float)x2 + 0.5f;
 
 	if (y1 < minClipY)
 	{
-		xStart = xStart + k_left  * (minClipY - y1);
-		xEnd   = xEnd   + k_right * (minClipY - y1);
+		xStart = xStart + k_left  * (float)(minClipY - y1);
+		xEnd   = xEnd   + k_right * (float)(minClipY - y1);
 		y1 = minClipY;
 	}
 
@@ -1158,18 +1150,18 @@ void Draw_Top_Triangle16(int x1, int y1,
 		x2 >= minClipX && x2 <= maxClipX &&
 		x3 >= minClipX && x3 <= maxClipX)
 	{
-		for (int i = y1; i <= y3; i++, destAddr += lPitch)
+		for (int i = y1; i <= y3; i++, destAddr += lPitch_16)
 		{
 			memset_word(destAddr + (UINT)xStart, 
 				        color,
-				        (UINT)(xEnd - xStart + 1));
+				        (UINT)((int)xEnd - (int)xStart + 1));
 			xStart += k_left;
 			xEnd   += k_right;
 		}
 	}
 	else
 	{
-		for (int i = y1; i <= y3; i++, destAddr += lPitch)
+		for (int i = y1; i <= y3; i++, destAddr += lPitch_16)
 		{
 			clip_left  = (int)xStart;
 			clip_right = (int)xEnd;
@@ -1191,7 +1183,7 @@ void Draw_Top_Triangle16(int x1, int y1,
 			}
 			memset_word(destAddr + (UINT)clip_left,
 				        color,
-				        (UINT)(clip_right - clip_left + 1));
+				        (UINT)((int)clip_right - (int)clip_left + 1));
 		}		
 	}
 }
@@ -1223,16 +1215,17 @@ void Draw_Top_Triangle32(int x1, int y1,
 		x1 = temp;
 	}
 
-	k_left   = (x3 - x1) / (y3 - y1);
-	k_right  = (x3 - x2) / (y3 - y1);
+	//reciprocal of slope
+	k_left   = (float)(x3 - x1) / (float)(y3 - y1);
+	k_right  = (float)(x3 - x2) / (float)(y3 - y1);
 
 	xStart = (float)x1;
 	xEnd   = (float)x2 + 0.5f;
 
 	if (y1 < minClipY)
 	{
-		xStart = xStart + k_left  * (minClipY - y1);
-		xEnd   = xEnd   + k_right * (minClipY - y1);
+		xStart = xStart + k_left  * (float)(minClipY - y1);
+		xEnd   = xEnd   + k_right * (float)(minClipY - y1);
 		y1 = minClipY;
 	}
 
@@ -1245,18 +1238,18 @@ void Draw_Top_Triangle32(int x1, int y1,
 		x2 >= minClipX && x2 <= maxClipX &&
 		x3 >= minClipX && x3 <= maxClipX)
 	{
-		for (int i = y1; i <= y3; i++, destAddr += lPitch)
+		for (int i = y1; i <= y3; i++, destAddr += lPitch_32)
 		{
 			memset_quad(destAddr + (UINT)xStart, 
 				        color,
-				        (UINT)(xEnd - xStart + 1));
+				        (UINT)((int)xEnd - (int)xStart + 1));
 			xStart += k_left;
 			xEnd   += k_right;
 		}
 	}
 	else
 	{
-		for (int i = y1; i <= y3; i++, destAddr += lPitch)
+		for (int i = y1; i <= y3; i++, destAddr += lPitch_32)
 		{
 			clip_left  = (int)xStart;
 			clip_right = (int)xEnd;
@@ -1278,7 +1271,7 @@ void Draw_Top_Triangle32(int x1, int y1,
 			}
 			memset_quad(destAddr + (UINT)clip_left,
 				        color,
-				        (UINT)(clip_right - clip_left + 1));
+				        (UINT)((int)clip_right - (int)clip_left + 1));
 		}		
 	}
 }
@@ -1308,16 +1301,16 @@ void Draw_Bottom_Triangle(int x1, int y1,
 		x2 = temp;
 	}
 
-	k_left  = (x2 - x1) / (y3 - y1);
-	k_right = (x3 - x1) / (y3 - y1);
+	k_left  = (float)(x2 - x1) / (float)(y3 - y1);
+	k_right = (float)(x3 - x1) / (float)(y3 - y1);
 
 	xStart = (float)x1;
 	xEnd   = (float)x1;
 
 	if (y1 < minClipY)
 	{
-		xStart = xStart + k_left  * (minClipY - y1);
-		xEnd   = xEnd   + k_right * (minClipY - y1);
+		xStart = xStart + k_left  * (float)(minClipY - y1);
+		xEnd   = xEnd   + k_right * (float)(minClipY - y1);
 		y1 = minClipY;
 	}
 
@@ -1334,7 +1327,7 @@ void Draw_Bottom_Triangle(int x1, int y1,
 		{
 			memset((UCHAR*)destAddr + (UINT)xStart, 
 				   color,
-				   (UINT)(xEnd - xStart + 1));
+				   (UINT)((int)xEnd - (int)xStart + 1));
 			xStart += k_left;
 			xEnd   += k_right;
 		}
@@ -1363,7 +1356,7 @@ void Draw_Bottom_Triangle(int x1, int y1,
 			}
 			memset((UCHAR*)destAddr + (UINT)clip_left,
 				   color,
-				   (UINT)(clip_right - clip_left + 1));
+				   (UINT)((int)clip_right - (int)clip_left + 1));
 		}		
 	}
 }
@@ -1395,16 +1388,16 @@ void Draw_Bottom_Triangle16(int x1, int y1,
 		x2 = temp;
 	}
 
-	k_left  = (x2 - x1) / (y3 - y1);
-	k_right = (x3 - x1) / (y3 - y1);
+	k_left  = (float)(x2 - x1) / (float)(y3 - y1);
+	k_right = (float)(x3 - x1) / (float)(y3 - y1);
 
 	xStart = (float)x1;
 	xEnd   = (float)x1;
 
 	if (y1 < minClipY)
 	{
-		xStart = xStart + k_left  * (minClipY - y1);
-		xEnd   = xEnd   + k_right * (minClipY - y1);
+		xStart = xStart + k_left  * (float)(minClipY - y1);
+		xEnd   = xEnd   + k_right * (float)(minClipY - y1);
 		y1 = minClipY;
 	}
 
@@ -1417,18 +1410,18 @@ void Draw_Bottom_Triangle16(int x1, int y1,
 		x2 >= minClipX && x2 <= maxClipX &&
 		x3 >= minClipX && x3 <= maxClipX)
 	{
-		for (int i = y1; i <= y3; i++, destAddr += lPitch)
+		for (int i = y1; i <= y3; i++, destAddr += lPitch_16)
 		{
 			memset_word(destAddr + (UINT)xStart, 
 				        color,
-				        (UINT)(xEnd - xStart + 1));
+				        (UINT)((int)xEnd - (int)xStart + 1));
 			xStart += k_left;
 			xEnd   += k_right;
 		}
 	}
 	else
 	{
-		for (int i = y1; i <= y3; i++, destAddr += lPitch)
+		for (int i = y1; i <= y3; i++, destAddr += lPitch_16)
 		{
 			clip_left  = (int)xStart;
 			clip_right = (int)xEnd;
@@ -1450,7 +1443,7 @@ void Draw_Bottom_Triangle16(int x1, int y1,
 			}
 			memset_word(destAddr + (UINT)clip_left,
 				        color,
-				        (UINT)(clip_right - clip_left + 1));
+				        (UINT)((int)clip_right - (int)clip_left + 1));
 		}		
 	}
 }
@@ -1482,16 +1475,16 @@ void Draw_Bottom_Triangle32(int x1, int y1,
 		x2 = temp;
 	}
 
-	k_left  = (x2 - x1) / (y3 - y1);
-	k_right = (x3 - x1) / (y3 - y1);
+	k_left  = (float)(x2 - x1) / (float)(y3 - y1);
+	k_right = (float)(x3 - x1) / (float)(y3 - y1);
 
 	xStart = (float)x1;
 	xEnd   = (float)x1;
 
 	if (y1 < minClipY)
 	{
-		xStart = xStart + k_left  * (minClipY - y1);
-		xEnd   = xEnd   + k_right * (minClipY - y1);
+		xStart = xStart + k_left  * (float)(minClipY - y1);
+		xEnd   = xEnd   + k_right * (float)(minClipY - y1);
 		y1 = minClipY;
 	}
 
@@ -1504,18 +1497,18 @@ void Draw_Bottom_Triangle32(int x1, int y1,
 		x2 >= minClipX && x2 <= maxClipX &&
 		x3 >= minClipX && x3 <= maxClipX)
 	{
-		for (int i = y1; i <= y3; i++, destAddr += lPitch)
+		for (int i = y1; i <= y3; i++, destAddr += lPitch_32)
 		{
 			memset_quad(destAddr + (UINT)xStart, 
 				        color,
-				        (UINT)(xEnd - xStart + 1));
+				        (UINT)((int)xEnd - (int)xStart + 1));
 			xStart += k_left;
 			xEnd   += k_right;
 		}
 	}
 	else
 	{
-		for (int i = y1; i <= y3; i++, destAddr += lPitch)
+		for (int i = y1; i <= y3; i++, destAddr += lPitch_32)
 		{
 			clip_left  = (int)xStart;
 			clip_right = (int)xEnd;
@@ -1537,7 +1530,7 @@ void Draw_Bottom_Triangle32(int x1, int y1,
 			}
 			memset_quad(destAddr + (UINT)clip_left,
 				        color,
-				        (UINT)(clip_right - clip_left + 1));
+				        (UINT)((int)clip_right - (int)clip_left + 1));
 		}		
 	}
 }
@@ -1730,9 +1723,6 @@ void Draw_2D_Triangle32(int x1, int y1,
 		Draw_Bottom_Triangle32(x2, y2, newX, y2, x3, y3, color, buffer, lPitch);
 	}
 }
-
-
-
 
 int Draw_Rectangle(int                  x1,
 				   int                  y1,
