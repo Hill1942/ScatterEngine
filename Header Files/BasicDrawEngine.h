@@ -55,6 +55,14 @@
 
 #define DDRAW_INIT_STRUCT(ddstruct) { memset(&ddstruct, 0, sizeof(ddstruct)); ddstruct.dwSize = sizeof(ddstruct); }
 
+inline void BREAKRGB32(int color, int& a, int& r, int& g, int& b)
+{
+	a = (color >> 24) & 0x000000ff;
+	r = (color >> 16) & 0x000000ff;
+	g = (color >> 8 ) & 0x000000ff;
+	b = color & 0x000000ff;
+}
+
 
 /** @}*/ // Macro
 
