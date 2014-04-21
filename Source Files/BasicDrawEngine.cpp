@@ -1593,8 +1593,8 @@ void Draw_2D_Triangle(int x1, int y1,
 	else
 	{
 		int newX = x1 + (int)(0.5 + (float)(y2 - y1) * (float)(x3 - x1) / (float)(y3 - y1));
-		Draw_Top_Triangle(x1, y1, newX, y2, x2, y2, color, buffer, lPitch);
-		Draw_Bottom_Triangle(x2, y2, newX, y2, x3, y3, color, buffer, lPitch);
+		Draw_Bottom_Triangle(x1, y1, newX, y2, x2, y2, color, buffer, lPitch);
+		Draw_Top_Triangle(x2, y2, newX, y2, x3, y3, color, buffer, lPitch);
 	}
 }
 
@@ -1656,8 +1656,8 @@ void Draw_2D_Triangle16(int x1, int y1,
 	else
 	{
 		int newX = x1 + (int)(0.5 + (float)(y2 - y1) * (float)(x3 - x1) / (float)(y3 - y1));
-		Draw_Top_Triangle16(x1, y1, newX, y2, x2, y2, color, buffer, lPitch);
-		Draw_Bottom_Triangle16(x2, y2, newX, y2, x3, y3, color, buffer, lPitch);
+		Draw_Bottom_Triangle16(x1, y1, newX, y2, x2, y2, color, buffer, lPitch);
+		Draw_Top_Triangle16(x2, y2, newX, y2, x3, y3, color, buffer, lPitch);
 	}
 }
 
@@ -1668,11 +1668,12 @@ void Draw_2D_Triangle32(int x1, int y1,
 					    UCHAR* buffer,
 					    int    lPitch)
 {
-		if ((x1 == x2 && x2 == x3) || (y1 == y2 && y2 == y3))
+	if ((x1 == x2 && x2 == x3) || (y1 == y2 && y2 == y3))
 		return;
 
 	int tempX;
 	int tempY;
+	// swap (x1, y1) and (x2, y2)
 	if (y2 < y1)
 	{
 		tempX = x2;
@@ -1719,8 +1720,8 @@ void Draw_2D_Triangle32(int x1, int y1,
 	else
 	{
 		int newX = x1 + (int)(0.5 + (float)(y2 - y1) * (float)(x3 - x1) / (float)(y3 - y1));
-		Draw_Top_Triangle32(x1, y1, newX, y2, x2, y2, color, buffer, lPitch);
-		Draw_Bottom_Triangle32(x2, y2, newX, y2, x3, y3, color, buffer, lPitch);
+		Draw_Bottom_Triangle32(x1, y1, newX, y2, x2, y2, color, buffer, lPitch);
+		Draw_Top_Triangle32(x2, y2, newX, y2, x3, y3, color, buffer, lPitch);
 	}
 }
 
