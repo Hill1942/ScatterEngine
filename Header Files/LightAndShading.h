@@ -1,5 +1,16 @@
+/** @defgroup ScatterEngine Light and Shading
+ *  @author  Yang Kaidi
+ *  @version 1.0
+ *  @date    2013-2014
+ *  @{
+ */
+
 #ifndef LIGHTANDSHADING
 #define LIGHTANDSHADING
+
+/** @name Macro Constant
+ *  @{
+ */
 
 #define LIGHTV1_ATTR_AMBIENT     0x0001
 #define LIGHTV1_ATTR_INFINITE    0x0002
@@ -29,6 +40,13 @@
 #define MATERIALV1_STATE_INACTIVE           0x0002
 
 #define MAX_MATERIALV1                      256
+
+/** @}*/ // Macro Constant
+
+
+/** @name Struct Define
+ *  @{
+ */
 
 typedef struct RGBAV1_TYP
 {
@@ -86,19 +104,20 @@ typedef struct LIGHTV1_TYP
 	float pf;
 }LIGHTV1, *LPLIGHTV1;
 
+/** @}*/ // Struct Define
 
 
-void Draw_OBJECT4DV1_Solid(OBJECT4DV1 obj, UCHAR* buffer, int lPitch);
+void Draw_OBJECT4DV1_Solid(LPOBJECT4DV1 obj, UCHAR* buffer, int lPitch);
 
-void Draw_RENDERLIST4DV1_Solid(RENDERLIST4DV1 renderList, UCHAR* buffer, int lPitch);
+void Draw_RENDERLIST4DV1_Solid(LPRENDERLIST4DV1 renderList, UCHAR* buffer, int lPitch);
 
-void Draw_OBJECT4DV1_Solid16(OBJECT4DV1 obj, UCHAR* buffer, int lPitch);
+void Draw_OBJECT4DV1_Solid16(LPOBJECT4DV1 obj, UCHAR* buffer, int lPitch);
 
-void Draw_RENDERLIST4DV1_Solid16(RENDERLIST4DV1 renderList, UCHAR* buffer, int lPitch);
+void Draw_RENDERLIST4DV1_Solid16(LPRENDERLIST4DV1 renderList, UCHAR* buffer, int lPitch);
 
-void Draw_OBJECT4DV1_Solid32(OBJECT4DV1 obj, UCHAR* buffer, int lPitch);
+void Draw_OBJECT4DV1_Solid32(LPOBJECT4DV1 obj, UCHAR* buffer, int lPitch);
 
-void Draw_RENDERLIST4DV1_Solid32(RENDERLIST4DV1 renderList, UCHAR* buffer, int lPitch);
+void Draw_RENDERLIST4DV1_Solid32(LPRENDERLIST4DV1 renderList, UCHAR* buffer, int lPitch);
 
 
 int Init_Light(int        index,
@@ -162,3 +181,6 @@ int Light_RENDERLIST4DV1_32(LPRENDERLIST4DV1 renderList,
 
 
 #endif LIGHTANDSHADING
+
+
+/** @}*/ // ScatterEngien Basic Drawing

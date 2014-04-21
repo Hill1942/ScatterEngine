@@ -1,5 +1,17 @@
+/** @defgroup ScatterEngine Basic Drawing
+ *  @author  Yang Kaidi
+ *  @version 1.0
+ *  @date    2013-2014
+ *  @{
+ */
+
+
 #ifndef BASIC_DRAW_ENGINE
 #define BASIC_DRAW_ENGINE
+
+/** @name Macro
+ *  @{
+ */
 
 #define SCREEN_WIDDTH      640
 #define SCREEN_HEIGHT      480
@@ -27,6 +39,8 @@
 #define DD_PIXEL_FORMATALPHA888 32
 
 
+
+
 #define KEY_DOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000) ? 1 : 0)
 #define KEY_UP(vk_code)   ((GetAsyncKeyState(vk_code) & 0x8000) ? 0 : 1)
 
@@ -41,6 +55,8 @@
 
 #define DDRAW_INIT_STRUCT(ddstruct) { memset(&ddstruct, 0, sizeof(ddstruct)); ddstruct.dwSize = sizeof(ddstruct); }
 
+
+/** @}*/ // Macro
 
 typedef unsigned short USHORT;
 typedef unsigned short WORD;
@@ -120,6 +136,7 @@ inline void memset_word(void* dest, USHORT data, int count)
 
 inline void memset_quad(void* dest, UINT data, int count)
 {
+	
 	_asm
 	{
 		mov edi, dest
@@ -127,6 +144,11 @@ inline void memset_quad(void* dest, UINT data, int count)
 		mov eax, data
 		rep stosd
 	}
+	/*
+	for (int i = 0; i < count; i++)
+	{
+		((UINT*)dest)[i] = data;
+	}*/
 }
 
 
@@ -188,11 +210,37 @@ int Collision_Scan16(int x1, int y1,
 					 UCHAR *scanBuffer,
 					 int scanLPitch);
 
-int Draw_Pixel(int x, int y, 
-			   int color,
-			   UCHAR* vedeoBuffer,
-			   int lPitch);
+/** Draw a 8-bit pixel on the screen
+ *  @param[in] x the x position of pixel
+ *  @param[in] y the y position of pixel
+ *  @param[in] color the color of pixel
+ *  @param[in] videoBuffer the start memory-position of current locked surface
+ *  @param[in] lPitch the video card pitch
+ *  @return the symbol indicating success
+ *  --1 success
+ */
+int Draw_Pixel(int x, int y, int color, UCHAR* vedeoBuffer,int lPitch);
+
+/** Draw a 16-bit pixel on the screen
+ *  @param[in] x the x position of pixel
+ *  @param[in] y the y position of pixel
+ *  @param[in] color the color of pixel
+ *  @param[in] videoBuffer the start memory-position of current locked surface
+ *  @param[in] lPitch the video card pitch
+ *  @return the symbol indicating success
+ *  --1 success
+ */
 int Draw_Pixel16(int x, int y, int color, UCHAR* vedeoBuffer, int lPitch);
+
+/** Draw a 32-bit pixel on the screen
+ *  @param[in] x the x position of pixel
+ *  @param[in] y the y position of pixel
+ *  @param[in] color the color of pixel
+ *  @param[in] videoBuffer the start memory-position of current locked surface
+ *  @param[in] lPitch the video card pitch
+ *  @return the symbol indicating success
+ *  --1 success
+ */
 int Draw_Pixel32(int x, int y, int color, UCHAR* vedeoBuffer, int lPitch);
 
 int Draw_Clip_Line(int x0, int y0, int x1, int y1, int color, UCHAR* destBuffer, int lPitch);
@@ -290,12 +338,11 @@ int Blink_Colors(int command, LPBLINKER newLight, int id);
 
 int Create_Bitmap(LPBITMAP_IMAGE image, int x, int y, int width, int height, int bpp = 8);
 int Destory_Bitmap(LPBITMAP_IMAGE image);
-//int Draw_Bitmap(LPBITMAP_IMAGE
-
-
-
 
 
 
 
 #endif
+
+
+/** @}*/ // ScatterEngine Basic Drawing
