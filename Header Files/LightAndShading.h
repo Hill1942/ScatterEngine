@@ -1,12 +1,14 @@
+
+
+#ifndef LIGHTANDSHADING
+#define LIGHTANDSHADING
+
 /** @defgroup ScatterEngine Light and Shading
  *  @author  Yang Kaidi
  *  @version 1.0
  *  @date    2013-2014
  *  @{
  */
-
-#ifndef LIGHTANDSHADING
-#define LIGHTANDSHADING
 
 /** @name Macro Constant
  *  @{
@@ -41,6 +43,10 @@
 
 #define MAX_MATERIALV1                      256
 
+#define SORT_POLYLIST_AVGZ   0
+#define SORT_POLYLIST_NEARZ  1
+#define SORT_POLYLIST_FARZ   2
+
 /** @}*/ // Macro Constant
 
 
@@ -48,18 +54,18 @@
  *  @{
  */
 
-typedef struct RGBAV1_TYP
+typedef struct ARGBV1_TYP
 {
 	union
 	{
-		int   rgba;
-		UCHAR RGBA[4];
+		int   argb;
+		UCHAR ARGB[4];
 		struct
 		{
-			UCHAR a, b, g, r;
+			UCHAR b, g, r, a;
 		};
 	};
-}RGBAV1, *LPRGBAV1;
+}ARGBV1, *LPARGBV1;
 
 typedef struct MATERIALV1_TYP
 {
@@ -68,10 +74,10 @@ typedef struct MATERIALV1_TYP
 	char   name[64];
 	int    attr;
 
-	RGBAV1 color;
-	RGBAV1 ra;
-	RGBAV1 rd;
-	RGBAV1 rs;
+	ARGBV1 color;
+	ARGBV1 ra;
+	ARGBV1 rd;
+	ARGBV1 rs;
 	float  ka;
 	float  kd;
 	float  ks;
@@ -87,9 +93,9 @@ typedef struct LIGHTV1_TYP
 	int id;
 	int attr;
 
-	RGBAV1 ambient;
-	RGBAV1 diffuse;
-	RGBAV1 specular;
+	ARGBV1 ambient;
+	ARGBV1 diffuse;
+	ARGBV1 specular;
 
 	POINT4D  pos;
 	VECTOR4D dir;
@@ -119,14 +125,22 @@ void Draw_OBJECT4DV1_Solid32(LPOBJECT4DV1 obj, UCHAR* buffer, int lPitch);
 
 void Draw_RENDERLIST4DV1_Solid32(LPRENDERLIST4DV1 renderList, UCHAR* buffer, int lPitch);
 
-
+/** Initialize a light, version 1
+ *  @param[in] index the index of the light, based on zero
+ *  @param[in] _state the state of the light
+ *  @param[in] _attr the attribute of the light
+ *  @param[in] _ambient
+ *  @param[in] lPitch the video card pitch
+ *  @return the symbol indicating success
+ *  --1 success
+ */
 int Init_LightV1(int        index,
 			     int        _state,
 			     int        _attr,
-			     RGBAV1     _ambient,
-			     RGBAV1     _diffuse,
-			     RGBAV1     _specular,
-			     LPPOINT    _pos,
+			     ARGBV1     _ambient,
+			     ARGBV1     _diffuse,
+			     ARGBV1     _specular,
+			     LPPOINT4D  _pos,
 			     LPVECTOR4D _dir,
 			     float      _kc,
 			     float      _kl,
@@ -174,13 +188,18 @@ int Light_RENDERLIST4DV1_32(LPRENDERLIST4DV1 renderList,
 						    LPLIGHTV1        lights,
 						    int              maxLights);
 
+int Compare_AvgZ_POLYF4DV1(const void* arg1, const void* arg2);
+
+int Compare_NearZ_POLYF4DV1(const void* arg1, const void* arg2);
+
+int Compare_FarZ_POLYF4DV1(const void* arg1, const void* arg2);
+
+void Sort_RENDERLIST4DV1(LPRENDERLIST4DV1 rendList, int method = SORT_POLYLIST_AVGZ);
 
 
 
-
-
+/** @}*/ // ScatterEngien Basic Drawing
 
 #endif LIGHTANDSHADING
 
 
-/** @}*/ // ScatterEngien Basic Drawing

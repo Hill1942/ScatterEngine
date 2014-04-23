@@ -77,7 +77,7 @@ void Draw_OBJECT4DV1_Solid32(LPOBJECT4DV1 obj,
 		Draw_2D_Triangle32(obj->vTransList[vindex_0].x, obj->vTransList[vindex_0].y,
 			obj->vTransList[vindex_1].x, obj->vTransList[vindex_1].y,
 			obj->vTransList[vindex_2].y, obj->vTransList[vindex_2].z,
-			obj->polyList[poly].color, buffer, lPitch);
+			obj->polyList[poly].lightColor, buffer, lPitch);
 	}
 }
 
@@ -144,7 +144,7 @@ void Draw_RENDERLIST4DV1_Solid32(LPRENDERLIST4DV1 renderList,
 			renderList->polyPointer[poly]->vTranList[1].y, 
 			renderList->polyPointer[poly]->vTranList[2].x, 
 			renderList->polyPointer[poly]->vTranList[2].y,
-			renderList->polyPointer[poly]->color,
+			renderList->polyPointer[poly]->lightColor,
 			buffer, 
 			lPitch);
 	}
@@ -154,10 +154,10 @@ void Draw_RENDERLIST4DV1_Solid32(LPRENDERLIST4DV1 renderList,
 int Init_LightV1(int        index,        //index of light
 			     int        _state,
 			     int        _attr,
-			     RGBAV1     _ambient,
-			     RGBAV1     _diffuse,
-			     RGBAV1     _specular,
-			     LPPOINT    _pos,
+			     ARGBV1     _ambient,
+			     ARGBV1     _diffuse,
+			     ARGBV1     _specular,
+			     LPPOINT4D  _pos,
 			     LPVECTOR4D _dir,
 			     float      _kc,       //constant factor for point lights
 			     float      _kl,       //linear factor for point lights
@@ -201,7 +201,7 @@ int Reset_LightsV1()
 
 	return 1;
 }
-
+/*
 int Reset_MaterialsV1()
 {
 	static int resetMaterialLabel = 1;
@@ -216,7 +216,7 @@ int Reset_MaterialsV1()
 	{
 		
 	}
-}
+}*/
 /*
 int Insert_OBJECT4DV1_RENDERLIST4DV2(LPRENDERLIST4DV1  renderList,
 									 LPOBJECT4DV1      obj,
@@ -296,7 +296,7 @@ int Light_OBJECT4DV1_32(LPOBJECT4DV1 obj,
 			for (int currentLight = 0; currentLight < maxLights; currentLight++)
 			{
 				if (lights[currentLight].state == LIGHTV1_STATE_OFF)
-					return;
+					continue;
 				if (lights[currentLight].attr & LIGHTV1_ATTR_AMBIENT)
 				{
 					r_sum += ((lights[currentLight].ambient.r * r_base) / 256);
@@ -349,7 +349,27 @@ int Light_OBJECT4DV1_32(LPOBJECT4DV1 obj,
 				}
 				else if (lights[currentLight].attr & LIGHTV1_ATTR_SPOTLIGHT1)
 				{
+					VECTOR4D u, v, n, l;
 
+					VECTOR4D_BUILD(&obj->vTransList[vindex_0], &obj->vTransList[vindex_1], &u);
+					VECTOR4D_BUILD(&obj->vTransList[vindex_0], &obj->vTransList[vindex_2], &v);
+					VECTOR4D_BUILD(&obj->vTransList[vindex_0], &lights[currentLight].pos, &l);
+					VECTOR4D_CROSS(&u, &v, &n);
+
+					float n_length = VECTOR4D_LENGTH_FAST(&n);
+					float l_length = VECTOR4D_LENGTH_FAST(&l);
+
+					float cosTheta = VECTOR4D_DOT(&n, &l) / (n_length * l_length);
+					if (cosTheta > 0)
+					{
+						float denominator = (lights[currentLight].kc + 
+							lights[currentLight].kl * l_length +
+							lights[currentLight].kq * l_length * l_length);
+						float i = cosTheta / denominator;
+						r_sum += (lights[currentLight].diffuse.r * r_base * i) / 256;
+						g_sum += (lights[currentLight].diffuse.g * g_base * i) / 256;
+						b_sum += (lights[currentLight].diffuse.b * b_base * i) / 256;
+					}
 				}
 				else if (lights[currentLight].attr & LIGHTV1_ATTR_SPOTLIGHT2)
 				{
@@ -367,4 +387,237 @@ int Light_OBJECT4DV1_32(LPOBJECT4DV1 obj,
 		}
 	}
 	return 1;
+}
+
+
+int Light_RENDERLIST4DV1_32(LPRENDERLIST4DV1 renderList,
+						    LPCAM4DV1        cam,
+						    LPLIGHTV1        lights,
+						    int              maxLights)
+{
+	int a_base = 0;
+	int r_base = 0;
+	int g_base = 0;
+	int b_base = 0;
+	
+
+
+	for (int poly = 0; poly < renderList->numPolys; poly++)
+	{
+		int a_sum  = 0;
+		int r_sum  = 0;
+		int g_sum  = 0;
+		int b_sum  = 0;
+		LPPOLYF4DV1 currentPoly = renderList->polyPointer[poly];
+		if (!(currentPoly->state & POLY4DV1_STATE_ACTIVE) ||
+			 (currentPoly->state & POLY4DV1_STATE_CLIPPED) ||
+			 (currentPoly->state & POLY4DV1_STATE_BACKFACE))
+			continue;
+
+		if (currentPoly->attr & POLY4DV1_ATTR_SHADE_MODE_FLAT||
+			currentPoly->attr & POLY4DV1_ATTR_SHADE_MODE_GOURAUD)
+		{
+			BREAKRGB32(currentPoly->color, a_base, r_base, g_base,b_base);
+			for (int currentLight = 0; currentLight < maxLights; currentLight++)
+			{
+				if (lights[currentLight].state == LIGHTV1_STATE_OFF)
+					continue;
+				if (lights[currentLight].attr & LIGHTV1_ATTR_AMBIENT)
+				{
+					r_sum += ((lights[currentLight].ambient.r * r_base) / 256);
+					g_sum += ((lights[currentLight].ambient.g * g_base) / 256);
+					b_sum += ((lights[currentLight].ambient.b * b_base) / 256);
+				}
+				else if (lights[currentLight].attr & LIGHTV1_ATTR_INFINITE)
+				{
+					VECTOR4D u, v, n;
+
+					VECTOR4D_BUILD(&currentPoly->vTranList[0], &currentPoly->vTranList[1], &u);
+					VECTOR4D_BUILD(&currentPoly->vTranList[0], &currentPoly->vTranList[2], &v);
+					VECTOR4D_CROSS(&u, &v, &n);
+
+
+					float length = VECTOR4D_LENGTH_FAST(&n);
+					float dot    = VECTOR4D_DOT(&n, &lights[currentLight].dir);
+
+					if (dot > 0)
+					{
+						float i = dot / length;
+						r_sum += (lights[currentLight].diffuse.r * r_base * i) / 256;
+						g_sum += (lights[currentLight].diffuse.g * g_base * i) / 256;
+						b_sum += (lights[currentLight].diffuse.b * b_base * i) / 256;
+					}
+				}
+				else if (lights[currentLight].attr & LIGHTV1_ATTR_POINT)
+				{
+					VECTOR4D u, v, n, l;
+
+					VECTOR4D_BUILD(&currentPoly->vTranList[0], &currentPoly->vTranList[1], &u);
+					VECTOR4D_BUILD(&currentPoly->vTranList[0], &currentPoly->vTranList[2], &v);
+					VECTOR4D_BUILD(&currentPoly->vTranList[0], &lights[currentLight].pos, &l);
+					VECTOR4D_CROSS(&u, &v, &n);
+
+					float n_length = VECTOR4D_LENGTH_FAST(&n);
+					float l_length = VECTOR4D_LENGTH_FAST(&l);
+
+					float cosTheta = VECTOR4D_DOT(&n, &l) / (n_length * l_length);
+					if (cosTheta > 0)
+					{
+						float denominator = (lights[currentLight].kc + 
+							lights[currentLight].kl * l_length +
+							lights[currentLight].kq * l_length * l_length);
+						float i = cosTheta / denominator;
+						r_sum += (lights[currentLight].diffuse.r * r_base * i) / 256;
+						g_sum += (lights[currentLight].diffuse.g * g_base * i) / 256;
+						b_sum += (lights[currentLight].diffuse.b * b_base * i) / 256;
+					}
+				}
+				else if (lights[currentLight].attr & LIGHTV1_ATTR_SPOTLIGHT1)
+				{
+					VECTOR4D u, v, n, l;
+
+					VECTOR4D_BUILD(&currentPoly->vTranList[0], &currentPoly->vTranList[1], &u);
+					VECTOR4D_BUILD(&currentPoly->vTranList[0], &currentPoly->vTranList[2], &v);
+					VECTOR4D_BUILD(&currentPoly->vTranList[0], &lights[currentLight].pos, &l);
+					VECTOR4D_CROSS(&u, &v, &n);
+
+					float n_length = VECTOR4D_LENGTH_FAST(&n);
+					float l_length = VECTOR4D_LENGTH_FAST(&l);
+
+					float cosTheta = VECTOR4D_DOT(&n, &l) / (n_length * l_length);
+					if (cosTheta > 0)
+					{
+						float denominator = (lights[currentLight].kc + 
+							lights[currentLight].kl * l_length +
+							lights[currentLight].kq * l_length * l_length);
+						float i = cosTheta / denominator;
+						r_sum += (lights[currentLight].diffuse.r * r_base * i) / 256;
+						g_sum += (lights[currentLight].diffuse.g * g_base * i) / 256;
+						b_sum += (lights[currentLight].diffuse.b * b_base * i) / 256;
+					}
+				}
+				else if (lights[currentLight].attr & LIGHTV1_ATTR_SPOTLIGHT2)
+				{
+
+				}
+			}  
+			if (r_sum > 255) r_sum = 255;
+			if (g_sum > 255) g_sum = 255;
+			if (b_sum > 255) b_sum = 255;
+			currentPoly->lightColor = _RGB32BIT_8888(255, r_sum, g_sum, b_sum);
+		}
+		else  // A
+		{
+			//currentPoly->lightColor = currentPoly->color;
+		}
+	}
+	return 1;
+}
+
+int Compare_AvgZ_POLYF4DV1(const void* arg1, const void* arg2)
+{
+	LPPOLYF4DV1 poly1;
+	LPPOLYF4DV1 poly2;
+
+	float z1;
+	float z2;
+
+	poly1 = *((LPPOLYF4DV1*)(arg1));
+	poly2 = *((LPPOLYF4DV1*)(arg2));
+
+	z1 = poly1->vTranList[0].z + poly1->vTranList[1].z + poly1->vTranList[2].z;
+	z2 = poly2->vTranList[0].z + poly2->vTranList[1].z + poly2->vTranList[2].z;
+
+
+	if (z1 > z2)
+		return -1;
+	else if (z1 < z2)
+		return 1;
+	else
+		return 0;
+}
+
+int Compare_NearZ_POLYF4DV1(const void* arg1, const void* arg2)
+{
+	LPPOLYF4DV1 poly1;
+	LPPOLYF4DV1 poly2;
+
+	float z1;
+	float z2;
+
+	poly1 = *((LPPOLYF4DV1*)(arg1));
+	poly2 = *((LPPOLYF4DV1*)(arg2));
+
+	z1 = MIN(poly1->vTranList[0].z, poly1->vTranList[1].z);
+	z1 = MIN(z1, poly1->vTranList[2].z);
+
+	z2 = MIN(poly2->vTranList[0].z, poly2->vTranList[1].z);
+	z2 = MIN(z2, poly2->vTranList[2].z);
+
+
+	if (z1 > z2)
+		return -1;
+	else if (z1 < z2)
+		return 1;
+	else
+		return 0;
+}
+
+int Compare_FarZ_POLYF4DV1(const void* arg1, const void* arg2)
+{
+	LPPOLYF4DV1 poly1;
+	LPPOLYF4DV1 poly2;
+
+	float z1;
+	float z2;
+
+	poly1 = *((LPPOLYF4DV1*)(arg1));
+	poly2 = *((LPPOLYF4DV1*)(arg2));
+
+	z1 = MAX(poly1->vTranList[0].z, poly1->vTranList[1].z);
+	z1 = MAX(z1, poly1->vTranList[2].z);
+
+	z2 = MAX(poly2->vTranList[0].z, poly2->vTranList[1].z);
+	z2 = MAX(z2, poly2->vTranList[2].z);
+
+
+	if (z1 > z2)
+		return -1;
+	else if (z1 < z2)
+		return 1;
+	else
+		return 0;
+}
+
+void Sort_RENDERLIST4DV1(LPRENDERLIST4DV1 rendList, int method)
+{
+	switch (method)
+	{
+	case SORT_POLYLIST_AVGZ:
+		{
+			qsort((void*)rendList->polyPointer, 
+				rendList->numPolys, 
+				sizeof(LPPOLYF4DV1), 
+				Compare_AvgZ_POLYF4DV1);
+		}
+		break;
+	case SORT_POLYLIST_NEARZ:
+		{
+			qsort((void*)rendList->polyPointer, 
+				rendList->numPolys, 
+				sizeof(LPPOLYF4DV1), 
+				Compare_NearZ_POLYF4DV1);
+		}
+		break;
+	case SORT_POLYLIST_FARZ:
+		{
+			qsort((void*)rendList->polyPointer, 
+				rendList->numPolys, 
+				sizeof(LPPOLYF4DV1), 
+				Compare_FarZ_POLYF4DV1);
+		}
+		break;
+	default:
+		break;
+	}
 }
