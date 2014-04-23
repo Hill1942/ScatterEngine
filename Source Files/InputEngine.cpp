@@ -1,4 +1,3 @@
-
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <Windows.h>
@@ -6,7 +5,6 @@
 #include <dinput.h>
 
 #include "InputEngine.h"
-
 
 #pragma comment(lib, "dinput8.lib")
 
