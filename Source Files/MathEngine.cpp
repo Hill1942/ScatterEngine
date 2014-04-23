@@ -576,9 +576,9 @@ void VECTOR4D_NORMALIZE(LPVECTOR4D va, LPVECTOR4D vn)
 
 void VECTOR4D_BUILD(LPVECTOR4D init, LPVECTOR4D term, LPVECTOR4D result)
 {
-	result->x = term->x - term->x;
-	result->y = term->y - term->y;
-	result->z = term->z - term->z;
+	result->x = term->x - init->x;
+	result->y = term->y - init->y;
+	result->z = term->z - init->z;
 	result->w = 1;
 }
 
