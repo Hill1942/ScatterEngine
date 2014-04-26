@@ -70,7 +70,7 @@ USHORT RGB16BIT565(int r, int g, int b)
 	r >>= 3;
 	g >>= 2;
 	b >>= 3;
-	return _RGB16BIT_565((r), (g), (b));
+	return RGB16BIT_565((r), (g), (b));
 }
 
 USHORT RGB16BIT555(int r, int g, int b)
@@ -78,7 +78,7 @@ USHORT RGB16BIT555(int r, int g, int b)
 	r >>= 3;
 	g >>= 3;
 	b >>= 3;
-	return _RGB16BIT_555((r), (g), (b));
+	return RGB16BIT_555((r), (g), (b));
 }
 
 int DDraw_Init(int width, int height, int bpp, int windowed)

@@ -3,34 +3,34 @@
 
 
 
-#define POLY4DV1_ATTR_2SIDED      0x0001
-#define POLY4DV1_ATTR_TRANSPARENT 0x0002
-#define POLY4DV1_ATTR_8BITCOLOR   0x0004
-#define POLY4DV1_ATTR_RGB16       0x0008
-#define POLY4DV1_ATTR_RGB24       0x0010
+#define POLY4D_ATTR_2SIDED      0x0001
+#define POLY4D_ATTR_TRANSPARENT 0x0002
+#define POLY4D_ATTR_8BITCOLOR   0x0004
+#define POLY4D_ATTRRGB16       0x0008
+#define POLY4D_ATTRRGB24       0x0010
 
 
-#define POLY4DV1_ATTR_SHADE_MODE_PURE      0x0020
-#define POLY4DV1_ATTR_SHADE_MODE_CONSTANT  0x0020
-#define POLY4DV1_ATTR_SHADE_MODE_FLAT      0x0040
-#define POLY4DV1_ATTR_SHADE_MODE_GOURAUD   0x0080
-#define POLY4DV1_ATTR_SHADE_MODE_PHONG     0x0100
-#define POLY4DV1_ATTR_SHADE_MODE_FASTPHONG 0x0100
-#define POLY4DV1_ATTR_SHADE_MODE_TEXTURE   0x0200
+#define POLY4D_ATTR_SHADE_MODE_PURE      0x0020
+#define POLY4D_ATTR_SHADE_MODE_CONSTANT  0x0020
+#define POLY4D_ATTR_SHADE_MODE_FLAT      0x0040
+#define POLY4D_ATTR_SHADE_MODE_GOURAUD   0x0080
+#define POLY4D_ATTR_SHADE_MODE_PHONG     0x0100
+#define POLY4D_ATTR_SHADE_MODE_FASTPHONG 0x0100
+#define POLY4D_ATTR_SHADE_MODE_TEXTURE   0x0200
 
-#define POLY4DV1_STATE_ACTIVE    0x0001
-#define POLY4DV1_STATE_CLIPPED   0x0002
-#define POLY4DV1_STATE_BACKFACE  0x0004
+#define POLY4D_STATE_ACTIVE    0x0001
+#define POLY4D_STATE_CLIPPED   0x0002
+#define POLY4D_STATE_BACKFACE  0x0004
 
-#define OBJECT4DV1_MAX_VERTICES  1024
-#define OBJECT4DV1_MAX_POLYS     1024
+#define OBJECT4D_MAX_VERTICES  1024
+#define OBJECT4D_MAX_POLYS     1024
 
-#define OBJECT4DV1_STATE_ACTIVE  0x0001
-#define OBJECT4DV1_STATE_VISIBLE 0x0002
-#define OBJECT4DV1_STATE_CULLED  0x0004
+#define OBJECT4D_STATE_ACTIVE  0x0001
+#define OBJECT4D_STATE_VISIBLE 0x0002
+#define OBJECT4D_STATE_CULLED  0x0004
 
 
-#define RENDERLIST4DV1_MAX_POLYS 32768
+#define RENDERLIST4D_MAX_POLYS 32768
 
 #define TRANSFORM_LOCAL_ONLY     0
 #define TRANSFORM_TRANS_ONLY     1
@@ -57,7 +57,7 @@
 #define UVN_MODE_SIMPLE     0
 #define UVN_MODE_SPHERICAL  1
 
-typedef struct POLY4DV1_TYP
+typedef struct POLY4D_TYP
 {
 	int state;
 	int attr;
@@ -67,9 +67,9 @@ typedef struct POLY4DV1_TYP
 	LPPOINT4D vList;
 	int       vert[3];
 
-}POLY4DV1, *LPPOLY4DV1;
+}POLY4D, *LPPOLY4D;
 
-typedef struct POLYF4DV1_TYP
+typedef struct POLYF4D_TYP
 {
 	int state;
 	int attr;
@@ -79,12 +79,12 @@ typedef struct POLYF4DV1_TYP
 	POINT4D vList[3];
 	POINT4D vTranList[3];
 
-	POLYF4DV1_TYP* next;
-	POLYF4DV1_TYP* prev;
+	POLYF4D_TYP* next;
+	POLYF4D_TYP* prev;
 
-}POLYF4DV1, *LPPOLYF4DV1;
+}POLYF4D, *LPPOLYF4D;
 
-typedef struct OBJECT4DV1_TYP
+typedef struct OBJECT4D_TYP
 {
 	int   id;
 	char  name[64];
@@ -100,15 +100,15 @@ typedef struct OBJECT4DV1_TYP
 	VECTOR4D uz;
 
 	int     numVertics;
-	POINT4D vLocalList[OBJECT4DV1_MAX_VERTICES];
-	POINT4D vTransList[OBJECT4DV1_MAX_VERTICES];
+	POINT4D vLocalList[OBJECT4D_MAX_VERTICES];
+	POINT4D vTransList[OBJECT4D_MAX_VERTICES];
 
 	int      numPolys;
-	POLY4DV1 polyList[OBJECT4DV1_MAX_POLYS];
+	POLY4D polyList[OBJECT4D_MAX_POLYS];
 
-}OBJECT4DV1, *LPOBJECT4DV1;
+}OBJECT4D, *LPOBJECT4D;
 
-typedef struct CAM4DV1_TYP
+typedef struct CAM4D_TYP
 {
 	int state;
 	int attr;
@@ -147,115 +147,115 @@ typedef struct CAM4DV1_TYP
 	MATRIX_4X4 mCamToPer;
 	MATRIX_4X4 mPerToScreen;
 
-}CAM4DV1, *LPCAM4DV1;
+}CAM4D, *LPCAM4D;
 
-typedef struct RENDERLIST4DV1_TYP
+typedef struct RENDERLIST4D_TYP
 {
 	int state;
 	int attr;
 
-	LPPOLYF4DV1 polyPointer[RENDERLIST4DV1_MAX_POLYS];
-	POLYF4DV1   polyData[RENDERLIST4DV1_MAX_POLYS];
+	LPPOLYF4D polyPointer[RENDERLIST4D_MAX_POLYS];
+	POLYF4D   polyData[RENDERLIST4D_MAX_POLYS];
 
 	int numPolys;
-}RENDERLIST4DV1, *LPRENDERLIST4DV1;
+}RENDERLIST4D, *LPRENDERLIST4D;
 
 
 char* Get_Line_PLG(char* buffer, int maxLength, FILE* fp);
 
-float Compute_OBJECT4DV1_Radius(LPOBJECT4DV1 obj);
+float Compute_OBJECT4D_Radius(LPOBJECT4D obj);
 
-int   Load_OBJECT4DV1_PLG(LPOBJECT4DV1 obj, char* filename, LPVECTOR4D scale, 
+int   Load_OBJECT4D_PLG(LPOBJECT4D obj, char* filename, LPVECTOR4D scale, 
 						  LPVECTOR4D pos, LPVECTOR4D rot);
 
-void  Translate_OBJECT4DV1(LPOBJECT4DV1 obj, LPVECTOR4D pvTranslate);
+void  Translate_OBJECT4D(LPOBJECT4D obj, LPVECTOR4D pvTranslate);
 
-void  Scale_OBJECT4DV1(LPOBJECT4DV1 obj, LPVECTOR4D pvScale);
+void  Scale_OBJECT4D(LPOBJECT4D obj, LPVECTOR4D pvScale);
 
 void  Build_XYZ_Rotation_Matrix4X4(float xTheta, float yTheta, float zTheta,
 								   LPMATRIX_4X4 pmRotation);
 
-void  Transform_OBJECT4DV1(LPOBJECT4DV1 obj, LPMATRIX_4X4 pmTransform, 
+void  Transform_OBJECT4D(LPOBJECT4D obj, LPMATRIX_4X4 pmTransform, 
 						   int coordinate, int transformBasis);
 
-void  Rotate_XYZ_OBJECT4DV1(LPOBJECT4DV1 obj, float xTheta, float yTheta, float zTheta);
+void  Rotate_XYZ_OBJECT4D(LPOBJECT4D obj, float xTheta, float yTheta, float zTheta);
 
-void  Model_To_Word_OBJECT4DV1(LPOBJECT4DV1 obj, int coordinate = TRANSFORM_LOCAL_TO_TRANS);
+void  Model_To_Word_OBJECT4D(LPOBJECT4D obj, int coordinate = TRANSFORM_LOCAL_TO_TRANS);
 
-int   Cull_OBJEC4DV1(LPOBJECT4DV1 obj, LPCAM4DV1 cam, int cullFlags);
+int   Cull_OBJEC4DV1(LPOBJECT4D obj, LPCAM4D cam, int cullFlags);
 
-void  Remove_Backfaces_OBJECT4DV1(LPOBJECT4DV1 obj, LPCAM4DV1 cam);
+void  Remove_Backfaces_OBJECT4D(LPOBJECT4D obj, LPCAM4D cam);
 
-void  Remove_Backfaces_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPCAM4DV1 cam);
+void  Remove_Backfaces_RENDERLIST4D(LPRENDERLIST4D renderList, LPCAM4D cam);
 
-void  World_To_Camera_OBJECT4DV1(LPOBJECT4DV1 obj, LPCAM4DV1 cam);
+void  World_To_Camera_OBJECT4D(LPOBJECT4D obj, LPCAM4D cam);
 
-void  Camera_To_Perspective_OBJECT4DV1(LPOBJECT4DV1 obj, LPCAM4DV1 cam);
+void  Camera_To_Perspective_OBJECT4D(LPOBJECT4D obj, LPCAM4D cam);
 
-void  Camera_To_Perspective_Screen_OBJECT4DV1(LPOBJECT4DV1 obj, LPCAM4DV1 cam);
+void  Camera_To_Perspective_Screen_OBJECT4D(LPOBJECT4D obj, LPCAM4D cam);
 
-void  Perspective_To_Screen_OBJECT4DV1(LPOBJECT4DV1 obj, LPCAM4DV1 cam);
+void  Perspective_To_Screen_OBJECT4D(LPOBJECT4D obj, LPCAM4D cam);
 
-void  Transform_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPMATRIX_4X4 pmTransform,
+void  Transform_RENDERLIST4D(LPRENDERLIST4D renderList, LPMATRIX_4X4 pmTransform,
 							   int coordinate);
 
-void  Model_To_World_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPPOINT4D worldPos,
+void  Model_To_World_RENDERLIST4D(LPRENDERLIST4D renderList, LPPOINT4D worldPos,
 								   int coordinate = TRANSFORM_LOCAL_TO_TRANS);
 
-void  World_To_Camera_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPCAM4DV1 cam);
+void  World_To_Camera_RENDERLIST4D(LPRENDERLIST4D renderList, LPCAM4D cam);
 
-void  Camera_To_Perspective_RENDERLIST4DV1(LPRENDERLIST4DV1 rendrerList, LPCAM4DV1 cam);
+void  Camera_To_Perspective_RENDERLIST4D(LPRENDERLIST4D rendrerList, LPCAM4D cam);
 
-void  Camera_To_Perspective_Screen_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPCAM4DV1 cam);
+void  Camera_To_Perspective_Screen_RENDERLIST4D(LPRENDERLIST4D renderList, LPCAM4D cam);
 
-void  Perspective_To_Screen_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPCAM4DV1 cam);
-
-
+void  Perspective_To_Screen_RENDERLIST4D(LPRENDERLIST4D renderList, LPCAM4D cam);
 
 
-void  Reset_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList);
 
-void  Reset_OBJECT4DV1(LPOBJECT4DV1 obj);
 
-int   Insert_POLY4DV1_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPPOLY4DV1 poly);
+void  Reset_RENDERLIST4D(LPRENDERLIST4D renderList);
 
-int   Insert_POLYF4DV1_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPPOLYF4DV1 poly);
+void  Reset_OBJECT4D(LPOBJECT4D obj);
 
-int   Insert_OBJECT4DV1_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPOBJECT4DV1 obj, 
+int   Insert_POLY4D_RENDERLIST4D(LPRENDERLIST4D renderList, LPPOLY4D poly);
+
+int   Insert_POLYF4D_RENDERLIST4D(LPRENDERLIST4D renderList, LPPOLYF4D poly);
+
+int   Insert_OBJECT4D_RENDERLIST4D(LPRENDERLIST4D renderList, LPOBJECT4D obj, 
 									   int insertLocation = 0);
 
-void  Draw_OBJECT4DV1_Wire(LPOBJECT4DV1 obj, UCHAR* videoBuffer, int lPitch);
+void  Draw_OBJECT4D_Wire(LPOBJECT4D obj, UCHAR* videoBuffer, int lPitch);
 
-void  Draw_RENDERLIST4DV1_Wire(LPRENDERLIST4DV1 renderList, UCHAR* videoBuffer, 
+void  Draw_RENDERLIST4D_Wire(LPRENDERLIST4D renderList, UCHAR* videoBuffer, 
 							   int lPitch);
 
-void  Draw_OBJECT4DV1_Wire16(LPOBJECT4DV1 obj, UCHAR* videoBuffer, int lPitch);
+void  Draw_OBJECT4D_Wire16(LPOBJECT4D obj, UCHAR* videoBuffer, int lPitch);
 
-void  Draw_RENDERLIST4DV1_Wire16(LPRENDERLIST4DV1 renderList, UCHAR* videoBuffer, 
+void  Draw_RENDERLIST4D_Wire16(LPRENDERLIST4D renderList, UCHAR* videoBuffer, 
 								 int lPitch);
 
-void  Draw_RENDERLIST4DV1_Wire32(LPRENDERLIST4DV1 renderList, UCHAR* videoBuffer, 
+void  Draw_RENDERLIST4D_Wire32(LPRENDERLIST4D renderList, UCHAR* videoBuffer, 
 								 int lPitch);
 
 void  Build_Model_To_World_Matrix4X4(LPVECTOR4D pvPos, LPMATRIX_4X4 pm);
 
-void  Build_Camera_To_Perspective_Matrix4X4(LPCAM4DV1 cam, LPMATRIX_4X4 pm);
+void  Build_Camera_To_Perspective_Matrix4X4(LPCAM4D cam, LPMATRIX_4X4 pm);
 
-void  Build_Perspective_To_Screen_4D_Matrix4X4(LPCAM4DV1 cam, LPMATRIX_4X4 pm);
+void  Build_Perspective_To_Screen_4D_Matrix4X4(LPCAM4D cam, LPMATRIX_4X4 pm);
 
-void  Build_Perspective_To_Screen_Matrix4X4(LPCAM4DV1 cam, LPMATRIX_4X4 pm);
+void  Build_Perspective_To_Screen_Matrix4X4(LPCAM4D cam, LPMATRIX_4X4 pm);
 
-void  Build_Camera_To_Screen_Matrix4X4(LPCAM4DV1 cam, LPMATRIX_4X4);
+void  Build_Camera_To_Screen_Matrix4X4(LPCAM4D cam, LPMATRIX_4X4);
 
-void  Convert_From_Homogeneous4D_OBJECT4DV1(LPOBJECT4DV1 obj);
+void  Convert_From_Homogeneous4D_OBJECT4D(LPOBJECT4D obj);
 
-void  Convert_From_Homogeneous4D_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList);
+void  Convert_From_Homogeneous4D_RENDERLIST4D(LPRENDERLIST4D renderList);
 
-void  Build_CAM4DV1_Matrix_Euler(LPCAM4DV1 cam, int camRotSeq);
+void  Build_CAM4D_Matrix_Euler(LPCAM4D cam, int camRotSeq);
 
-void  Build_CAM4DV1_Matrix_UVM(LPCAM4DV1 cam, int mode);
+void  Build_CAM4D_Matrix_UVM(LPCAM4D cam, int mode);
 
-void  Init_CAM4DV1(LPCAM4DV1 cam, int attr, LPPOINT4D position, LPVECTOR4D direction,
+void  Init_CAM4D(LPCAM4D cam, int attr, LPPOINT4D position, LPVECTOR4D direction,
 				   LPVECTOR4D target, float nearClipZ, float farClipZ, float fov, 
 				   float viewPortWidth, float viewPortHeight);
 

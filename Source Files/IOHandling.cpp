@@ -710,7 +710,7 @@ int IsInt(char* string)
 }
 
 
-int Load_OBJECT4DV1_3DSASC(LPOBJECT4DV1 obj,
+int Load_OBJECT4D_3DSASC(LPOBJECT4D obj,
 						   char*        filename,
 						   LPVECTOR4D   scale,
 						   LPVECTOR4D   postion,
@@ -727,9 +727,9 @@ int Load_OBJECT4DV1_3DSASC(LPOBJECT4DV1 obj,
 	int g;
 	int b;
 
-	memset(obj, 0, sizeof(OBJECT4DV1));
+	memset(obj, 0, sizeof(OBJECT4D));
 
-	obj->state = OBJECT4DV1_STATE_ACTIVE | OBJECT4DV1_STATE_VISIBLE;
+	obj->state = OBJECT4D_STATE_ACTIVE | OBJECT4D_STATE_VISIBLE;
 
 	if (postion)
 	{
@@ -847,7 +847,7 @@ int Load_OBJECT4DV1_3DSASC(LPOBJECT4DV1 obj,
 		}  // end while
 	}  // end for
 
-	Compute_OBJECT4DV1_Radius(obj);
+	Compute_OBJECT4D_Radius(obj);
 
 	while (1)
 	{
@@ -907,9 +907,9 @@ int Load_OBJECT4DV1_3DSASC(LPOBJECT4DV1 obj,
 				g = parser.pInts[1];
 				b = parser.pInts[2];
 
-				obj->polyList[poly].color = _RGB24BIT_888(255, r, g, b);
-				SET_BIT(obj->polyList[poly].attr, POLY4DV1_ATTR_SHADE_MODE_FLAT);
-				obj->polyList[poly].state = POLY4DV1_STATE_ACTIVE;
+				obj->polyList[poly].color = RGB24BIT_888(255, r, g, b);
+				SET_BIT(obj->polyList[poly].attr, POLY4D_ATTR_SHADE_MODE_FLAT);
+				obj->polyList[poly].state = POLY4D_STATE_ACTIVE;
 				break;
 			}
 		} // end while

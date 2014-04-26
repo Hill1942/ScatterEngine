@@ -103,7 +103,7 @@ float IsFloat(char* string);
 
 int IsInt(char* string);
 
-int Load_OBJECT4DV1_3DSASC(LPOBJECT4DV1 obj,
+int Load_OBJECT4D_3DSASC(LPOBJECT4D obj,
 						   char*        filename,
 						   LPVECTOR4D   scale,
 						   LPVECTOR4D   postion,

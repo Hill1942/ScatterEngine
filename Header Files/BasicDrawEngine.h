@@ -1,13 +1,12 @@
+#ifndef BASIC_DRAW_ENGINE
+#define BASIC_DRAW_ENGINE
+
 /** @defgroup ScatterEngine Basic Drawing
  *  @author  Yang Kaidi
  *  @version 1.0
  *  @date    2013-2014
  *  @{
  */
-
-
-#ifndef BASIC_DRAW_ENGINE
-#define BASIC_DRAW_ENGINE
 
 /** @name Macro
  *  @{
@@ -44,11 +43,11 @@
 #define KEY_DOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000) ? 1 : 0)
 #define KEY_UP(vk_code)   ((GetAsyncKeyState(vk_code) & 0x8000) ? 0 : 1)
 
-#define _RGB16BIT_555(r, g, b) ((b & 31) + ((g & 31) << 5) + ((r & 31) << 10))
-#define _RGB16BIT_565(r, g, b) ((b & 31) + ((g & 63) << 5) + ((r & 31) << 11))
+#define RGB16BIT_555(r, g, b) ((b & 31) + ((g & 31) << 5) + ((r & 31) << 10))
+#define RGB16BIT_565(r, g, b) ((b & 31) + ((g & 63) << 5) + ((r & 31) << 11))
 
-#define _RGB24BIT_888(a, r, g, b)  ((b) + ((g) << 8) + ((r) << 16))
-#define _RGB32BIT_8888(a, r, g, b) ((b) + ((g) << 8) + ((r) << 16) + ((a) << 24))
+#define RGB24BIT_888(a, r, g, b)  ((b) + ((g) << 8) + ((r) << 16))
+#define RGB32BIT_8888(a, r, g, b) ((b) + ((g) << 8) + ((r) << 16) + ((a) << 24))
 
 #define SET_BIT(word, bit_flag) ((word) = ((word) | (bit_flag)))
 #define RESET_BIT(word, bit_flag) ((word) = ((word) & (~bit_flag)))
@@ -349,8 +348,7 @@ int Destory_Bitmap(LPBITMAP_IMAGE image);
 
 
 
+/** @}*/ // ScatterEngine Basic Drawing
 
 #endif
 
-
-/** @}*/ // ScatterEngine Basic Drawing

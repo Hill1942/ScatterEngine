@@ -51,12 +51,12 @@ VECTOR4D vscale={20,20,20,1},
          vpos = {0,0,0,1}, 
          vrot = {0,0,0,1};
 
-CAM4DV1        cam;                     // the single camera
-RENDERLIST4DV1 rend_list;               // the single renderlist
-POLYF4DV1      poly1;                   // our lonely polygon
+CAM4D        cam;                     // the single camera
+RENDERLIST4D rend_list;               // the single renderlist
+POLYF4D      poly1;                   // our lonely polygon
 POINT4D        poly1_pos = {0,0,100,1}; // world position of polygon
 
-OBJECT4DV1 myobj;
+OBJECT4D myobj;
 
 
 extern LPDIRECTDRAWSURFACE7 lpddsBack;
@@ -178,11 +178,11 @@ int Game_Init(void *param)
 
 
 
-	Load_OBJECT4DV1_3DSASC(&myobj, "car.asc", &vscale, &vpos, &vrot, VERTEX_FLAGS_INVERT_WINDING_ORDER | VERTEX_FLAGS_SWAP_YZ);
+	Load_OBJECT4D_3DSASC(&myobj, "car.asc", &vscale, &vpos, &vrot, VERTEX_FLAGS_INVERT_WINDING_ORDER | VERTEX_FLAGS_SWAP_YZ);
 
     
     // initialize the camera with 90 FOV, normalized coordinates
-    Init_CAM4DV1(&cam,      // the camera object
+    Init_CAM4D(&cam,      // the camera object
                  CAM_MODEL_EULER, // euler camera model
                  &cam_pos,  // initial camera position
                  &cam_dir,  // initial camera angles
@@ -230,31 +230,31 @@ int Game_Main(void *param)
     // game logic here...
     
     // initialize the renderlist
-    Reset_RENDERLIST4DV1(&rend_list);
+    Reset_RENDERLIST4D(&rend_list);
     
 
-	//Reset_OBJECT4DV1(&myobj);
+	//Reset_OBJECT4D(&myobj);
 
-	Insert_OBJECT4DV1_RENDERLIST4DV1(&rend_list, &myobj, 1);
+	Insert_OBJECT4D_RENDERLIST4D(&rend_list, &myobj, 1);
 
 	Build_XYZ_Rotation_Matrix4X4(0, ang_y, 0, &mrot);
    
     if (++ang_y >= 360.0) ang_y = 0;
 
-    Transform_RENDERLIST4DV1(&rend_list, &mrot, TRANSFORM_LOCAL_ONLY);
+    Transform_RENDERLIST4D(&rend_list, &mrot, TRANSFORM_LOCAL_ONLY);
     
-	Model_To_World_RENDERLIST4DV1(&rend_list, &poly1_pos);
+	Model_To_World_RENDERLIST4D(&rend_list, &poly1_pos);
 
-	Build_CAM4DV1_Matrix_Euler(&cam, CAM_ROT_SEQ_ZYX);
+	Build_CAM4D_Matrix_Euler(&cam, CAM_ROT_SEQ_ZYX);
 
     // apply world to camera transform
-    World_To_Camera_RENDERLIST4DV1(&rend_list, &cam);
+    World_To_Camera_RENDERLIST4D(&rend_list, &cam);
     
     // apply camera to perspective transformation
-    Camera_To_Perspective_RENDERLIST4DV1(&rend_list, &cam);
+    Camera_To_Perspective_RENDERLIST4D(&rend_list, &cam);
     
     // apply screen transform
-    Perspective_To_Screen_RENDERLIST4DV1(&rend_list, &cam);
+    Perspective_To_Screen_RENDERLIST4D(&rend_list, &cam);
     
     // draw instructions
    // Draw_Text_GDI("Press ESC to exit.", 0, 0, RGB(0,255,0), lpddsback);
@@ -263,7 +263,7 @@ int Game_Main(void *param)
     DDraw_Lock_Back_Surface();
     
     // render the polygon list
-    Draw_RENDERLIST4DV1_Wire32(&rend_list, backBuffer, backLPitch);
+    Draw_RENDERLIST4D_Wire32(&rend_list, backBuffer, backLPitch);
     
     // unlock the back buffer
     DDraw_Unlock_Back_Surface();

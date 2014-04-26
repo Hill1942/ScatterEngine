@@ -8,22 +8,22 @@
 #include "3DPipeLine.h"
 #include "LightAndShading.h"
 
-MATERIALV1 materials[MAX_MATERIALV1];
+MATERIAL materials[MAX_MATERIAL];
 int        numMaterials;
 
-LIGHTV1    lights[MAX_LIGHTS];
+LIGHT    lights[MAX_LIGHTS];
 int        numLights;
 
 
-void Draw_OBJECT4DV1_Solid(LPOBJECT4DV1 obj, 
+void Draw_OBJECT4D_Solid(LPOBJECT4D obj, 
 						   UCHAR* buffer, 
 						   int lPitch)
 {
 	for (int poly = 0; poly < obj->numPolys; poly++)
 	{
-		if (!(obj->polyList[poly].state & POLY4DV1_STATE_ACTIVE) ||
-			 (obj->polyList[poly].state & POLY4DV1_STATE_CLIPPED) ||
-			 (obj->polyList[poly].state & POLY4DV1_STATE_BACKFACE))
+		if (!(obj->polyList[poly].state & POLY4D_STATE_ACTIVE) ||
+			 (obj->polyList[poly].state & POLY4D_STATE_CLIPPED) ||
+			 (obj->polyList[poly].state & POLY4D_STATE_BACKFACE))
 			 continue;
 
 		int vindex_0 = obj->polyList[poly].vert[0];
@@ -37,15 +37,15 @@ void Draw_OBJECT4DV1_Solid(LPOBJECT4DV1 obj,
 	}
 }
 
-void Draw_OBJECT4DV1_Solid16(LPOBJECT4DV1 obj, 
+void Draw_OBJECT4D_Solid16(LPOBJECT4D obj, 
 						   UCHAR* buffer, 
 						   int lPitch)
 {
 	for (int poly = 0; poly < obj->numPolys; poly++)
 	{
-		if (!(obj->polyList[poly].state & POLY4DV1_STATE_ACTIVE) ||
-			 (obj->polyList[poly].state & POLY4DV1_STATE_CLIPPED) ||
-			 (obj->polyList[poly].state & POLY4DV1_STATE_BACKFACE))
+		if (!(obj->polyList[poly].state & POLY4D_STATE_ACTIVE) ||
+			 (obj->polyList[poly].state & POLY4D_STATE_CLIPPED) ||
+			 (obj->polyList[poly].state & POLY4D_STATE_BACKFACE))
 			 continue;
 
 		int vindex_0 = obj->polyList[poly].vert[0];
@@ -59,15 +59,15 @@ void Draw_OBJECT4DV1_Solid16(LPOBJECT4DV1 obj,
 	}
 }
 
-void Draw_OBJECT4DV1_Solid32(LPOBJECT4DV1 obj, 
+void Draw_OBJECT4D_Solid32(LPOBJECT4D obj, 
 						   UCHAR* buffer, 
 						   int lPitch)
 {
 	for (int poly = 0; poly < obj->numPolys; poly++)
 	{
-		if (!(obj->polyList[poly].state & POLY4DV1_STATE_ACTIVE) ||
-			 (obj->polyList[poly].state & POLY4DV1_STATE_CLIPPED) ||
-			 (obj->polyList[poly].state & POLY4DV1_STATE_BACKFACE))
+		if (!(obj->polyList[poly].state & POLY4D_STATE_ACTIVE) ||
+			 (obj->polyList[poly].state & POLY4D_STATE_CLIPPED) ||
+			 (obj->polyList[poly].state & POLY4D_STATE_BACKFACE))
 			 continue;
 
 		int vindex_0 = obj->polyList[poly].vert[0];
@@ -81,15 +81,15 @@ void Draw_OBJECT4DV1_Solid32(LPOBJECT4DV1 obj,
 	}
 }
 
-void Draw_RENDERLIST4DV1_Solid(LPRENDERLIST4DV1 renderList, 
+void Draw_RENDERLIST4D_Solid(LPRENDERLIST4D renderList, 
 							   UCHAR* buffer,
 							   int lPitch)
 {
 	for (int poly = 0; poly < renderList->numPolys; poly++)
 	{
-		if (!(renderList->polyPointer[poly]->state & POLY4DV1_STATE_ACTIVE) ||
-			 (renderList->polyPointer[poly]->state & POLY4DV1_STATE_CLIPPED) ||
-			 (renderList->polyPointer[poly]->state & POLY4DV1_STATE_BACKFACE))
+		if (!(renderList->polyPointer[poly]->state & POLY4D_STATE_ACTIVE) ||
+			 (renderList->polyPointer[poly]->state & POLY4D_STATE_CLIPPED) ||
+			 (renderList->polyPointer[poly]->state & POLY4D_STATE_BACKFACE))
 			 continue;
 
 		Draw_2D_Triangle(renderList->polyPointer[poly]->vTranList[0].x,
@@ -104,15 +104,15 @@ void Draw_RENDERLIST4DV1_Solid(LPRENDERLIST4DV1 renderList,
 	}
 }
 
-void Draw_RENDERLIST4DV1_Solid16(LPRENDERLIST4DV1 renderList, 
+void Draw_RENDERLIST4D_Solid16(LPRENDERLIST4D renderList, 
 							   UCHAR* buffer,
 							   int lPitch)
 {
 	for (int poly = 0; poly < renderList->numPolys; poly++)
 	{
-		if (!(renderList->polyPointer[poly]->state & POLY4DV1_STATE_ACTIVE) ||
-			 (renderList->polyPointer[poly]->state & POLY4DV1_STATE_CLIPPED) ||
-			 (renderList->polyPointer[poly]->state & POLY4DV1_STATE_BACKFACE))
+		if (!(renderList->polyPointer[poly]->state & POLY4D_STATE_ACTIVE) ||
+			 (renderList->polyPointer[poly]->state & POLY4D_STATE_CLIPPED) ||
+			 (renderList->polyPointer[poly]->state & POLY4D_STATE_BACKFACE))
 			 continue;
 
 		Draw_2D_Triangle16(renderList->polyPointer[poly]->vTranList[0].x,
@@ -127,15 +127,15 @@ void Draw_RENDERLIST4DV1_Solid16(LPRENDERLIST4DV1 renderList,
 	}
 }
 
-void Draw_RENDERLIST4DV1_Solid32(LPRENDERLIST4DV1 renderList, 
+void Draw_RENDERLIST4D_Solid32(LPRENDERLIST4D renderList, 
 							   UCHAR* buffer,
 							   int lPitch)
 {
 	for (int poly = 0; poly < renderList->numPolys; poly++)
 	{
-		if (!(renderList->polyPointer[poly]->state & POLY4DV1_STATE_ACTIVE) ||
-			 (renderList->polyPointer[poly]->state & POLY4DV1_STATE_CLIPPED) ||
-			 (renderList->polyPointer[poly]->state & POLY4DV1_STATE_BACKFACE))
+		if (!(renderList->polyPointer[poly]->state & POLY4D_STATE_ACTIVE) ||
+			 (renderList->polyPointer[poly]->state & POLY4D_STATE_CLIPPED) ||
+			 (renderList->polyPointer[poly]->state & POLY4D_STATE_BACKFACE))
 			 continue;
 
 		Draw_2D_Triangle32(renderList->polyPointer[poly]->vTranList[0].x,
@@ -151,12 +151,12 @@ void Draw_RENDERLIST4DV1_Solid32(LPRENDERLIST4DV1 renderList,
 }
 
 
-int Init_LightV1(int        index,        //index of light
+int Init_Light(int        index,        //index of light
 			     int        _state,
 			     int        _attr,
-			     ARGBV1     _ambient,
-			     ARGBV1     _diffuse,
-			     ARGBV1     _specular,
+			     ARGB     _ambient,
+			     ARGB     _diffuse,
+			     ARGB     _specular,
 			     LPPOINT4D  _pos,
 			     LPVECTOR4D _dir,
 			     float      _kc,       //constant factor for point lights
@@ -192,49 +192,49 @@ int Init_LightV1(int        index,        //index of light
 	return index;
 }
 
-int Reset_LightsV1()
+int Reset_Lights()
 {
 	static int resetLightLabel = 1;
-	memset(lights, 0, MAX_LIGHTS * sizeof(LIGHTV1));
+	memset(lights, 0, MAX_LIGHTS * sizeof(LIGHT));
 	numLights       =0;
 	resetLightLabel = 0;
 
 	return 1;
 }
 /*
-int Reset_MaterialsV1()
+int Reset_Materials()
 {
 	static int resetMaterialLabel = 1;
 
 	if (resetMaterialLabel)
 	{
-		memset(materials, 0, MAX_MATERIALV1 * sizeof(MATERIALV1));
+		memset(materials, 0, MAX_MATERIAL * sizeof(MATERIAL));
 		resetMaterialLabel = 1;
 	}
 
-	for (int i = 0; i < MAX_MATERIALV1; i++)
+	for (int i = 0; i < MAX_MATERIAL; i++)
 	{
 		
 	}
 }*/
 /*
-int Insert_OBJECT4DV1_RENDERLIST4DV2(LPRENDERLIST4DV1  renderList,
-									 LPOBJECT4DV1      obj,
+int Insert_OBJECT4D_RENDERLIST4DV2(LPRENDERLIST4D  renderList,
+									 LPOBJECT4D      obj,
 									 int               isLocal,
 									 int               isLightOn)
 {
-	if (!(obj->state & OBJECT4DV1_STATE_ACTIVE) || 
-		 (obj->state & OBJECT4DV1_STATE_CULLED) ||
-		!(obj->state & OBJECT4DV1_STATE_VISIBLE))
+	if (!(obj->state & OBJECT4D_STATE_ACTIVE) || 
+		 (obj->state & OBJECT4D_STATE_CULLED) ||
+		!(obj->state & OBJECT4D_STATE_VISIBLE))
 		return 0;
 
 	for (int poly = 0; poly < obj->numPolys; poly++)
 	{
-		LPPOLY4DV1 currentPoly = &obj->polyList[poly];
+		LPPOLY4D currentPoly = &obj->polyList[poly];
 
-		if (!(currentPoly->state & POLY4DV1_STATE_ACTIVE)  ||
-			 (currentPoly->state & POLY4DV1_STATE_CLIPPED) ||
-			!(currentPoly->state & POLY4DV1_STATE_BACKFACE))
+		if (!(currentPoly->state & POLY4D_STATE_ACTIVE)  ||
+			 (currentPoly->state & POLY4D_STATE_CLIPPED) ||
+			!(currentPoly->state & POLY4D_STATE_BACKFACE))
 			continue;
 
 		LPPOINT4D oldList = currentPoly->vList;
@@ -249,7 +249,7 @@ int Insert_OBJECT4DV1_RENDERLIST4DV2(LPRENDERLIST4DV1  renderList,
 			currentPoly->lightColor;
 		}
 
-		if (!Insert_POLY4DV1_RENDERLIST4DV1(renderList, currentPoly))
+		if (!Insert_POLY4D_RENDERLIST4D(renderList, currentPoly))
 		{
 			currentPoly->vList = oldList;
 			return 0;
@@ -258,9 +258,9 @@ int Insert_OBJECT4DV1_RENDERLIST4DV2(LPRENDERLIST4DV1  renderList,
 }
 */
 
-int Light_OBJECT4DV1_32(LPOBJECT4DV1 obj,
-						LPCAM4DV1    cam,
-						LPLIGHTV1    lights,
+int Light_OBJECT4D_32(LPOBJECT4D obj,
+						LPCAM4D    cam,
+						LPLIGHT    lights,
 						int          maxLights)
 {
 	int a_base = 0;
@@ -272,38 +272,38 @@ int Light_OBJECT4DV1_32(LPOBJECT4DV1 obj,
 	int g_sum  = 0;
 	int b_sum  = 0;
 
-	if (!(obj->state & OBJECT4DV1_STATE_ACTIVE) ||
-		 (obj->state & OBJECT4DV1_STATE_CULLED) ||
-		!(obj->state & OBJECT4DV1_STATE_VISIBLE))
+	if (!(obj->state & OBJECT4D_STATE_ACTIVE) ||
+		 (obj->state & OBJECT4D_STATE_CULLED) ||
+		!(obj->state & OBJECT4D_STATE_VISIBLE))
 		return 0;
 
 	for (int poly = 0; poly < obj->numPolys; poly++)
 	{
-		LPPOLY4DV1 currentPoly = &obj->polyList[poly];
-		if (!(currentPoly->state & POLY4DV1_STATE_ACTIVE) ||
-			 (currentPoly->state & POLY4DV1_STATE_CLIPPED) ||
-			 (currentPoly->state & POLY4DV1_STATE_BACKFACE))
+		LPPOLY4D currentPoly = &obj->polyList[poly];
+		if (!(currentPoly->state & POLY4D_STATE_ACTIVE) ||
+			 (currentPoly->state & POLY4D_STATE_CLIPPED) ||
+			 (currentPoly->state & POLY4D_STATE_BACKFACE))
 			continue;
 
 		int vindex_0 = currentPoly->vert[0];
 		int vindex_1 = currentPoly->vert[1];
 		int vindex_2 = currentPoly->vert[2];
 
-		if (currentPoly->attr & POLY4DV1_ATTR_SHADE_MODE_FLAT||
-			currentPoly->attr & POLY4DV1_ATTR_SHADE_MODE_GOURAUD)
+		if (currentPoly->attr & POLY4D_ATTR_SHADE_MODE_FLAT||
+			currentPoly->attr & POLY4D_ATTR_SHADE_MODE_GOURAUD)
 		{
 			BREAKRGB32(currentPoly->color, a_base, r_base, g_base,b_base);
 			for (int currentLight = 0; currentLight < maxLights; currentLight++)
 			{
-				if (lights[currentLight].state == LIGHTV1_STATE_OFF)
+				if (lights[currentLight].state == LIGHT_STATE_OFF)
 					continue;
-				if (lights[currentLight].attr & LIGHTV1_ATTR_AMBIENT)
+				if (lights[currentLight].attr & LIGHT_ATTR_AMBIENT)
 				{
 					r_sum += ((lights[currentLight].ambient.r * r_base) / 256);
 					g_sum += ((lights[currentLight].ambient.g * g_base) / 256);
 					b_sum += ((lights[currentLight].ambient.b * b_base) / 256);
 				}
-				else if (lights[currentLight].attr & LIGHTV1_ATTR_INFINITE)
+				else if (lights[currentLight].attr & LIGHT_ATTR_INFINITE)
 				{
 					VECTOR4D u, v, n;
 
@@ -323,7 +323,7 @@ int Light_OBJECT4DV1_32(LPOBJECT4DV1 obj,
 						b_sum += (lights[currentLight].diffuse.b * b_base * i) / 256;
 					}
 				}
-				else if (lights[currentLight].attr & LIGHTV1_ATTR_POINT)
+				else if (lights[currentLight].attr & LIGHT_ATTR_POINT)
 				{
 					VECTOR4D u, v, n, l;
 
@@ -347,7 +347,7 @@ int Light_OBJECT4DV1_32(LPOBJECT4DV1 obj,
 						b_sum += (lights[currentLight].diffuse.b * b_base * i) / 256;
 					}
 				}
-				else if (lights[currentLight].attr & LIGHTV1_ATTR_SPOTLIGHT1)
+				else if (lights[currentLight].attr & LIGHT_ATTR_SPOTLIGHT1)
 				{
 					VECTOR4D u, v, n, l;
 
@@ -371,7 +371,7 @@ int Light_OBJECT4DV1_32(LPOBJECT4DV1 obj,
 						b_sum += (lights[currentLight].diffuse.b * b_base * i) / 256;
 					}
 				}
-				else if (lights[currentLight].attr & LIGHTV1_ATTR_SPOTLIGHT2)
+				else if (lights[currentLight].attr & LIGHT_ATTR_SPOTLIGHT2)
 				{
 
 				}
@@ -379,7 +379,7 @@ int Light_OBJECT4DV1_32(LPOBJECT4DV1 obj,
 			if (r_sum > 255) r_sum = 255;
 			if (g_sum > 255) r_sum = 255;
 			if (b_sum > 255) r_sum = 255;
-			currentPoly->lightColor = _RGB32BIT_8888(255, r_sum, g_sum, b_sum);
+			currentPoly->lightColor = RGB32BIT_8888(255, r_sum, g_sum, b_sum);
 		}
 		else  // A
 		{
@@ -390,9 +390,9 @@ int Light_OBJECT4DV1_32(LPOBJECT4DV1 obj,
 }
 
 
-int Light_RENDERLIST4DV1_32(LPRENDERLIST4DV1 renderList,
-						    LPCAM4DV1        cam,
-						    LPLIGHTV1        lights,
+int Light_RENDERLIST4D_32(LPRENDERLIST4D renderList,
+						    LPCAM4D        cam,
+						    LPLIGHT        lights,
 						    int              maxLights)
 {
 	int a_base = 0;
@@ -408,27 +408,27 @@ int Light_RENDERLIST4DV1_32(LPRENDERLIST4DV1 renderList,
 		int r_sum  = 0;
 		int g_sum  = 0;
 		int b_sum  = 0;
-		LPPOLYF4DV1 currentPoly = renderList->polyPointer[poly];
-		if (!(currentPoly->state & POLY4DV1_STATE_ACTIVE) ||
-			 (currentPoly->state & POLY4DV1_STATE_CLIPPED) ||
-			 (currentPoly->state & POLY4DV1_STATE_BACKFACE))
+		LPPOLYF4D currentPoly = renderList->polyPointer[poly];
+		if (!(currentPoly->state & POLY4D_STATE_ACTIVE) ||
+			 (currentPoly->state & POLY4D_STATE_CLIPPED) ||
+			 (currentPoly->state & POLY4D_STATE_BACKFACE))
 			continue;
 
-		if (currentPoly->attr & POLY4DV1_ATTR_SHADE_MODE_FLAT||
-			currentPoly->attr & POLY4DV1_ATTR_SHADE_MODE_GOURAUD)
+		if (currentPoly->attr & POLY4D_ATTR_SHADE_MODE_FLAT||
+			currentPoly->attr & POLY4D_ATTR_SHADE_MODE_GOURAUD)
 		{
 			BREAKRGB32(currentPoly->color, a_base, r_base, g_base,b_base);
 			for (int currentLight = 0; currentLight < maxLights; currentLight++)
 			{
-				if (lights[currentLight].state == LIGHTV1_STATE_OFF)
+				if (lights[currentLight].state == LIGHT_STATE_OFF)
 					continue;
-				if (lights[currentLight].attr & LIGHTV1_ATTR_AMBIENT)
+				if (lights[currentLight].attr & LIGHT_ATTR_AMBIENT)
 				{
 					r_sum += ((lights[currentLight].ambient.r * r_base) / 256);
 					g_sum += ((lights[currentLight].ambient.g * g_base) / 256);
 					b_sum += ((lights[currentLight].ambient.b * b_base) / 256);
 				}
-				else if (lights[currentLight].attr & LIGHTV1_ATTR_INFINITE)
+				else if (lights[currentLight].attr & LIGHT_ATTR_INFINITE)
 				{
 					VECTOR4D u, v, n;
 
@@ -448,7 +448,7 @@ int Light_RENDERLIST4DV1_32(LPRENDERLIST4DV1 renderList,
 						b_sum += (lights[currentLight].diffuse.b * b_base * i) / 256;
 					}
 				}
-				else if (lights[currentLight].attr & LIGHTV1_ATTR_POINT)
+				else if (lights[currentLight].attr & LIGHT_ATTR_POINT)
 				{
 					VECTOR4D u, v, n, l;
 
@@ -472,7 +472,7 @@ int Light_RENDERLIST4DV1_32(LPRENDERLIST4DV1 renderList,
 						b_sum += (lights[currentLight].diffuse.b * b_base * i) / 256;
 					}
 				}
-				else if (lights[currentLight].attr & LIGHTV1_ATTR_SPOTLIGHT1)
+				else if (lights[currentLight].attr & LIGHT_ATTR_SPOTLIGHT1)
 				{
 					VECTOR4D u, v, n, l;
 
@@ -496,7 +496,7 @@ int Light_RENDERLIST4DV1_32(LPRENDERLIST4DV1 renderList,
 						b_sum += (lights[currentLight].diffuse.b * b_base * i) / 256;
 					}
 				}
-				else if (lights[currentLight].attr & LIGHTV1_ATTR_SPOTLIGHT2)
+				else if (lights[currentLight].attr & LIGHT_ATTR_SPOTLIGHT2)
 				{
 
 				}
@@ -504,7 +504,7 @@ int Light_RENDERLIST4DV1_32(LPRENDERLIST4DV1 renderList,
 			if (r_sum > 255) r_sum = 255;
 			if (g_sum > 255) g_sum = 255;
 			if (b_sum > 255) b_sum = 255;
-			currentPoly->lightColor = _RGB32BIT_8888(255, r_sum, g_sum, b_sum);
+			currentPoly->lightColor = RGB32BIT_8888(255, r_sum, g_sum, b_sum);
 		}
 		else  // A
 		{
@@ -514,16 +514,16 @@ int Light_RENDERLIST4DV1_32(LPRENDERLIST4DV1 renderList,
 	return 1;
 }
 
-int Compare_AvgZ_POLYF4DV1(const void* arg1, const void* arg2)
+int Compare_AvgZ_POLYF4D(const void* arg1, const void* arg2)
 {
-	LPPOLYF4DV1 poly1;
-	LPPOLYF4DV1 poly2;
+	LPPOLYF4D poly1;
+	LPPOLYF4D poly2;
 
 	float z1;
 	float z2;
 
-	poly1 = *((LPPOLYF4DV1*)(arg1));
-	poly2 = *((LPPOLYF4DV1*)(arg2));
+	poly1 = *((LPPOLYF4D*)(arg1));
+	poly2 = *((LPPOLYF4D*)(arg2));
 
 	z1 = poly1->vTranList[0].z + poly1->vTranList[1].z + poly1->vTranList[2].z;
 	z2 = poly2->vTranList[0].z + poly2->vTranList[1].z + poly2->vTranList[2].z;
@@ -537,16 +537,16 @@ int Compare_AvgZ_POLYF4DV1(const void* arg1, const void* arg2)
 		return 0;
 }
 
-int Compare_NearZ_POLYF4DV1(const void* arg1, const void* arg2)
+int Compare_NearZ_POLYF4D(const void* arg1, const void* arg2)
 {
-	LPPOLYF4DV1 poly1;
-	LPPOLYF4DV1 poly2;
+	LPPOLYF4D poly1;
+	LPPOLYF4D poly2;
 
 	float z1;
 	float z2;
 
-	poly1 = *((LPPOLYF4DV1*)(arg1));
-	poly2 = *((LPPOLYF4DV1*)(arg2));
+	poly1 = *((LPPOLYF4D*)(arg1));
+	poly2 = *((LPPOLYF4D*)(arg2));
 
 	z1 = MIN(poly1->vTranList[0].z, poly1->vTranList[1].z);
 	z1 = MIN(z1, poly1->vTranList[2].z);
@@ -563,16 +563,16 @@ int Compare_NearZ_POLYF4DV1(const void* arg1, const void* arg2)
 		return 0;
 }
 
-int Compare_FarZ_POLYF4DV1(const void* arg1, const void* arg2)
+int Compare_FarZ_POLYF4D(const void* arg1, const void* arg2)
 {
-	LPPOLYF4DV1 poly1;
-	LPPOLYF4DV1 poly2;
+	LPPOLYF4D poly1;
+	LPPOLYF4D poly2;
 
 	float z1;
 	float z2;
 
-	poly1 = *((LPPOLYF4DV1*)(arg1));
-	poly2 = *((LPPOLYF4DV1*)(arg2));
+	poly1 = *((LPPOLYF4D*)(arg1));
+	poly2 = *((LPPOLYF4D*)(arg2));
 
 	z1 = MAX(poly1->vTranList[0].z, poly1->vTranList[1].z);
 	z1 = MAX(z1, poly1->vTranList[2].z);
@@ -589,7 +589,7 @@ int Compare_FarZ_POLYF4DV1(const void* arg1, const void* arg2)
 		return 0;
 }
 
-void Sort_RENDERLIST4DV1(LPRENDERLIST4DV1 rendList, int method)
+void Sort_RENDERLIST4D(LPRENDERLIST4D rendList, int method)
 {
 	switch (method)
 	{
@@ -597,24 +597,24 @@ void Sort_RENDERLIST4DV1(LPRENDERLIST4DV1 rendList, int method)
 		{
 			qsort((void*)rendList->polyPointer, 
 				rendList->numPolys, 
-				sizeof(LPPOLYF4DV1), 
-				Compare_AvgZ_POLYF4DV1);
+				sizeof(LPPOLYF4D), 
+				Compare_AvgZ_POLYF4D);
 		}
 		break;
 	case SORT_POLYLIST_NEARZ:
 		{
 			qsort((void*)rendList->polyPointer, 
 				rendList->numPolys, 
-				sizeof(LPPOLYF4DV1), 
-				Compare_NearZ_POLYF4DV1);
+				sizeof(LPPOLYF4D), 
+				Compare_NearZ_POLYF4D);
 		}
 		break;
 	case SORT_POLYLIST_FARZ:
 		{
 			qsort((void*)rendList->polyPointer, 
 				rendList->numPolys, 
-				sizeof(LPPOLYF4DV1), 
-				Compare_FarZ_POLYF4DV1);
+				sizeof(LPPOLYF4D), 
+				Compare_FarZ_POLYF4D);
 		}
 		break;
 	default:

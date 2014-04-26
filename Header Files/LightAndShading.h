@@ -14,34 +14,34 @@
  *  @{
  */
 
-#define LIGHTV1_ATTR_AMBIENT     0x0001
-#define LIGHTV1_ATTR_INFINITE    0x0002
-#define LIGHTV1_ATTR_DIRECTIONAL 0x0002
-#define LIGHTV1_ATTR_POINT       0x0004
-#define LIGHTV1_ATTR_SPOTLIGHT1  0x0008
-#define LIGHTV1_ATTR_SPOTLIGHT2  0x0010
+#define LIGHT_ATTR_AMBIENT     0x0001
+#define LIGHT_ATTR_INFINITE    0x0002
+#define LIGHT_ATTR_DIRECTIONAL 0x0002
+#define LIGHT_ATTR_POINT       0x0004
+#define LIGHT_ATTR_SPOTLIGHT1  0x0008
+#define LIGHT_ATTR_SPOTLIGHT2  0x0010
 
-#define LIGHTV1_STATE_ON         1
-#define LIGHTV1_STATE_OFF        0
+#define LIGHT_STATE_ON         1
+#define LIGHT_STATE_OFF        0
 
 #define MAX_LIGHTS               8
 
-#define MATERIALV1_ATTR_2SIDED              0x0001
-#define MATERIALV1_ATTR_TRANSPARENT         0x0002
-#define MATERIALV1_ATTR_8BITCOLOR           0x0004
-#define MATERIALV1_ATTR_RGB16               0x0008
-#define MATERIALV1_ATTR_RGB24               0x0010
-#define MATERIALV1_ATTR_SHADEMODE_CONSTANT  0x0020
-#define MATERIALV1_ATTR_SHADEMODE_EMMISIVE  0x0020
-#define MATERIALV1_ATTR_SHADEMODE_FLAT      0x0040
-#define MATERIALV1_ATTR_SHADEMODE_GOURAUD   0x0080
-#define MATERIALV1_ATTR_SHADEMODE_FASTPHONG 0x0100
-#define MATERIALV1_ATTR_SHADEMODE_TEXTURE   0x0200
+#define MATERIAL_ATTR_2SIDED              0x0001
+#define MATERIAL_ATTR_TRANSPARENT         0x0002
+#define MATERIAL_ATTR_8BITCOLOR           0x0004
+#define MATERIAL_ATTRRGB16               0x0008
+#define MATERIAL_ATTRRGB24               0x0010
+#define MATERIAL_ATTR_SHADEMODE_CONSTANT  0x0020
+#define MATERIAL_ATTR_SHADEMODE_EMMISIVE  0x0020
+#define MATERIAL_ATTR_SHADEMODE_FLAT      0x0040
+#define MATERIAL_ATTR_SHADEMODE_GOURAUD   0x0080
+#define MATERIAL_ATTR_SHADEMODE_FASTPHONG 0x0100
+#define MATERIAL_ATTR_SHADEMODE_TEXTURE   0x0200
 
-#define MATERIALV1_STATE_ACTIVE             0x0001
-#define MATERIALV1_STATE_INACTIVE           0x0002
+#define MATERIAL_STATE_ACTIVE             0x0001
+#define MATERIAL_STATE_INACTIVE           0x0002
 
-#define MAX_MATERIALV1                      256
+#define MAX_MATERIAL                      256
 
 #define SORT_POLYLIST_AVGZ   0
 #define SORT_POLYLIST_NEARZ  1
@@ -54,7 +54,7 @@
  *  @{
  */
 
-typedef struct ARGBV1_TYP
+typedef struct ARGB_TYP
 {
 	union
 	{
@@ -65,19 +65,19 @@ typedef struct ARGBV1_TYP
 			UCHAR b, g, r, a;
 		};
 	};
-}ARGBV1, *LPARGBV1;
+}ARGB, *LPARGB;
 
-typedef struct MATERIALV1_TYP
+typedef struct MATERIAL_TYP
 {
 	int    state;
 	int    id;
 	char   name[64];
 	int    attr;
 
-	ARGBV1 color;
-	ARGBV1 ra;
-	ARGBV1 rd;
-	ARGBV1 rs;
+	ARGB color;
+	ARGB ra;
+	ARGB rd;
+	ARGB rs;
 	float  ka;
 	float  kd;
 	float  ks;
@@ -85,17 +85,17 @@ typedef struct MATERIALV1_TYP
 
 	char   texturFile[80];
 	BITMAP_IMAGE texture;
-}MATERIALV1, *LPMATERIALV1;
+}MATERIAL, *LPMATERIAL;
 
-typedef struct LIGHTV1_TYP
+typedef struct LIGHT_TYP
 {
 	int state;
 	int id;
 	int attr;
 
-	ARGBV1 ambient;
-	ARGBV1 diffuse;
-	ARGBV1 specular;
+	ARGB ambient;
+	ARGB diffuse;
+	ARGB specular;
 
 	POINT4D  pos;
 	VECTOR4D dir;
@@ -108,22 +108,22 @@ typedef struct LIGHTV1_TYP
 	float spotOuterTheta;
 
 	float pf;
-}LIGHTV1, *LPLIGHTV1;
+}LIGHT, *LPLIGHT;
 
 /** @}*/ // Struct Define
 
 
-void Draw_OBJECT4DV1_Solid(LPOBJECT4DV1 obj, UCHAR* buffer, int lPitch);
+void Draw_OBJECT4D_Solid(LPOBJECT4D obj, UCHAR* buffer, int lPitch);
 
-void Draw_RENDERLIST4DV1_Solid(LPRENDERLIST4DV1 renderList, UCHAR* buffer, int lPitch);
+void Draw_RENDERLIST4D_Solid(LPRENDERLIST4D renderList, UCHAR* buffer, int lPitch);
 
-void Draw_OBJECT4DV1_Solid16(LPOBJECT4DV1 obj, UCHAR* buffer, int lPitch);
+void Draw_OBJECT4D_Solid16(LPOBJECT4D obj, UCHAR* buffer, int lPitch);
 
-void Draw_RENDERLIST4DV1_Solid16(LPRENDERLIST4DV1 renderList, UCHAR* buffer, int lPitch);
+void Draw_RENDERLIST4D_Solid16(LPRENDERLIST4D renderList, UCHAR* buffer, int lPitch);
 
-void Draw_OBJECT4DV1_Solid32(LPOBJECT4DV1 obj, UCHAR* buffer, int lPitch);
+void Draw_OBJECT4D_Solid32(LPOBJECT4D obj, UCHAR* buffer, int lPitch);
 
-void Draw_RENDERLIST4DV1_Solid32(LPRENDERLIST4DV1 renderList, UCHAR* buffer, int lPitch);
+void Draw_RENDERLIST4D_Solid32(LPRENDERLIST4D renderList, UCHAR* buffer, int lPitch);
 
 /** Initialize a light, version 1
  *  @param[in] index the index of the light, based on zero
@@ -134,12 +134,12 @@ void Draw_RENDERLIST4DV1_Solid32(LPRENDERLIST4DV1 renderList, UCHAR* buffer, int
  *  @return the symbol indicating success
  *  --1 success
  */
-int Init_LightV1(int        index,
+int Init_Light(int        index,
 			     int        _state,
 			     int        _attr,
-			     ARGBV1     _ambient,
-			     ARGBV1     _diffuse,
-			     ARGBV1     _specular,
+			     ARGB     _ambient,
+			     ARGB     _diffuse,
+			     ARGB     _specular,
 			     LPPOINT4D  _pos,
 			     LPVECTOR4D _dir,
 			     float      _kc,
@@ -149,52 +149,52 @@ int Init_LightV1(int        index,
 			     float      _spotOuterTheta,
 			     float      _pf);
 
-int Reset_LightsV1();
+int Reset_Lights();
 
-int Reset_MaterialsV1();
+int Reset_Materials();
 
-int Insert_OBJECT4DV1_RENDERLIST4DV2(LPRENDERLIST4DV1  renderList,
-									 LPOBJECT4DV1      obj,
+int Insert_OBJECT4D_RENDERLIST4DV2(LPRENDERLIST4D  renderList,
+									 LPOBJECT4D      obj,
 									 int               isLocal = 0,
 									 int               isLightOn = 0);
 
-int Light_OBJECT4DV1(LPOBJECT4DV1 obj,
-					 LPCAM4DV1    cam,
-					 LPLIGHTV1    lights,
+int Light_OBJECT4D(LPOBJECT4D obj,
+					 LPCAM4D    cam,
+					 LPLIGHT    lights,
 					 int          maxLights);
 
-int Light_OBJECT4DV1_16(LPOBJECT4DV1 obj,
-					    LPCAM4DV1    cam,
-					    LPLIGHTV1    lights,
+int Light_OBJECT4D_16(LPOBJECT4D obj,
+					    LPCAM4D    cam,
+					    LPLIGHT    lights,
 					    int          maxLights);
 
-int Light_OBJECT4DV1_32(LPOBJECT4DV1 obj,
-					    LPCAM4DV1    cam,
-					    LPLIGHTV1    lights,
+int Light_OBJECT4D_32(LPOBJECT4D obj,
+					    LPCAM4D    cam,
+					    LPLIGHT    lights,
 					    int          maxLights);
 
-int Light_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList,
-						 LPCAM4DV1        cam,
-						 LPLIGHTV1        lights,
+int Light_RENDERLIST4D(LPRENDERLIST4D renderList,
+						 LPCAM4D        cam,
+						 LPLIGHT        lights,
 						 int              maxLights);
 
-int Light_RENDERLIST4DV1_16(LPRENDERLIST4DV1 renderList,
-						    LPCAM4DV1        cam,
-						    LPLIGHTV1        lights,
+int Light_RENDERLIST4D_16(LPRENDERLIST4D renderList,
+						    LPCAM4D        cam,
+						    LPLIGHT        lights,
 						    int              maxLights);
 
-int Light_RENDERLIST4DV1_32(LPRENDERLIST4DV1 renderList,
-						    LPCAM4DV1        cam,
-						    LPLIGHTV1        lights,
+int Light_RENDERLIST4D_32(LPRENDERLIST4D renderList,
+						    LPCAM4D        cam,
+						    LPLIGHT        lights,
 						    int              maxLights);
 
-int Compare_AvgZ_POLYF4DV1(const void* arg1, const void* arg2);
+int Compare_AvgZ_POLYF4D(const void* arg1, const void* arg2);
 
-int Compare_NearZ_POLYF4DV1(const void* arg1, const void* arg2);
+int Compare_NearZ_POLYF4D(const void* arg1, const void* arg2);
 
-int Compare_FarZ_POLYF4DV1(const void* arg1, const void* arg2);
+int Compare_FarZ_POLYF4D(const void* arg1, const void* arg2);
 
-void Sort_RENDERLIST4DV1(LPRENDERLIST4DV1 rendList, int method = SORT_POLYLIST_AVGZ);
+void Sort_RENDERLIST4D(LPRENDERLIST4D rendList, int method = SORT_POLYLIST_AVGZ);
 
 
 

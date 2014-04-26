@@ -16,7 +16,7 @@ char* Get_Line_PLG(char* buffer, int maxLength, FILE* fp)
 
 }*/
 /*
-int Load_OBJECT4DV1_PLG(LPOBJECT4DV1 obj, 
+int Load_OBJECT4D_PLG(LPOBJECT4D obj, 
 						char*        filename, 
 						LPVECTOR4D   scale, 
 						LPVECTOR4D   pos,
@@ -25,7 +25,7 @@ int Load_OBJECT4DV1_PLG(LPOBJECT4DV1 obj,
 
 }*/
 
-float Compute_OBJECT4DV1_Radius(LPOBJECT4DV1 obj)
+float Compute_OBJECT4D_Radius(LPOBJECT4D obj)
 {
 	obj->avgRadius = 0;
 	obj->maxRadius = 0;
@@ -45,12 +45,12 @@ float Compute_OBJECT4DV1_Radius(LPOBJECT4DV1 obj)
 }
 
 
-void Translate_OBJECT4DV1(LPOBJECT4DV1 obj, LPVECTOR4D pvTranslate)
+void Translate_OBJECT4D(LPOBJECT4D obj, LPVECTOR4D pvTranslate)
 {
 	VECTOR4D_ADD(&obj->worldPos, pvTranslate, &obj->worldPos);
 }
 
-void Scale_OBJECT4DV1(LPOBJECT4DV1 obj, LPVECTOR4D pvScale)
+void Scale_OBJECT4D(LPOBJECT4D obj, LPVECTOR4D pvScale)
 {
 	for (int vertex = 0; vertex < obj->numVertics; vertex++)
 	{
@@ -232,7 +232,7 @@ void Build_Model_To_World_Matrix4X4(LPVECTOR4D pvPostion, LPMATRIX_4X4 pm)
 					    pvPostion->x, pvPostion->y, pvPostion->z, 1);
 }
 
-void Build_Camera_To_Perspective_Matrix4X4(LPCAM4DV1 cam, LPMATRIX_4X4 pm)
+void Build_Camera_To_Perspective_Matrix4X4(LPCAM4D cam, LPMATRIX_4X4 pm)
 {
 	MATRIX_INIT_4X4(pm, cam->viewDistance, 0,                                    0, 0,
 		                0,                 cam->viewDistance / cam->aspectRatio, 0, 0,
@@ -240,7 +240,7 @@ void Build_Camera_To_Perspective_Matrix4X4(LPCAM4DV1 cam, LPMATRIX_4X4 pm)
 						0,                 0,                                    0, 0);
 }
 
-void Build_Perspective_To_Screen_4D_Matrix4X4(LPCAM4DV1 cam, LPMATRIX_4X4 pm)
+void Build_Perspective_To_Screen_4D_Matrix4X4(LPCAM4D cam, LPMATRIX_4X4 pm)
 {
 	float alpha = (0.5 * cam->viewPortWidth  - 0.5);
 	float beta  = (0.5 * cam->viewPortHeight - 0.5);
@@ -251,7 +251,7 @@ void Build_Perspective_To_Screen_4D_Matrix4X4(LPCAM4DV1 cam, LPMATRIX_4X4 pm)
 						0,      0,    0, 1);
 }
 
-void Build_Perspective_To_Screen_Matrix4X4(LPCAM4DV1 cam, LPMATRIX_4X4 pm)
+void Build_Perspective_To_Screen_Matrix4X4(LPCAM4D cam, LPMATRIX_4X4 pm)
 {
 	float alpha = (0.5 * cam->viewPortWidth  - 0.5);
 	float beta  = (0.5 * cam->viewPortHeight - 0.5);
@@ -262,7 +262,7 @@ void Build_Perspective_To_Screen_Matrix4X4(LPCAM4DV1 cam, LPMATRIX_4X4 pm)
 						0,      0,    0, 1);
 }
 
-void Build_Camera_To_Screen_Matrix4X4(LPCAM4DV1 cam, LPMATRIX_4X4 pm)
+void Build_Camera_To_Screen_Matrix4X4(LPCAM4D cam, LPMATRIX_4X4 pm)
 {
 	float alpha = (0.5 * cam->viewPortWidth  - 0.5);
 	float beta  = (0.5 * cam->viewPortHeight - 0.5);
@@ -273,7 +273,7 @@ void Build_Camera_To_Screen_Matrix4X4(LPCAM4DV1 cam, LPMATRIX_4X4 pm)
 		                0,                  0,                 0, 0);
 }
 
-void Transform_OBJECT4DV1(LPOBJECT4DV1 obj, 
+void Transform_OBJECT4D(LPOBJECT4D obj, 
 						  LPMATRIX_4X4 pmTransform,
 						  int          coordinate, 
 						  int          transformBasis)
@@ -324,7 +324,7 @@ void Transform_OBJECT4DV1(LPOBJECT4DV1 obj,
 	}
 }
 
-void Rotate_XYZ_OBJECT4DV1(LPOBJECT4DV1 obj,
+void Rotate_XYZ_OBJECT4D(LPOBJECT4D obj,
 						   float      xTheta, 
 						   float      yTheta, 
 						   float      zTheta)
@@ -352,7 +352,7 @@ void Rotate_XYZ_OBJECT4DV1(LPOBJECT4DV1 obj,
 	VECTOR4D_COPY(&obj->uz, &vResult);
 }
 
-void Model_To_Word_OBJECT4DV1(LPOBJECT4DV1 obj, int coordinate)
+void Model_To_Word_OBJECT4D(LPOBJECT4D obj, int coordinate)
 {
 	if (coordinate = TRANSFORM_LOCAL_TO_TRANS)
 	{
@@ -370,8 +370,8 @@ void Model_To_Word_OBJECT4DV1(LPOBJECT4DV1 obj, int coordinate)
 	}
 }
 
-int Cull_OBJEC4DV1(LPOBJECT4DV1 obj, 
-				   LPCAM4DV1    cam,
+int Cull_OBJEC4DV1(LPOBJECT4D obj, 
+				   LPCAM4D    cam,
 				   int          cullFlags)
 {
 	POINT4D boundingCenter;
@@ -383,7 +383,7 @@ int Cull_OBJEC4DV1(LPOBJECT4DV1 obj,
 		if ( (boundingCenter.z - obj->maxRadius) > cam->farClipZ ||
 			(boundingCenter.z + obj->maxRadius) < cam->nearClipZ )
 		{
-			SET_BIT(obj->state, OBJECT4DV1_STATE_CULLED);
+			SET_BIT(obj->state, OBJECT4D_STATE_CULLED);
 			return 1;
 		}
 	}
@@ -394,7 +394,7 @@ int Cull_OBJEC4DV1(LPOBJECT4DV1 obj,
 		if ( (boundingCenter.x - obj->maxRadius) > left_right_half ||
 			 (boundingCenter.x + obj->maxRadius) < -left_right_half )
 		{
-			SET_BIT(obj->state, OBJECT4DV1_STATE_CULLED);
+			SET_BIT(obj->state, OBJECT4D_STATE_CULLED);
 			return 1;
 		}
 	}
@@ -405,26 +405,26 @@ int Cull_OBJEC4DV1(LPOBJECT4DV1 obj,
 		if ( (boundingCenter.y - obj->maxRadius) > top_bottom_half || 
 			 (boundingCenter.y + obj->maxRadius) < -top_bottom_half )
 		{
-			SET_BIT(obj->state, OBJECT4DV1_STATE_CULLED);
+			SET_BIT(obj->state, OBJECT4D_STATE_CULLED);
 			return 1;
 		}
 	}
 	return 0;
 }
 
-void Remove_Backfaces_OBJECT4DV1(LPOBJECT4DV1 obj, LPCAM4DV1 cam)
+void Remove_Backfaces_OBJECT4D(LPOBJECT4D obj, LPCAM4D cam)
 {
-	if (obj->state & OBJECT4DV1_STATE_CULLED)
+	if (obj->state & OBJECT4D_STATE_CULLED)
 		return;
 
 	for (int poly = 0; obj->numPolys; poly++)
 	{
-		LPPOLY4DV1 currentPoly = &obj->polyList[poly];
+		LPPOLY4D currentPoly = &obj->polyList[poly];
 
-		if ( !(currentPoly->state & POLY4DV1_STATE_ACTIVE)  ||
-			  (currentPoly->state & POLY4DV1_STATE_CLIPPED) || 
-			  (currentPoly->attr  & POLY4DV1_ATTR_2SIDED)   ||
-			  (currentPoly->state & POLY4DV1_STATE_BACKFACE))
+		if ( !(currentPoly->state & POLY4D_STATE_ACTIVE)  ||
+			  (currentPoly->state & POLY4D_STATE_CLIPPED) || 
+			  (currentPoly->attr  & POLY4D_ATTR_2SIDED)   ||
+			  (currentPoly->state & POLY4D_STATE_BACKFACE))
 	        continue;
 
 		int v0 = currentPoly->vert[0];
@@ -444,20 +444,20 @@ void Remove_Backfaces_OBJECT4DV1(LPOBJECT4DV1 obj, LPCAM4DV1 cam)
 		VECTOR4D_BUILD(&obj->vTransList[v0], &cam->pos, &n);
 
 		if (VECTOR4D_DOT(&n, &view) <= 0.0)
-			SET_BIT(currentPoly->state, POLY4DV1_STATE_BACKFACE);
+			SET_BIT(currentPoly->state, POLY4D_STATE_BACKFACE);
 	}
 }
 
-void Remove_Backfaces_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPCAM4DV1 cam)
+void Remove_Backfaces_RENDERLIST4D(LPRENDERLIST4D renderList, LPCAM4D cam)
 {
 	for (int poly = 0; poly < renderList->numPolys; poly++)
 	{
-		LPPOLYF4DV1 currentPoly = renderList->polyPointer[poly];
+		LPPOLYF4D currentPoly = renderList->polyPointer[poly];
 
 		if ( (currentPoly == NULL)                        ||
-			!(currentPoly->state & POLY4DV1_STATE_ACTIVE) ||
-			 (currentPoly->attr  & POLY4DV1_ATTR_2SIDED)  ||
-			 (currentPoly->state & POLY4DV1_STATE_BACKFACE))
+			!(currentPoly->state & POLY4D_STATE_ACTIVE) ||
+			 (currentPoly->attr  & POLY4D_ATTR_2SIDED)  ||
+			 (currentPoly->state & POLY4D_STATE_BACKFACE))
 		    continue;
 
 		VECTOR4D u;
@@ -473,11 +473,11 @@ void Remove_Backfaces_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPCAM4DV1 cam)
 		VECTOR4D_BUILD(&currentPoly->vTranList[0], &cam->pos, &view);
 
 		if (VECTOR4D_DOT(&n, &view))
-			SET_BIT(currentPoly->state, POLY4DV1_STATE_BACKFACE);
+			SET_BIT(currentPoly->state, POLY4D_STATE_BACKFACE);
 	}
 }
 
-void World_To_Camera_OBJECT4DV1(LPOBJECT4DV1 obj, LPCAM4DV1 cam)
+void World_To_Camera_OBJECT4D(LPOBJECT4D obj, LPCAM4D cam)
 {
 	for (int vertex = 0; vertex < obj->numVertics; vertex++)
 	{
@@ -487,7 +487,7 @@ void World_To_Camera_OBJECT4DV1(LPOBJECT4DV1 obj, LPCAM4DV1 cam)
 	}
 }
 
-void Camera_To_Perspective_OBJECT4DV1(LPOBJECT4DV1 obj, LPCAM4DV1 cam)
+void Camera_To_Perspective_OBJECT4D(LPOBJECT4D obj, LPCAM4D cam)
 {
 	for(int vertex = 0; vertex < obj->numVertics; vertex++)
 	{
@@ -498,7 +498,7 @@ void Camera_To_Perspective_OBJECT4DV1(LPOBJECT4DV1 obj, LPCAM4DV1 cam)
 	}
 }
 
-void Camera_To_Perspective_Screen_OBJECT4DV1(LPOBJECT4DV1 obj, LPCAM4DV1 cam)
+void Camera_To_Perspective_Screen_OBJECT4D(LPOBJECT4D obj, LPCAM4D cam)
 {
 	float alpha = 0.5 * cam->viewPlaneWidth  - 0.5;
 	float beta  = 0.5 * cam->viewPlaneHeight - 0.5;
@@ -515,7 +515,7 @@ void Camera_To_Perspective_Screen_OBJECT4DV1(LPOBJECT4DV1 obj, LPCAM4DV1 cam)
 	}
 }
 
-void Perspective_To_Screen_OBJECT4DV1(LPOBJECT4DV1 obj, LPCAM4DV1 cam)
+void Perspective_To_Screen_OBJECT4D(LPOBJECT4D obj, LPCAM4D cam)
 {
 	float alpha = 0.5 * cam->viewPortWidth  - 0.5;
 	float beta  = 0.5 * cam->viewPortHeight - 0.5;
@@ -527,7 +527,7 @@ void Perspective_To_Screen_OBJECT4DV1(LPOBJECT4DV1 obj, LPCAM4DV1 cam)
 	}
 }
 
-void Convert_From_Homogeneous4D_OBJECT4DV1(LPOBJECT4DV1 obj)
+void Convert_From_Homogeneous4D_OBJECT4D(LPOBJECT4D obj)
 {
 	for (int vertex = 0; vertex < obj->numVertics; vertex++)
 	{
@@ -535,7 +535,7 @@ void Convert_From_Homogeneous4D_OBJECT4DV1(LPOBJECT4DV1 obj)
 	}
 }
 
-void Transform_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, 
+void Transform_RENDERLIST4D(LPRENDERLIST4D renderList, 
 							  LPMATRIX_4X4     pmTransform,
 							  int              coordinate)
 {
@@ -544,12 +544,12 @@ void Transform_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList,
 	case TRANSFORM_LOCAL_ONLY:
 		for (int poly = 0; poly < renderList->numPolys; poly++)
 		{
-			LPPOLYF4DV1 currentPoly = renderList->polyPointer[poly];
+			LPPOLYF4D currentPoly = renderList->polyPointer[poly];
 
 			if ( (currentPoly == NULL)                         ||
-				!(currentPoly->state & POLY4DV1_STATE_ACTIVE)  ||
-				 (currentPoly->state & POLY4DV1_STATE_CLIPPED) ||
-				 (currentPoly->state & POLY4DV1_STATE_BACKFACE) )
+				!(currentPoly->state & POLY4D_STATE_ACTIVE)  ||
+				 (currentPoly->state & POLY4D_STATE_CLIPPED) ||
+				 (currentPoly->state & POLY4D_STATE_BACKFACE) )
 			    continue;
 
 			for (int vertex = 0; vertex < 3; vertex++)
@@ -564,12 +564,12 @@ void Transform_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList,
 	case TRANSFORM_TRANS_ONLY:
 		for (int poly = 0; poly < renderList->numPolys; poly++)
 		{
-			LPPOLYF4DV1 currentPoly = renderList->polyPointer[poly];
+			LPPOLYF4D currentPoly = renderList->polyPointer[poly];
 
 			if ( (currentPoly == NULL)                         ||
-				!(currentPoly->state & POLY4DV1_STATE_ACTIVE)  ||
-				 (currentPoly->state & POLY4DV1_STATE_CLIPPED) ||
-				 (currentPoly->state & POLY4DV1_STATE_BACKFACE) )
+				!(currentPoly->state & POLY4D_STATE_ACTIVE)  ||
+				 (currentPoly->state & POLY4D_STATE_CLIPPED) ||
+				 (currentPoly->state & POLY4D_STATE_BACKFACE) )
 			    continue;
 
 			for (int vertex = 0; vertex < 3; vertex++)
@@ -584,12 +584,12 @@ void Transform_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList,
 	case TRANSFORM_LOCAL_TO_TRANS:
 		for (int poly = 0; poly < renderList->numPolys; poly++)
 		{
-			LPPOLYF4DV1 currentPoly = renderList->polyPointer[poly];
+			LPPOLYF4D currentPoly = renderList->polyPointer[poly];
 
 			if ( (currentPoly == NULL)                         ||
-				!(currentPoly->state & POLY4DV1_STATE_ACTIVE)  ||
-				 (currentPoly->state & POLY4DV1_STATE_CLIPPED) ||
-				 (currentPoly->state & POLY4DV1_STATE_BACKFACE) )
+				!(currentPoly->state & POLY4D_STATE_ACTIVE)  ||
+				 (currentPoly->state & POLY4D_STATE_CLIPPED) ||
+				 (currentPoly->state & POLY4D_STATE_BACKFACE) )
 			    continue;
 
 			for (int vertex = 0; vertex < 3; vertex++)
@@ -605,7 +605,7 @@ void Transform_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList,
 	}
 }
 
-void Model_To_World_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, 
+void Model_To_World_RENDERLIST4D(LPRENDERLIST4D renderList, 
 								   LPPOINT4D        worldPos,
 								   int              coordinate)
 {
@@ -613,12 +613,12 @@ void Model_To_World_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList,
 	{
 		for (int poly = 0; poly < renderList->numPolys; poly++)
 		{
-			LPPOLYF4DV1 currentPoly = renderList->polyPointer[poly];
+			LPPOLYF4D currentPoly = renderList->polyPointer[poly];
 
 			if ( (currentPoly == NULL)                         ||
-				!(currentPoly->state & POLY4DV1_STATE_ACTIVE)  ||
-				 (currentPoly->state & POLY4DV1_STATE_CLIPPED) ||
-				 (currentPoly->state & POLY4DV1_STATE_BACKFACE) )
+				!(currentPoly->state & POLY4D_STATE_ACTIVE)  ||
+				 (currentPoly->state & POLY4D_STATE_CLIPPED) ||
+				 (currentPoly->state & POLY4D_STATE_BACKFACE) )
 			    continue;
 
 			for (int vertex = 0; vertex < 3; vertex++)
@@ -631,12 +631,12 @@ void Model_To_World_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList,
 	{
 		for (int poly = 0; poly < renderList->numPolys; poly++)
 		{
-			LPPOLYF4DV1 currentPoly = renderList->polyPointer[poly];
+			LPPOLYF4D currentPoly = renderList->polyPointer[poly];
 
 			if ( (currentPoly == NULL)                         ||
-				!(currentPoly->state & POLY4DV1_STATE_ACTIVE)  ||
-				 (currentPoly->state & POLY4DV1_STATE_CLIPPED) ||
-				 (currentPoly->state & POLY4DV1_STATE_BACKFACE) )
+				!(currentPoly->state & POLY4D_STATE_ACTIVE)  ||
+				 (currentPoly->state & POLY4D_STATE_CLIPPED) ||
+				 (currentPoly->state & POLY4D_STATE_BACKFACE) )
 			    continue;
 
 			for (int vertex = 0; vertex < 3; vertex++)
@@ -647,16 +647,16 @@ void Model_To_World_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList,
 	}
 }
 
-void Convert_From_Homogeneous4D_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList)
+void Convert_From_Homogeneous4D_RENDERLIST4D(LPRENDERLIST4D renderList)
 {
 	for (int poly = 0; poly < renderList->numPolys; poly++)
 	{
-		LPPOLYF4DV1 currentPoly = renderList->polyPointer[poly];
+		LPPOLYF4D currentPoly = renderList->polyPointer[poly];
 
 		if ( (currentPoly == NULL)                         ||
-			!(currentPoly->state & POLY4DV1_STATE_ACTIVE)  ||
-			 (currentPoly->state & POLY4DV1_STATE_CLIPPED) ||
-			 (currentPoly->state & POLY4DV1_STATE_BACKFACE) )
+			!(currentPoly->state & POLY4D_STATE_ACTIVE)  ||
+			 (currentPoly->state & POLY4D_STATE_CLIPPED) ||
+			 (currentPoly->state & POLY4D_STATE_BACKFACE) )
 		    continue;
 
 		for (int vertex = 0; vertex < 3; vertex++)
@@ -666,16 +666,16 @@ void Convert_From_Homogeneous4D_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList)
 	}
 }
 
-void World_To_Camera_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPCAM4DV1 cam)
+void World_To_Camera_RENDERLIST4D(LPRENDERLIST4D renderList, LPCAM4D cam)
 {
 	for (int poly = 0; poly < renderList->numPolys; poly++)
 	{
-		LPPOLYF4DV1 currentPoly = renderList->polyPointer[poly];
+		LPPOLYF4D currentPoly = renderList->polyPointer[poly];
 
 		if ( (currentPoly == NULL) ||
-			!(currentPoly->state & POLY4DV1_STATE_ACTIVE)  ||
-			 (currentPoly->state & POLY4DV1_STATE_CLIPPED) ||
-			 (currentPoly->state & POLY4DV1_STATE_BACKFACE) )
+			!(currentPoly->state & POLY4D_STATE_ACTIVE)  ||
+			 (currentPoly->state & POLY4D_STATE_CLIPPED) ||
+			 (currentPoly->state & POLY4D_STATE_BACKFACE) )
 		    continue;
 
 		for (int vertex = 0; vertex < 3; vertex++)
@@ -689,16 +689,16 @@ void World_To_Camera_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPCAM4DV1 cam)
 	}
 }
 
-void Camera_To_Perspective_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPCAM4DV1 cam)
+void Camera_To_Perspective_RENDERLIST4D(LPRENDERLIST4D renderList, LPCAM4D cam)
 {
 	for (int poly = 0; poly < renderList->numPolys; poly++)
 	{
-		LPPOLYF4DV1 currentPoly = renderList->polyPointer[poly];
+		LPPOLYF4D currentPoly = renderList->polyPointer[poly];
 
 		if ( (currentPoly == NULL) ||
-			!(currentPoly->state & POLY4DV1_STATE_ACTIVE)  ||
-			 (currentPoly->state & POLY4DV1_STATE_CLIPPED) ||
-			 (currentPoly->state & POLY4DV1_STATE_BACKFACE) )
+			!(currentPoly->state & POLY4D_STATE_ACTIVE)  ||
+			 (currentPoly->state & POLY4D_STATE_CLIPPED) ||
+			 (currentPoly->state & POLY4D_STATE_BACKFACE) )
 		    continue;
 
 		for (int vertex = 0; vertex < 3; vertex++)
@@ -713,16 +713,16 @@ void Camera_To_Perspective_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPCAM4DV1
 	}
 }
 
-void Camera_To_Perspective_Screen_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPCAM4DV1 cam)
+void Camera_To_Perspective_Screen_RENDERLIST4D(LPRENDERLIST4D renderList, LPCAM4D cam)
 {
 	for (int poly = 0; poly < renderList->numPolys; poly++)
 	{
-		LPPOLYF4DV1 currentPoly = renderList->polyPointer[poly];
+		LPPOLYF4D currentPoly = renderList->polyPointer[poly];
 
 		if ( (currentPoly == NULL) ||
-			!(currentPoly->state & POLY4DV1_STATE_ACTIVE)  ||
-			 (currentPoly->state & POLY4DV1_STATE_CLIPPED) ||
-			 (currentPoly->state & POLY4DV1_STATE_BACKFACE) )
+			!(currentPoly->state & POLY4D_STATE_ACTIVE)  ||
+			 (currentPoly->state & POLY4D_STATE_CLIPPED) ||
+			 (currentPoly->state & POLY4D_STATE_BACKFACE) )
 		    continue;
 
 		float alpha = 0.5 * cam->viewPortWidth  - 0.5;
@@ -740,16 +740,16 @@ void Camera_To_Perspective_Screen_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LP
 	}
 }
 
-void Perspective_To_Screen_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPCAM4DV1 cam)
+void Perspective_To_Screen_RENDERLIST4D(LPRENDERLIST4D renderList, LPCAM4D cam)
 {
 	for (int poly = 0; poly < renderList->numPolys; poly++)
 	{
-		LPPOLYF4DV1 currentPoly = renderList->polyPointer[poly];
+		LPPOLYF4D currentPoly = renderList->polyPointer[poly];
 
 		if ( (currentPoly == NULL) ||
-			!(currentPoly->state & POLY4DV1_STATE_ACTIVE)  ||
-			 (currentPoly->state & POLY4DV1_STATE_CLIPPED) ||
-			 (currentPoly->state & POLY4DV1_STATE_BACKFACE) )
+			!(currentPoly->state & POLY4D_STATE_ACTIVE)  ||
+			 (currentPoly->state & POLY4D_STATE_CLIPPED) ||
+			 (currentPoly->state & POLY4D_STATE_BACKFACE) )
 		    continue;
 
 		float alpha = 0.5 * cam->viewPortWidth  - 0.5;
@@ -763,29 +763,29 @@ void Perspective_To_Screen_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPCAM4DV1
 	}
 }
 
-void Reset_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList)
+void Reset_RENDERLIST4D(LPRENDERLIST4D renderList)
 {
 	renderList->numPolys = 0;
 }
 
-void Reset_OBJECT4DV1(LPOBJECT4DV1 obj)
+void Reset_OBJECT4D(LPOBJECT4D obj)
 {
-	RESET_BIT(obj->state, OBJECT4DV1_STATE_CULLED);
+	RESET_BIT(obj->state, OBJECT4D_STATE_CULLED);
 
 	for (int poly = 0; poly < obj->numPolys; poly++)
 	{
-		LPPOLY4DV1 currentPoly = &obj->polyList[poly];
-		if (!currentPoly->state & POLY4DV1_STATE_ACTIVE)
+		LPPOLY4D currentPoly = &obj->polyList[poly];
+		if (!currentPoly->state & POLY4D_STATE_ACTIVE)
 			continue;
 		
-		RESET_BIT(currentPoly->state, POLY4DV1_STATE_CLIPPED);
-		RESET_BIT(currentPoly->state, POLY4DV1_STATE_BACKFACE);
+		RESET_BIT(currentPoly->state, POLY4D_STATE_CLIPPED);
+		RESET_BIT(currentPoly->state, POLY4D_STATE_BACKFACE);
 	}
 }
 
-int Insert_POLY4DV1_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPPOLY4DV1 poly)
+int Insert_POLY4D_RENDERLIST4D(LPRENDERLIST4D renderList, LPPOLY4D poly)
 {
-	if (renderList->numPolys >= RENDERLIST4DV1_MAX_POLYS)
+	if (renderList->numPolys >= RENDERLIST4D_MAX_POLYS)
 		return 0;
 
 	renderList->polyPointer[renderList->numPolys] = &renderList->polyData[renderList->numPolys];
@@ -820,14 +820,14 @@ int Insert_POLY4DV1_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPPOLY4DV1 poly)
 	return 1;
 }
 
-int Insert_POLYF4DV1_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPPOLYF4DV1 poly)
+int Insert_POLYF4D_RENDERLIST4D(LPRENDERLIST4D renderList, LPPOLYF4D poly)
 {
-	if (renderList->numPolys >= RENDERLIST4DV1_MAX_POLYS)
+	if (renderList->numPolys >= RENDERLIST4D_MAX_POLYS)
 		return 0;
 
 	renderList->polyPointer[renderList->numPolys] = &renderList->polyData[renderList->numPolys];
 
-	memcpy((void*)&renderList->polyData[renderList->numPolys], (void*)poly, sizeof(POLYF4DV1));
+	memcpy((void*)&renderList->polyData[renderList->numPolys], (void*)poly, sizeof(POLYF4D));
 
 	if (renderList->numPolys == 0)
 	{
@@ -845,22 +845,22 @@ int Insert_POLYF4DV1_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList, LPPOLYF4DV1 pol
 	return 1;
 }
 
-int Insert_OBJECT4DV1_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList,
-									 LPOBJECT4DV1     obj,
+int Insert_OBJECT4D_RENDERLIST4D(LPRENDERLIST4D renderList,
+									 LPOBJECT4D     obj,
 									 int              insertLocale)
 {
-	if (!(obj->state & OBJECT4DV1_STATE_ACTIVE) ||
-		 (obj->state & OBJECT4DV1_STATE_CULLED) ||
-		!(obj->state & OBJECT4DV1_STATE_VISIBLE))
+	if (!(obj->state & OBJECT4D_STATE_ACTIVE) ||
+		 (obj->state & OBJECT4D_STATE_CULLED) ||
+		!(obj->state & OBJECT4D_STATE_VISIBLE))
 	    return 0;
 
 	for (int poly = 0; poly < obj->numPolys; poly++)
 	{
-		LPPOLY4DV1 currentPoly = &obj->polyList[poly];
+		LPPOLY4D currentPoly = &obj->polyList[poly];
 
-		if (!(currentPoly->state == POLY4DV1_STATE_ACTIVE)  ||
-			 (currentPoly->state == POLY4DV1_STATE_CLIPPED) ||
-			 (currentPoly->state == POLY4DV1_STATE_BACKFACE))
+		if (!(currentPoly->state == POLY4D_STATE_ACTIVE)  ||
+			 (currentPoly->state == POLY4D_STATE_CLIPPED) ||
+			 (currentPoly->state == POLY4D_STATE_BACKFACE))
 		    continue;
 
 		LPPOINT4D vOldList = currentPoly->vList;
@@ -870,7 +870,7 @@ int Insert_OBJECT4DV1_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList,
 		else
 			currentPoly->vList = obj->vTransList;
 
-		if (!Insert_POLY4DV1_RENDERLIST4DV1(renderList, currentPoly))
+		if (!Insert_POLY4D_RENDERLIST4D(renderList, currentPoly))
 		{
 			currentPoly->vList = vOldList;
 			return 0;
@@ -882,15 +882,15 @@ int Insert_OBJECT4DV1_RENDERLIST4DV1(LPRENDERLIST4DV1 renderList,
 }
 
 
-void Draw_OBJECT4DV1_Wire(LPOBJECT4DV1 obj, 
+void Draw_OBJECT4D_Wire(LPOBJECT4D obj, 
 						  UCHAR*       videoBuffer,
 						  int          lPitch)
 {
 	for (int poly = 0; poly < obj->numPolys; poly++)
 	{
-		if (!(obj->polyList[poly].state & POLY4DV1_STATE_ACTIVE)  ||
-			 (obj->polyList[poly].state & POLY4DV1_STATE_CLIPPED) ||
-			 (obj->polyList[poly].state & POLY4DV1_STATE_BACKFACE))
+		if (!(obj->polyList[poly].state & POLY4D_STATE_ACTIVE)  ||
+			 (obj->polyList[poly].state & POLY4D_STATE_CLIPPED) ||
+			 (obj->polyList[poly].state & POLY4D_STATE_BACKFACE))
 		    continue;
 
 		int v0 = obj->polyList[poly].vert[0];
@@ -923,15 +923,15 @@ void Draw_OBJECT4DV1_Wire(LPOBJECT4DV1 obj,
 	}
 }
 
-void Draw_RENDERLIST4DV1_Wire(LPRENDERLIST4DV1 renderList, 
+void Draw_RENDERLIST4D_Wire(LPRENDERLIST4D renderList, 
 							  UCHAR*           videoBuffer,
 							  int              lPitch)
 {
 	for (int poly = 0; poly < renderList->numPolys; poly++)
 	{
-		if (!(renderList->polyPointer[poly]->state & POLY4DV1_STATE_ACTIVE)  ||
-			 (renderList->polyPointer[poly]->state & POLY4DV1_STATE_CLIPPED) ||
-			 (renderList->polyPointer[poly]->state & POLY4DV1_STATE_BACKFACE))
+		if (!(renderList->polyPointer[poly]->state & POLY4D_STATE_ACTIVE)  ||
+			 (renderList->polyPointer[poly]->state & POLY4D_STATE_CLIPPED) ||
+			 (renderList->polyPointer[poly]->state & POLY4D_STATE_BACKFACE))
 		    continue;
 
 		
@@ -961,15 +961,15 @@ void Draw_RENDERLIST4DV1_Wire(LPRENDERLIST4DV1 renderList,
 	}
 }
 
-void Draw_OBJECT4DV1_Wire16(LPOBJECT4DV1 obj,
+void Draw_OBJECT4D_Wire16(LPOBJECT4D obj,
 							UCHAR*       videoBuffer,
 							int          lPitch)
 {
 	for (int poly = 0; poly < obj->numPolys; poly++)
 	{
-		if (!(obj->polyList[poly].state & POLY4DV1_STATE_ACTIVE)  ||
-			 (obj->polyList[poly].state & POLY4DV1_STATE_CLIPPED) ||
-			 (obj->polyList[poly].state & POLY4DV1_STATE_BACKFACE))
+		if (!(obj->polyList[poly].state & POLY4D_STATE_ACTIVE)  ||
+			 (obj->polyList[poly].state & POLY4D_STATE_CLIPPED) ||
+			 (obj->polyList[poly].state & POLY4D_STATE_BACKFACE))
 		    continue;
 
 		int v0 = obj->polyList[poly].vert[0];
@@ -1002,15 +1002,15 @@ void Draw_OBJECT4DV1_Wire16(LPOBJECT4DV1 obj,
 	}
 }
 
-void Draw_RENDERLIST4DV1_Wire16(LPRENDERLIST4DV1 renderList, 
+void Draw_RENDERLIST4D_Wire16(LPRENDERLIST4D renderList, 
 							    UCHAR*           videoBuffer,
 							    int              lPitch)
 {
 	for (int poly = 0; poly < renderList->numPolys; poly++)
 	{
-		if (!(renderList->polyPointer[poly]->state & POLY4DV1_STATE_ACTIVE)  ||
-			 (renderList->polyPointer[poly]->state & POLY4DV1_STATE_CLIPPED) ||
-			 (renderList->polyPointer[poly]->state & POLY4DV1_STATE_BACKFACE))
+		if (!(renderList->polyPointer[poly]->state & POLY4D_STATE_ACTIVE)  ||
+			 (renderList->polyPointer[poly]->state & POLY4D_STATE_CLIPPED) ||
+			 (renderList->polyPointer[poly]->state & POLY4D_STATE_BACKFACE))
 		    continue;
 
 		
@@ -1040,15 +1040,15 @@ void Draw_RENDERLIST4DV1_Wire16(LPRENDERLIST4DV1 renderList,
 	}
 }
 
-void Draw_RENDERLIST4DV1_Wire32(LPRENDERLIST4DV1 renderList, 
+void Draw_RENDERLIST4D_Wire32(LPRENDERLIST4D renderList, 
 							    UCHAR*           videoBuffer,
 							    int              lPitch)
 {
 	for (int poly = 0; poly < renderList->numPolys; poly++)
 	{
-		if (!(renderList->polyPointer[poly]->state & POLY4DV1_STATE_ACTIVE)  ||
-			 (renderList->polyPointer[poly]->state & POLY4DV1_STATE_CLIPPED) ||
-			 (renderList->polyPointer[poly]->state & POLY4DV1_STATE_BACKFACE))
+		if (!(renderList->polyPointer[poly]->state & POLY4D_STATE_ACTIVE)  ||
+			 (renderList->polyPointer[poly]->state & POLY4D_STATE_CLIPPED) ||
+			 (renderList->polyPointer[poly]->state & POLY4D_STATE_BACKFACE))
 		    continue;
 
 		
@@ -1078,7 +1078,7 @@ void Draw_RENDERLIST4DV1_Wire32(LPRENDERLIST4DV1 renderList,
 	}
 }
 
-void Build_CAM4DV1_Matrix_Euler(LPCAM4DV1 cam, int camRotSeq)
+void Build_CAM4D_Matrix_Euler(LPCAM4D cam, int camRotSeq)
 {
 	MATRIX_4X4 mt_inv;
 	MATRIX_4X4 mx_inv;
@@ -1159,7 +1159,7 @@ void Build_CAM4DV1_Matrix_Euler(LPCAM4DV1 cam, int camRotSeq)
 	MATRIX_MUL_4X4(&mt_inv, &mrot, &cam->mWordToCam);
 }
 
-void Build_CAM4DV1_Matrix_UVM(LPCAM4DV1 cam, int mode)
+void Build_CAM4D_Matrix_UVM(LPCAM4D cam, int mode)
 {
 	MATRIX_4X4 mt_inv;
 	MATRIX_4X4 mt_uvn;
@@ -1206,7 +1206,7 @@ void Build_CAM4DV1_Matrix_UVM(LPCAM4DV1 cam, int mode)
 	MATRIX_MUL_4X4(&mt_inv, &mt_uvn, &cam->mWordToCam);
 }
 
-void Init_CAM4DV1(LPCAM4DV1  cam,
+void Init_CAM4D(LPCAM4D  cam,
 				  int        attr,
 				  LPPOINT4D  postion,
 				  LPVECTOR4D direction,
