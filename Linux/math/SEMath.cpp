@@ -1,5 +1,5 @@
 #include <cmath>
-#include "MathEngine.h"
+#include "SEMath.h"
 
 
 
@@ -44,8 +44,8 @@ float Fast_Cos(float theta)
 
 int Fast_Distance_2D(int x, int y)
 {
-	x = abs(x);
-	y = abs(y);
+	x = std::abs(x);
+	y = std::abs(y);
 	int min = MIN(x, y);
 	return x + y - min>>1 - min>>2 + min>>4;
 }
