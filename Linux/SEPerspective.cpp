@@ -1,10 +1,16 @@
+#include <X11/Xlib.h>
+#include <GL/gl.h>
+#include <GL/glx.h>
+
 #include <iostream>
 #include <cstring>
 #include <cmath>
 
-#include "BasicDrawEngine.h"
-#include "MathEngine.h"
-#include "3DPipeLine.h"
+
+#include "math/SEMath.h"
+#include "platform/SEWindow.h"
+#include "render/SEOpenGLDriver.h"
+#include "SEPerspective.h"
 
 
 /*
@@ -879,201 +885,7 @@ int Insert_OBJECT4D_RENDERLIST4D(LPRENDERLIST4D renderList,
 }
 
 
-void Draw_OBJECT4D_Wire(LPOBJECT4D obj, 
-						  UCHAR*       videoBuffer,
-						  int          lPitch)
-{
-	for (int poly = 0; poly < obj->numPolys; poly++)
-	{
-		if (!(obj->polyList[poly].state & POLY4D_STATE_ACTIVE)  ||
-			 (obj->polyList[poly].state & POLY4D_STATE_CLIPPED) ||
-			 (obj->polyList[poly].state & POLY4D_STATE_BACKFACE))
-		    continue;
 
-		int v0 = obj->polyList[poly].vert[0];
-		int v1 = obj->polyList[poly].vert[1];
-		int v2 = obj->polyList[poly].vert[2];
-
-		Draw_Clip_Line(obj->vTransList[v0].x,
-			           obj->vTransList[v0].y,
-					   obj->vTransList[v1].x,
-					   obj->vTransList[v1].y,
-					   obj->polyList[poly].color,
-					   videoBuffer,
-					   lPitch);
-
-		Draw_Clip_Line(obj->vTransList[v1].x,
-			           obj->vTransList[v1].y,
-					   obj->vTransList[v2].x,
-					   obj->vTransList[v2].y,
-					   obj->polyList[poly].color,
-					   videoBuffer,
-					   lPitch);
-
-		Draw_Clip_Line(obj->vTransList[v2].x,
-			           obj->vTransList[v2].y,
-					   obj->vTransList[v0].x,
-					   obj->vTransList[v0].y,
-					   obj->polyList[poly].color,
-					   videoBuffer,
-					   lPitch);
-	}
-}
-
-void Draw_RENDERLIST4D_Wire(LPRENDERLIST4D renderList, 
-							  UCHAR*           videoBuffer,
-							  int              lPitch)
-{
-	for (int poly = 0; poly < renderList->numPolys; poly++)
-	{
-		if (!(renderList->polyPointer[poly]->state & POLY4D_STATE_ACTIVE)  ||
-			 (renderList->polyPointer[poly]->state & POLY4D_STATE_CLIPPED) ||
-			 (renderList->polyPointer[poly]->state & POLY4D_STATE_BACKFACE))
-		    continue;
-
-		
-		Draw_Clip_Line(renderList->polyPointer[poly]->vTranList[0].x,
-			           renderList->polyPointer[poly]->vTranList[0].y,
-					   renderList->polyPointer[poly]->vTranList[1].x,
-					   renderList->polyPointer[poly]->vTranList[1].y,
-					   renderList->polyPointer[poly]->color,
-					   videoBuffer,
-					   lPitch);
-
-		Draw_Clip_Line(renderList->polyPointer[poly]->vTranList[1].x,
-			           renderList->polyPointer[poly]->vTranList[1].y,
-					   renderList->polyPointer[poly]->vTranList[2].x,
-					   renderList->polyPointer[poly]->vTranList[2].y,
-					   renderList->polyPointer[poly]->color,
-					   videoBuffer,
-					   lPitch);
-
-		Draw_Clip_Line(renderList->polyPointer[poly]->vTranList[2].x,
-			           renderList->polyPointer[poly]->vTranList[2].y,
-					   renderList->polyPointer[poly]->vTranList[0].x,
-					   renderList->polyPointer[poly]->vTranList[0].y,
-					   renderList->polyPointer[poly]->color,
-					   videoBuffer,
-					   lPitch);		
-	}
-}
-
-void Draw_OBJECT4D_Wire16(LPOBJECT4D obj,
-							UCHAR*       videoBuffer,
-							int          lPitch)
-{
-	for (int poly = 0; poly < obj->numPolys; poly++)
-	{
-		if (!(obj->polyList[poly].state & POLY4D_STATE_ACTIVE)  ||
-			 (obj->polyList[poly].state & POLY4D_STATE_CLIPPED) ||
-			 (obj->polyList[poly].state & POLY4D_STATE_BACKFACE))
-		    continue;
-
-		int v0 = obj->polyList[poly].vert[0];
-		int v1 = obj->polyList[poly].vert[1];
-		int v2 = obj->polyList[poly].vert[2];
-
-		Draw_Clip_Line16(obj->vTransList[v0].x,
-			             obj->vTransList[v0].y,
-					     obj->vTransList[v1].x,
-					     obj->vTransList[v1].y,
-					     obj->polyList[poly].color,
-					     videoBuffer,
-					     lPitch);
-
-		Draw_Clip_Line16(obj->vTransList[v1].x,
-			             obj->vTransList[v1].y,
-					     obj->vTransList[v2].x,
-					     obj->vTransList[v2].y,
-					     obj->polyList[poly].color,
-					     videoBuffer,
-					     lPitch);
-
-		Draw_Clip_Line16(obj->vTransList[v2].x,
-			             obj->vTransList[v2].y,
-					     obj->vTransList[v0].x,
-					     obj->vTransList[v0].y,
-					     obj->polyList[poly].color,
-					     videoBuffer,
-					     lPitch);
-	}
-}
-
-void Draw_RENDERLIST4D_Wire16(LPRENDERLIST4D renderList, 
-							    UCHAR*           videoBuffer,
-							    int              lPitch)
-{
-	for (int poly = 0; poly < renderList->numPolys; poly++)
-	{
-		if (!(renderList->polyPointer[poly]->state & POLY4D_STATE_ACTIVE)  ||
-			 (renderList->polyPointer[poly]->state & POLY4D_STATE_CLIPPED) ||
-			 (renderList->polyPointer[poly]->state & POLY4D_STATE_BACKFACE))
-		    continue;
-
-		
-		Draw_Clip_Line16(renderList->polyPointer[poly]->vTranList[0].x,
-			             renderList->polyPointer[poly]->vTranList[0].y,
-					     renderList->polyPointer[poly]->vTranList[1].x,
-					     renderList->polyPointer[poly]->vTranList[1].y,
-					     renderList->polyPointer[poly]->color,
-					     videoBuffer,
-					     lPitch);
-
-		Draw_Clip_Line16(renderList->polyPointer[poly]->vTranList[1].x,
-			             renderList->polyPointer[poly]->vTranList[1].y,
-					     renderList->polyPointer[poly]->vTranList[2].x,
-					     renderList->polyPointer[poly]->vTranList[2].y,
-					     renderList->polyPointer[poly]->color,
-					     videoBuffer,
-					     lPitch);
-
-		Draw_Clip_Line16(renderList->polyPointer[poly]->vTranList[2].x,
-			             renderList->polyPointer[poly]->vTranList[2].y,
-					     renderList->polyPointer[poly]->vTranList[0].x,
-					     renderList->polyPointer[poly]->vTranList[0].y,
-					     renderList->polyPointer[poly]->color,
-					     videoBuffer,
-					     lPitch);		
-	}
-}
-
-void Draw_RENDERLIST4D_Wire32(LPRENDERLIST4D renderList, 
-							    UCHAR*           videoBuffer,
-							    int              lPitch)
-{
-	for (int poly = 0; poly < renderList->numPolys; poly++)
-	{
-		if (!(renderList->polyPointer[poly]->state & POLY4D_STATE_ACTIVE)  ||
-			 (renderList->polyPointer[poly]->state & POLY4D_STATE_CLIPPED) ||
-			 (renderList->polyPointer[poly]->state & POLY4D_STATE_BACKFACE))
-		    continue;
-
-		
-		Draw_Clip_Line32(renderList->polyPointer[poly]->vTranList[0].x,
-			             renderList->polyPointer[poly]->vTranList[0].y,
-					     renderList->polyPointer[poly]->vTranList[1].x,
-					     renderList->polyPointer[poly]->vTranList[1].y,
-					     renderList->polyPointer[poly]->color,
-					     videoBuffer,
-					     lPitch);
-
-		Draw_Clip_Line32(renderList->polyPointer[poly]->vTranList[1].x,
-			             renderList->polyPointer[poly]->vTranList[1].y,
-					     renderList->polyPointer[poly]->vTranList[2].x,
-					     renderList->polyPointer[poly]->vTranList[2].y,
-					     renderList->polyPointer[poly]->color,
-					     videoBuffer,
-					     lPitch);
-
-		Draw_Clip_Line32(renderList->polyPointer[poly]->vTranList[2].x,
-			             renderList->polyPointer[poly]->vTranList[2].y,
-					     renderList->polyPointer[poly]->vTranList[0].x,
-					     renderList->polyPointer[poly]->vTranList[0].y,
-					     renderList->polyPointer[poly]->color,
-					     videoBuffer,
-					     lPitch);		
-	}
-}
 
 void Build_CAM4D_Matrix_Euler(LPCAM4D cam, int camRotSeq)
 {
