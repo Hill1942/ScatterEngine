@@ -110,9 +110,11 @@ void CreateWindow(RenderContext* rcx)
 
 void Loop(RenderContext* rcx, RenderCallback render)
 {
+	int t = 0;
 	bool bWinMapped = false;
 	for(;;)
 	{
+		t++;
 		XEvent newEvent;
 		XWindowAttributes winData;
 
@@ -121,10 +123,10 @@ void Loop(RenderContext* rcx, RenderCallback render)
 		switch(newEvent.type)
 		{
 			case UnmapNotify:
-			    bWinMapped = False;
+			    bWinMapped = false;
 			    break;
 			case MapNotify:
-				bWinMapped = True;
+				bWinMapped = true;
 				break;
 			case ConfigureNotify:
 				XGetWindowAttributes(rcx->dpy, rcx->win, &winData);
@@ -142,6 +144,7 @@ void Loop(RenderContext* rcx, RenderCallback render)
 				exit(0);
 				break;
 		}
+		std::cout << bWinMapped << ", " << t << std::endl;
 		if (bWinMapped) 
 		{
 			render(rcx);
