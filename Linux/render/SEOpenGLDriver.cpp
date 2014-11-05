@@ -6,6 +6,7 @@
 
 #include "../SEConfig.h"
 #include "../platform/SEWindow.h"
+#include "../math/SEMath.h"
 #include "SEOpenGLDriver.h"
 
 GLuint program;
@@ -122,13 +123,13 @@ void Draw_Pixel(int x, int y, int color, RenderContext *rcx)
 	//glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
 	//glEnableVertexAttribArray(1);
 	glUseProgram(program);
-	glPointSize(10.0f);
+	//glPointSize(10.0f);
 	//glBindVertexArray(vaos[0]);
 	glDrawArrays(GL_POINTS, 0, 1);
 }
 
-/*
-int Clip_Line(int &x1, int &y1, int &x2, int &y2)
+
+int Clip_Line(int &x1, int &y1, int &x2, int &y2, RenderContext* rcx)
 {
 #define CLIP_CODE_C  0x0000
 #define CLIP_CODE_N  0x0008
@@ -148,6 +149,11 @@ int Clip_Line(int &x1, int &y1, int &x2, int &y2)
 
 	int directCode1 = 0;
 	int directCode2 = 0;
+
+	int minClipX = 0;
+	int maxClipX = rcx->nWindowWidth - 1;
+	int minClipY = 0;
+	int maxClipY = rcx->nWindowHeight - 1;
 
 	if (y1 < minClipY)
 		directCode1 |= CLIP_CODE_N;
@@ -327,22 +333,14 @@ int Clip_Line(int &x1, int &y1, int &x2, int &y2)
 	return 1;
 }
 
-int Draw_Line32_Hard(int x0, 
-	                 int y0,
-	                 int x1, 
-	                 int y1,
-	                 int color,
-	                 int lPitch)
-{
 
-}
 
-int Draw_Line32(int    x0, 
+int Draw_Line(int    x0, 
 			    int    y0, 
 			    int    x1, 
 			    int    y1,
 			    int    color,
-			    int    lPitch)
+			    RenderContext* rcx)
 {
 	int dx;
 	int dy;
@@ -375,12 +373,15 @@ int Draw_Line32(int    x0,
 		yinc = -1;
 	}
 
+	int dx2 = dx << 1;
+	int dy2 = dy << 1;
+
 	if (dx > dy)
 	{
 		int error = 0;
 		for (int i = 0; i <= dx; i++)
 		{
-			Draw_Pixel32(x, y, color);
+			Draw_Pixel(x, y, color, rcx);
 			error += dy2;
 			if (error >= dx)
 			{
@@ -395,7 +396,7 @@ int Draw_Line32(int    x0,
 		int error = 0;
 		for (int i = 0; i <= dy; i++)
 		{
-			Draw_Pixel32(x, y, color);
+			Draw_Pixel(x, y, color, rcx);
 			error += dx2;
 			if (error >= dy)
 			{
@@ -409,24 +410,25 @@ int Draw_Line32(int    x0,
 	return 1;
 }
 
-int Draw_Clip_Line32(int    x0, 
+int Draw_Clip_Line(int    x0, 
 					 int    y0, 
 					 int    x1, 
 					 int    y1,
-					 int    color)
+					 int    color,
+					 RenderContext* rcx)
 {
 	int xc0 = x0;
 	int yc0 = y0;
 	int xc1 = x1;
 	int yc1 = y1;
 
-	if (Clip_Line(xc0, yc0, xc1, yc1))
-		Draw_Line32(xc0, yc0, xc1, yc1, color);
+	if (Clip_Line(xc0, yc0, xc1, yc1, rcx))
+		Draw_Line(xc0, yc0, xc1, yc1, color, rcx);
 
 	return 1;
 }
-/*
-void Draw_RENDERLIST4D_Wire32(LPRENDERLIST4D renderList
+
+void Draw_RENDERLIST4D_Wire(LPRENDERLIST4D renderList, RenderContext* rcx)
 {
 	for (int poly = 0; poly < renderList->numPolys; poly++)
 	{
@@ -435,25 +437,28 @@ void Draw_RENDERLIST4D_Wire32(LPRENDERLIST4D renderList
 			 (renderList->polyPointer[poly]->state & POLY4D_STATE_BACKFACE))
 		    continue;
 	
-		Draw_Clip_Line32(renderList->polyPointer[poly]->vTranList[0].x,
+		Draw_Clip_Line(renderList->polyPointer[poly]->vTranList[0].x,
 			             renderList->polyPointer[poly]->vTranList[0].y,
 					     renderList->polyPointer[poly]->vTranList[1].x,
 					     renderList->polyPointer[poly]->vTranList[1].y,
-					     renderList->polyPointer[poly]->color);
+					     renderList->polyPointer[poly]->color,
+					     rcx);
 
-		Draw_Clip_Line32(renderList->polyPointer[poly]->vTranList[1].x,
+		Draw_Clip_Line(renderList->polyPointer[poly]->vTranList[1].x,
 			             renderList->polyPointer[poly]->vTranList[1].y,
 					     renderList->polyPointer[poly]->vTranList[2].x,
 					     renderList->polyPointer[poly]->vTranList[2].y,
-					     renderList->polyPointer[poly]->color);
+					     renderList->polyPointer[poly]->color,
+					     rcx);
 
-		Draw_Clip_Line32(renderList->polyPointer[poly]->vTranList[2].x,
+		Draw_Clip_Line(renderList->polyPointer[poly]->vTranList[2].x,
 			             renderList->polyPointer[poly]->vTranList[2].y,
 					     renderList->polyPointer[poly]->vTranList[0].x,
 					     renderList->polyPointer[poly]->vTranList[0].y,
-					     renderList->polyPointer[poly]->color);		
+					     renderList->polyPointer[poly]->color,
+					     rcx);		
 	}
-}*/
+}
 
 
 
