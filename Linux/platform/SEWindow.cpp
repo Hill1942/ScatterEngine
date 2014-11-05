@@ -115,13 +115,15 @@ void Loop(RenderContext* rcx, RenderCallback render)
 	for(;;)
 	{
 		t++;
+		std::cout << t << std::endl;
 		XEvent newEvent;
 		XWindowAttributes winData;
 
-		XNextEvent(rcx->dpy, &newEvent);
-
-		switch(newEvent.type)
+		while(XPending(rcx->dpy))
 		{
+			XNextEvent(rcx->dpy, &newEvent);
+			switch(newEvent.type)
+			{
 			case UnmapNotify:
 			    bWinMapped = false;
 			    break;
@@ -143,8 +145,10 @@ void Loop(RenderContext* rcx, RenderCallback render)
 				Cleanup(rcx);
 				exit(0);
 				break;
+			}
 		}
-		std::cout << bWinMapped << ", " << t << std::endl;
+
+		//std::cout << bWinMapped << ", " << t << std::endl;
 		if (bWinMapped) 
 		{
 			render(rcx);
