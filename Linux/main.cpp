@@ -11,14 +11,14 @@
 
 #include "SEConfig.h"
 #include "platform/SEWindow.h"
-#include "render/SEOpenGLDriver.h"
 #include "math/SEMath.h"
-//#include "SEPerspective.h"
+#include "render/SEOpenGLDriver.h"
+#include "SEPerspective.h"
 
 
 
 
-/*
+
 POINT4D  cam_pos = {0,0,-100,1};
 VECTOR4D cam_dir = {0,0,0,1};
 
@@ -32,7 +32,7 @@ RENDERLIST4D rend_list;               // the single renderlist
 POLYF4D      poly1;                   // our lonely polygon
 POINT4D        poly1_pos = {0,0,100,1}; // world position of polygon
 
-*/
+
 
 void Draw(RenderContext *rcx);
 void InitGame(RenderContext *rcx);
@@ -63,7 +63,9 @@ void Draw(RenderContext *rcx)
 {
 	const GLfloat color[] = {0.0f, 0.0f, 0.0f, 1.0f};
 	glClearBufferfv(GL_COLOR, 0, color);
-/*
+
+    static MATRIX_4X4 mrot; // general rotation matrix
+
 	static float ang_y = 0;      // rotation angle
 
 	Reset_RENDERLIST4D(&rend_list);
@@ -102,7 +104,7 @@ void Draw(RenderContext *rcx)
    // DDraw_Lock_Back_Surface();
     
     // render the polygon list
-    Draw_RENDERLIST4D_Wire32(&rend_list, backBuffer, backLPitch);
+    Draw_RENDERLIST4D_Wire(&rend_list, rcx);
     
     // unlock the back buffer
    // DDraw_Unlock_Back_Surface();
@@ -111,21 +113,21 @@ void Draw(RenderContext *rcx)
    // DDraw_Flip();
     
     // sync to 30ish fps
-   // Wait_Clock(30);*/
+   // Wait_Clock(30);
 
     
-	Draw_Pixel(100, 200, 0x00ff0000, rcx);
+	//Draw_Pixel(100, 200, 0x00ff0000, rcx);
     glXSwapBuffers(rcx->dpy, rcx->win);    
 }
 
 void InitGame(RenderContext *rcx)
 {
-	//Build_Sin_Cos_Tables();
+	Build_Sin_Cos_Tables();
 
     // initialize a single polygon
-    /*poly1.state  = POLY4D_STATE_ACTIVE;
+    poly1.state  = POLY4D_STATE_ACTIVE;
     poly1.attr   =  0; 
-    poly1.color  = _RGB32BIT_8888(255,255,0, 0);
+    poly1.color  = RGB32BIT_8888(255,255,0, 0);
       
 	poly1.vList[0].x = 0;
     poly1.vList[0].y = 50;
@@ -154,7 +156,7 @@ void InitGame(RenderContext *rcx)
                  500.0,
                  90.0,      // field of view in degrees
                  rcx->nWindowWidth,   // size of final screen viewport
-                 rdx->nWindowHeight);*/
+                 rcx->nWindowHeight);
 }
 
 void InitGL(RenderContext *rcx)
