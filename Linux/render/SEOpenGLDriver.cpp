@@ -460,5 +460,257 @@ void Draw_RENDERLIST4D_Wire(LPRENDERLIST4D renderList, RenderContext* rcx)
 	}
 }
 
+/************************************************
+for triangle like this:
+     ______
+     \    /
+      \  /
+       \/
+**************************************************/
+void Draw_Top_Triangle(int x1,    int y1,
+					   int x2,    int y2, 
+					   int x3,    int y3,
+					   int color, RenderContext* rcx)
+{
+	float k_right;
+	float k_left;
+	float xStart;
+	float xEnd;
+
+	int   clip_right;
+	int   clip_left;
+
+	int minClipX = 0;
+	int maxClipX = rcx->nWindowWidth - 1;
+	int minClipY = 0;
+	int maxClipY = rcx->nWindowHeight - 1;
+
+	int temp;
+	if (x2 < x1)
+	{
+		temp = x2;
+		x2 = x1;
+		x1 = temp;
+	}
+
+	k_left   = (float)(x3 - x1) / (float)(y3 - y1);
+	k_right  = (float)(x3 - x2) / (float)(y3 - y1);
+
+	xStart = (float)x1;
+	xEnd   = (float)x2 + 0.5f;
+
+	if (y1 < minClipY)
+	{
+		xStart = xStart + k_left  * (float)(minClipY - y1);
+		xEnd   = xEnd   + k_right * (float)(minClipY - y1);
+		y1 = minClipY;
+	}
+
+	if (y3 > maxClipY)
+		y3 = maxClipY;
+
+	if (x1 >= minClipX && x1 <= maxClipX &&
+		x2 >= minClipX && x2 <= maxClipX &&
+		x3 >= minClipX && x3 <= maxClipX)
+	{
+		for (int i = y1; i <= y3; i++)
+		{
+			for (int s = xStart; s<= xEnd; s++) 
+			{
+				Draw_Pixel(s, i, color, rcx);
+			}
+			xStart += k_left;
+			xEnd   += k_right;
+		}
+	}
+	else
+	{
+		for (int i = y1; i <= y3; i++)
+		{
+			clip_left  = (int)xStart;
+			clip_right = (int)xEnd; 
+
+			xStart += k_left;
+			xEnd   += k_right;
+
+			if (clip_left < minClipX)
+			{
+				clip_left = minClipX;
+				if (clip_right < minClipX)
+					continue;
+			}
+			if (clip_right > maxClipX)
+			{
+				clip_right = maxClipX;
+				if (clip_left > maxClipX)
+					continue;
+			}
+			for (int s = xStart; s<= xEnd; s++) 
+			{
+				Draw_Pixel(s, i, color, rcx);
+			}
+	}
+}
+
+/************************************************
+for triangle like this:
+      /\
+     /  \
+    /    \
+   /______\
+**************************************************/
+void Draw_Bottom_Triangle(int x1,    int y1,
+					      int x2,    int y2, 
+					      int x3,    int y3,
+					      int color, RenderContext* rcx)
+{
+	float k_right;
+	float k_left;
+	float xStart;
+	float xEnd;
+
+	int   clip_right;
+	int   clip_left;
+
+	int minClipX = 0;
+	int maxClipX = rcx->nWindowWidth - 1;
+	int minClipY = 0;
+	int maxClipY = rcx->nWindowHeight - 1;
+
+	int temp;
+	if (x3 < x2)
+	{
+		temp = x3;
+		x3 = x2;
+		x2 = temp;
+	}
+
+	k_left  = (float)(x2 - x1) / (float)(y3 - y1);
+	k_right = (float)(x3 - x1) / (float)(y3 - y1);
+
+	xStart = (float)x1;
+	xEnd   = (float)x1;
+
+	if (y1 < minClipY)
+	{
+		xStart = xStart + k_left  * (float)(minClipY - y1);
+		xEnd   = xEnd   + k_right * (float)(minClipY - y1);
+		y1 = minClipY;
+	}
+
+	if (y3 > maxClipY)
+		y3 = maxClipY;
+
+
+	if (x1 >= minClipX && x1 <= maxClipX &&
+		x2 >= minClipX && x2 <= maxClipX &&
+		x3 >= minClipX && x3 <= maxClipX)
+	{
+		for (int i = y1; i <= y3; i++)
+		{
+			for (int s = xStart; s<= xEnd; s++) 
+			{
+				Draw_Pixel(s, i, color, rcx);
+			}
+			xStart += k_left;
+			xEnd   += k_right;
+		}
+	}
+	else
+	{
+		for (int i = y1; i <= y3; i++)
+		{
+			clip_left  = (int)xStart;
+			clip_right = (int)xEnd;
+
+			xStart += k_left;
+			xEnd   += k_right;
+
+			if (clip_left < minClipX)
+			{
+				clip_left = minClipX;
+				if (clip_right < minClipX)
+					continue;
+			}
+			if (clip_right > maxClipX)
+			{
+				clip_right = maxClipX;
+				if (clip_left > maxClipX)
+					continue;
+			}
+			for (int s = xStart; s<= xEnd; s++) 
+			{
+				Draw_Pixel(s, i, color, rcx);
+			}
+		}		
+	}
+}
+
+void Draw_2D_Triangle(int x1,    int y1,
+					  int x2,    int y2, 
+					  int x3,    int y3,
+					  int color, RenderContext* rcx)
+{
+	int minClipX = 0;
+	int maxClipX = rcx->nWindowWidth - 1;
+	int minClipY = 0;
+	int maxClipY = rcx->nWindowHeight - 1;
+	
+	if ((x1 == x2 && x2 == x3) || (y1 == y2 && y2 == y3))
+		return;
+
+	int tempX;
+	int tempY;
+	if (y2 < y1)
+	{
+		tempX = x2;
+		tempY = y2;
+		x2    = x1;
+		y2    = y1;
+		x1    = tempX;
+		y1    = tempY;
+	}
+
+	if (y3 < y1)
+	{
+		tempX = x3;
+		tempY = y3;
+		x3    = x1;
+		y3    = y1;
+		x1    = tempX;
+		y1    = tempY;
+	}
+
+	if (y3 < y2)
+	{
+		tempX = x2;
+		tempY = y2;
+		x2    = x3;
+		y2    = y3;
+		x3    = tempX;
+		y3    = tempY;
+	}
+
+	if ( y3 < minClipY || y1 > maxClipY ||
+		(x1 < minClipX && x2 < minClipX && x3 < minClipX) ||
+		(x1 > maxClipX && x2 > maxClipX && x3 > maxClipX))
+		return;
+
+	if (y1 == y2)
+	{
+		Draw_Top_Triangle(x1, y1, x2, y2, x3, y3, color, rcx);
+	}
+	else if (y2 == y3)
+	{
+		Draw_Bottom_Triangle(x1, y1, x2, y2, x3, y3, color, rcx);
+	}
+	else
+	{
+		int newX = x1 + (int)(0.5 + (float)(y2 - y1) * (float)(x3 - x1) / (float)(y3 - y1));
+		Draw_Bottom_Triangle(x1, y1, newX, y2, x2, y2, color, rcx);
+		Draw_Top_Triangle(x2, y2, newX, y2, x3, y3, color, rcx);
+	}
+}
+
 
 

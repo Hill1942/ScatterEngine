@@ -127,16 +127,30 @@ void  Draw_OBJECT4D_Wire(LPOBJECT4D obj, RenderContext* rcx);
 void  Draw_RENDERLIST4D_Wire(LPRENDERLIST4D renderList, RenderContext* rcx);
 
 
+void Draw_Pixel(int x, int y, int color, RenderContext *rcx);
 
 int Clip_Line(int &x1, int &y1, int &x2, int &y2, RenderContext* rcx);
 int Draw_Line(int x0, int y0, int x1, int y1, int color, RenderContext* rcx);
 int Draw_Clip_Line(int x0, int y0, int x1, int y1, int color, RenderContext* rcx);
 
+void Draw_Top_Triangle(int x1,    int y1,
+					   int x2,    int y2, 
+					   int x3,    int y3,
+					   int color, RenderContext* rcx);
+void Draw_Bottom_Triangle(int x1,    int y1,
+					      int x2,    int y2, 
+					      int x3,    int y3,
+					      int color, RenderContext* rcx);
+void Draw_2D_Triangle(int x1,    int y1,
+					  int x2,    int y2, 
+					  int x3,    int y3,
+					  int color, RenderContext* rcx);
+
 
 void InitShaders();
 GLuint CompileShaders();
 
-void Draw_Pixel(int x, int y, int color, RenderContext *rcx);
+
 
 
 #endif
