@@ -428,37 +428,7 @@ int Draw_Clip_Line(int    x0,
 	return 1;
 }
 
-void Draw_RENDERLIST4D_Wire(LPRENDERLIST4D renderList, RenderContext* rcx)
-{
-	for (int poly = 0; poly < renderList->numPolys; poly++)
-	{
-		if (!(renderList->polyPointer[poly]->state & POLY4D_STATE_ACTIVE)  ||
-			 (renderList->polyPointer[poly]->state & POLY4D_STATE_CLIPPED) ||
-			 (renderList->polyPointer[poly]->state & POLY4D_STATE_BACKFACE))
-		    continue;
-	
-		Draw_Clip_Line(renderList->polyPointer[poly]->vTranList[0].x,
-			             renderList->polyPointer[poly]->vTranList[0].y,
-					     renderList->polyPointer[poly]->vTranList[1].x,
-					     renderList->polyPointer[poly]->vTranList[1].y,
-					     renderList->polyPointer[poly]->color,
-					     rcx);
 
-		Draw_Clip_Line(renderList->polyPointer[poly]->vTranList[1].x,
-			             renderList->polyPointer[poly]->vTranList[1].y,
-					     renderList->polyPointer[poly]->vTranList[2].x,
-					     renderList->polyPointer[poly]->vTranList[2].y,
-					     renderList->polyPointer[poly]->color,
-					     rcx);
-
-		Draw_Clip_Line(renderList->polyPointer[poly]->vTranList[2].x,
-			             renderList->polyPointer[poly]->vTranList[2].y,
-					     renderList->polyPointer[poly]->vTranList[0].x,
-					     renderList->polyPointer[poly]->vTranList[0].y,
-					     renderList->polyPointer[poly]->color,
-					     rcx);		
-	}
-}
 
 /************************************************
 for triangle like this:
@@ -549,6 +519,7 @@ void Draw_Top_Triangle(int x1,    int y1,
 			{
 				Draw_Pixel(s, i, color, rcx);
 			}
+		}	
 	}
 }
 
@@ -709,6 +680,64 @@ void Draw_2D_Triangle(int x1,    int y1,
 		int newX = x1 + (int)(0.5 + (float)(y2 - y1) * (float)(x3 - x1) / (float)(y3 - y1));
 		Draw_Bottom_Triangle(x1, y1, newX, y2, x2, y2, color, rcx);
 		Draw_Top_Triangle(x2, y2, newX, y2, x3, y3, color, rcx);
+	}
+}
+
+
+void Draw_RENDERLIST4D_Wire(LPRENDERLIST4D renderList, RenderContext* rcx)
+{
+	for (int poly = 0; poly < renderList->numPolys; poly++)
+	{
+		if (!(renderList->polyPointer[poly]->state & POLY4D_STATE_ACTIVE)  ||
+			 (renderList->polyPointer[poly]->state & POLY4D_STATE_CLIPPED) ||
+			 (renderList->polyPointer[poly]->state & POLY4D_STATE_BACKFACE))
+		    continue;
+	
+		Draw_Clip_Line(renderList->polyPointer[poly]->vTranList[0].x,
+			             renderList->polyPointer[poly]->vTranList[0].y,
+					     renderList->polyPointer[poly]->vTranList[1].x,
+					     renderList->polyPointer[poly]->vTranList[1].y,
+					     renderList->polyPointer[poly]->color,
+					     rcx);
+
+		Draw_Clip_Line(renderList->polyPointer[poly]->vTranList[1].x,
+			             renderList->polyPointer[poly]->vTranList[1].y,
+					     renderList->polyPointer[poly]->vTranList[2].x,
+					     renderList->polyPointer[poly]->vTranList[2].y,
+					     renderList->polyPointer[poly]->color,
+					     rcx);
+
+		Draw_Clip_Line(renderList->polyPointer[poly]->vTranList[2].x,
+			             renderList->polyPointer[poly]->vTranList[2].y,
+					     renderList->polyPointer[poly]->vTranList[0].x,
+					     renderList->polyPointer[poly]->vTranList[0].y,
+					     renderList->polyPointer[poly]->color,
+					     rcx);		
+	}
+}
+
+void Draw_OBJECT4D_Solid(LPOBJECT4D obj, RenderContext* rcx)
+{
+
+}
+
+void Draw_RENDERLIST4D_Solid(LPRENDERLIST4D renderList, RenderContext* rcx) 
+{
+	for (int poly = 0; poly < renderList->numPolys; poly++)
+	{
+		if (!(renderList->polyPointer[poly]->state & POLY4D_STATE_ACTIVE) ||
+			 (renderList->polyPointer[poly]->state & POLY4D_STATE_CLIPPED) ||
+			 (renderList->polyPointer[poly]->state & POLY4D_STATE_BACKFACE))
+			 continue;
+
+		Draw_2D_Triangle(renderList->polyPointer[poly]->vTranList[0].x,
+			renderList->polyPointer[poly]->vTranList[0].y, 
+			renderList->polyPointer[poly]->vTranList[1].x, 
+			renderList->polyPointer[poly]->vTranList[1].y, 
+			renderList->polyPointer[poly]->vTranList[2].x, 
+			renderList->polyPointer[poly]->vTranList[2].y,
+			renderList->polyPointer[poly]->color,
+			rcx);
 	}
 }
 

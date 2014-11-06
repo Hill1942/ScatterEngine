@@ -123,8 +123,11 @@ int   Insert_OBJECT4D_RENDERLIST4D(LPRENDERLIST4D renderList, LPOBJECT4D obj,
 
 void  Draw_OBJECT4D_Wire(LPOBJECT4D obj, RenderContext* rcx);
 
-
 void  Draw_RENDERLIST4D_Wire(LPRENDERLIST4D renderList, RenderContext* rcx);
+
+void Draw_OBJECT4D_Solid(LPOBJECT4D obj, RenderContext* rcx);
+
+void Draw_RENDERLIST4D_Solid(LPRENDERLIST4D renderList, RenderContext* rcx);
 
 
 void Draw_Pixel(int x, int y, int color, RenderContext *rcx);

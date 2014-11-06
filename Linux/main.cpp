@@ -7,6 +7,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
+#include <sys/time.h>
 
 
 #include "SEConfig.h"
@@ -60,8 +61,13 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
+    
+
 void Draw(RenderContext *rcx)
 {
+    struct timeval start;
+    gettimeofday(&start, NULL);
+
 	const GLfloat color[] = {0.0f, 0.0f, 0.0f, 1.0f};
 	glClearBufferfv(GL_COLOR, 0, color);
 
@@ -105,7 +111,7 @@ void Draw(RenderContext *rcx)
    // DDraw_Lock_Back_Surface();
     
     // render the polygon list
-    Draw_RENDERLIST4D_Wire(&rend_list, rcx);
+    Draw_RENDERLIST4D_Solid(&rend_list, rcx);
     
     // unlock the back buffer
    // DDraw_Unlock_Back_Surface();
@@ -118,7 +124,17 @@ void Draw(RenderContext *rcx)
 
     
 	//Draw_Pixel(100, 200, 0x00ff0000, rcx);
-    glXSwapBuffers(rcx->dpy, rcx->win);    
+    glXSwapBuffers(rcx->dpy, rcx->win);   
+
+    struct timeval end;
+    gettimeofday(&end, NULL);
+
+    //std::cout << (start.tv_usec) << std::endl;
+
+    //std::cout << (end.tv_usec) << std::endl;
+
+    std::cout << (1000000 / (end.tv_usec - start.tv_usec)) << std::endl;
+    
 }
 
 void InitGame(RenderContext *rcx)

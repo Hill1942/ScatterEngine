@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cstdlib>
 
+
 #include "SEWindow.h"
 
 
@@ -112,10 +113,10 @@ void Loop(RenderContext* rcx, RenderCallback render)
 {
 	int t = 0;
 	bool bWinMapped = false;
+
 	for(;;)
 	{
 		t++;
-		std::cout << t << std::endl;
 		XEvent newEvent;
 		XWindowAttributes winData;
 
@@ -150,8 +151,8 @@ void Loop(RenderContext* rcx, RenderCallback render)
 
 		//std::cout << bWinMapped << ", " << t << std::endl;
 		if (bWinMapped) 
-		{
-			render(rcx);
+		{					
+			render(rcx);		
 		}
 	}
 }
