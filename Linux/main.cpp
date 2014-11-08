@@ -14,17 +14,20 @@
 #include "platform/SEWindow.h"
 #include "math/SEMath.h"
 #include "render/SEOpenGLDriver.h"
+#include "util/SELoader.h"
 #include "SEPerspective.h"
 
 
 
 
 
+
 POINT4D  cam_pos = {0,0,-100,1};
+POINT4D  cam_target = {0,0,0,1};
 VECTOR4D cam_dir = {0,0,0,1};
 
 // all your initialization code goes here...
-VECTOR4D vscale={.5,.5,.5,1}, 
+VECTOR4D vscale={20,20,20,1}, 
          vpos = {0,0,0,1}, 
          vrot = {0,0,0,1};
 
@@ -33,6 +36,7 @@ RENDERLIST4D rend_list;               // the single renderlist
 POLYF4D      poly1;                   // our lonely polygon
 POINT4D        poly1_pos = {0,0,100,1}; // world position of polygon
 
+OBJECT4D myobj;
 
 
 void Draw(RenderContext *rcx);
@@ -77,8 +81,8 @@ void Draw(RenderContext *rcx)
 
 	Reset_RENDERLIST4D(&rend_list);
     
-    // insert polygon into the renderlist
-    Insert_POLYF4D_RENDERLIST4D(&rend_list, &poly1);
+    Insert_OBJECT4D_RENDERLIST4D(&rend_list, &myobj, 1);
+
     
     // generate rotation matrix around y axis
     Build_XYZ_Rotation_Matrix4X4(0, ang_y, 0, &mrot);
@@ -141,27 +145,12 @@ void InitGame(RenderContext *rcx)
 {
 	Build_Sin_Cos_Tables();
 
-    // initialize a single polygon
-    poly1.state  = POLY4D_STATE_ACTIVE;
-    poly1.attr   =  0; 
-    poly1.color  = RGB32BIT_8888(255,255,0, 0);
-      
-	poly1.vList[0].x = 0;
-    poly1.vList[0].y = 50;
-    poly1.vList[0].z = 0;
-    poly1.vList[0].w = 1;
-
-    poly1.vList[1].x = 50;
-    poly1.vList[1].y = -50;
-    poly1.vList[1].z = 0;
-    poly1.vList[1].w = 1;
-
-    poly1.vList[2].x = -50;
-    poly1.vList[2].y = -50;
-    poly1.vList[2].z = 0;
-    poly1.vList[2].w = 1;
-
-    poly1.next = poly1.prev = NULL;
+    Load_OBJECT4D_3DSASC(&myobj, 
+                         "car.asc", 
+                         &vscale, 
+                         &vpos, 
+                         &vrot, 
+                         VERTEX_FLAGS_INVERT_WINDING_ORDER | VERTEX_FLAGS_SWAP_YZ);
     
     // initialize the camera with 90 FOV, normalized coordinates
     Init_CAM4D(&cam,      // the camera object

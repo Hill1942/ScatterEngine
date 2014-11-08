@@ -684,6 +684,43 @@ void Draw_2D_Triangle(int x1,    int y1,
 }
 
 
+void Draw_OBJECT4D_Wire(LPOBJECT4D obj, RenderContext* rcx)
+{
+	for (int poly = 0; poly < obj->numPolys; poly++)
+	{
+		if (!(obj->polyList[poly].state & POLY4D_STATE_ACTIVE)  ||
+			 (obj->polyList[poly].state & POLY4D_STATE_CLIPPED) ||
+			 (obj->polyList[poly].state & POLY4D_STATE_BACKFACE))
+		    continue;
+
+		int v0 = obj->polyList[poly].vert[0];
+		int v1 = obj->polyList[poly].vert[1];
+		int v2 = obj->polyList[poly].vert[2];
+
+		Draw_Clip_Line(obj->vTransList[v0].x,
+			           obj->vTransList[v0].y,
+					   obj->vTransList[v1].x,
+					   obj->vTransList[v1].y,
+					   obj->polyList[poly].color,
+					   rcx);
+
+		Draw_Clip_Line(obj->vTransList[v1].x,
+			           obj->vTransList[v1].y,
+					   obj->vTransList[v2].x,
+					   obj->vTransList[v2].y,
+					   obj->polyList[poly].color,
+					   rcx);
+
+		Draw_Clip_Line(obj->vTransList[v2].x,
+			           obj->vTransList[v2].y,
+					   obj->vTransList[v0].x,
+					   obj->vTransList[v0].y,
+					   obj->polyList[poly].color,
+					   rcx);
+	}
+}
+
+
 void Draw_RENDERLIST4D_Wire(LPRENDERLIST4D renderList, RenderContext* rcx)
 {
 	for (int poly = 0; poly < renderList->numPolys; poly++)
@@ -718,7 +755,26 @@ void Draw_RENDERLIST4D_Wire(LPRENDERLIST4D renderList, RenderContext* rcx)
 
 void Draw_OBJECT4D_Solid(LPOBJECT4D obj, RenderContext* rcx)
 {
+	for (int poly = 0; poly < obj->numPolys; poly++)
+	{
+		if (!(obj->polyList[poly].state & POLY4D_STATE_ACTIVE) ||
+			 (obj->polyList[poly].state & POLY4D_STATE_CLIPPED) ||
+			 (obj->polyList[poly].state & POLY4D_STATE_BACKFACE))
+			 continue;
 
+		int vindex_0 = obj->polyList[poly].vert[0];
+		int vindex_1 = obj->polyList[poly].vert[1];
+		int vindex_2 = obj->polyList[poly].vert[2];
+	
+		Draw_2D_Triangle(obj->vTransList[vindex_0].x,
+		                 obj->vTransList[vindex_0].y,
+			             obj->vTransList[vindex_1].x,
+			             obj->vTransList[vindex_1].y,
+			             obj->vTransList[vindex_2].y, 
+			             obj->vTransList[vindex_2].z,
+			             obj->polyList[poly].color,
+			             rcx);
+	}
 }
 
 void Draw_RENDERLIST4D_Solid(LPRENDERLIST4D renderList, RenderContext* rcx) 
@@ -730,7 +786,8 @@ void Draw_RENDERLIST4D_Solid(LPRENDERLIST4D renderList, RenderContext* rcx)
 			 (renderList->polyPointer[poly]->state & POLY4D_STATE_BACKFACE))
 			 continue;
 
-		Draw_2D_Triangle(renderList->polyPointer[poly]->vTranList[0].x,
+		Draw_2D_Triangle(
+			renderList->polyPointer[poly]->vTranList[0].x,
 			renderList->polyPointer[poly]->vTranList[0].y, 
 			renderList->polyPointer[poly]->vTranList[1].x, 
 			renderList->polyPointer[poly]->vTranList[1].y, 
