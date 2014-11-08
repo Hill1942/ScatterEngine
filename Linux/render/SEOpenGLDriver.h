@@ -31,6 +31,8 @@
 
 #define RENDERLIST4D_MAX_POLYS 32768
 
+
+
 #define RGB32BIT_8888(a, r, g, b) ((b) + ((g) << 8) + ((r) << 16) + ((a) << 24))
 
 typedef struct POLY4D_TYP
@@ -100,6 +102,8 @@ typedef struct RENDERLIST4D_TYP
 
 
 
+
+
 inline void BREAKRGB32(int color, int& a, int& r, int& g, int& b)
 {
 	a = (color >> 24) & 0x000000ff;
@@ -148,6 +152,9 @@ void Draw_2D_Triangle(int x1,    int y1,
 					  int x2,    int y2, 
 					  int x3,    int y3,
 					  int color, RenderContext* rcx);
+
+
+
 
 
 void InitShaders();

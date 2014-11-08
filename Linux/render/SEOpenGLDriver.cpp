@@ -772,7 +772,7 @@ void Draw_OBJECT4D_Solid(LPOBJECT4D obj, RenderContext* rcx)
 			             obj->vTransList[vindex_1].y,
 			             obj->vTransList[vindex_2].y, 
 			             obj->vTransList[vindex_2].z,
-			             obj->polyList[poly].color,
+			             obj->polyList[poly].lightColor,
 			             rcx);
 	}
 }
@@ -793,10 +793,8 @@ void Draw_RENDERLIST4D_Solid(LPRENDERLIST4D renderList, RenderContext* rcx)
 			renderList->polyPointer[poly]->vTranList[1].y, 
 			renderList->polyPointer[poly]->vTranList[2].x, 
 			renderList->polyPointer[poly]->vTranList[2].y,
-			renderList->polyPointer[poly]->color,
+			renderList->polyPointer[poly]->lightColor,
 			rcx);
 	}
 }
-
-
 
