@@ -16,6 +16,7 @@
 #include "render/SEOpenGLDriver.h"
 #include "util/SELoader.h"
 #include "SEPerspective.h"
+#include "render/SELighting.h"
 
 
 
@@ -37,6 +38,10 @@ POLYF4D      poly1;                   // our lonely polygon
 POINT4D        poly1_pos = {0,0,100,1}; // world position of polygon
 
 OBJECT4D myobj;
+
+
+extern LIGHT    lights[MAX_LIGHTS];
+extern int        numLights;
 
 
 void Draw(RenderContext *rcx);
@@ -82,6 +87,8 @@ void Draw(RenderContext *rcx)
 	Reset_RENDERLIST4D(&rend_list);
     
     Insert_OBJECT4D_RENDERLIST4D(&rend_list, &myobj, 1);
+
+    Light_RENDERLIST4D(&rend_list, &cam, lights, 4);
 
     
     // generate rotation matrix around y axis
@@ -146,7 +153,7 @@ void InitGame(RenderContext *rcx)
 	Build_Sin_Cos_Tables();
 
     Load_OBJECT4D_3DSASC(&myobj, 
-                         "car.asc", 
+                         "cube.asc", 
                          &vscale, 
                          &vpos, 
                          &vrot, 
@@ -163,6 +170,64 @@ void InitGame(RenderContext *rcx)
                  90.0,      // field of view in degrees
                  rcx->nWindowWidth,   // size of final screen viewport
                  rcx->nWindowHeight);
+
+    Reset_Lights();
+    
+    // create some working colors
+    ARGB white, gray, black, red, green, blue;
+    
+    white.argb = RGB32BIT_8888(255,255,255,0);
+    gray.argb  = RGB32BIT_8888(0,200,100,100);
+    black.argb = RGB32BIT_8888(0,0,0,0);
+    red.argb   = RGB32BIT_8888(255,0,0,0);
+    green.argb = RGB32BIT_8888(0,255,0,0);
+    blue.argb  = RGB32BIT_8888(0,0,255,0);
+    
+    
+    // ambient light
+    Init_Light(0,   
+                       LIGHT_STATE_ON,      // turn the light on
+                       LIGHT_ATTR_AMBIENT,  // ambient light type
+                       gray, black, black,    // color for ambient term only
+                       NULL, NULL,            // no need for pos or dir
+                       0,0,0,                 // no need for attenuation
+                       0,0,0);                // spotlight info NA
+    
+    
+    VECTOR4D dlight_dir = {0,1,1,1};
+    
+    // directional light
+    Init_Light(1,  
+                       LIGHT_STATE_ON,      // turn the light on
+                       LIGHT_ATTR_INFINITE, // infinite light type
+                       black, gray, black,    // color for diffuse term only
+                       NULL, &dlight_dir,     // need direction only
+                       0,0,0,                 // no need for attenuation
+                       0,0,0);                // spotlight info NA
+    
+    
+    VECTOR4D plight_pos = {0,200,0,0};
+    
+    // point light
+    Init_Light(2,
+                       LIGHT_STATE_OFF,      // turn the light on
+                       LIGHT_ATTR_POINT,    // pointlight type
+                       black, green, black,   // color for diffuse term only
+                       &plight_pos, NULL,     // need pos only
+                       0, .001, 0,              // linear attenuation only
+                       0,0,1);                // spotlight info NA
+    
+    VECTOR4D slight_pos = {0,200,0,0};
+    VECTOR4D slight_dir = {-1,0,-1,0};
+    
+    // spot light
+    Init_Light(3,
+                       LIGHT_STATE_OFF,         // turn the light on
+                       LIGHT_ATTR_SPOTLIGHT2,  // spot light type 2
+                       black, red, black,      // color for diffuse term only
+                       &slight_pos, &slight_dir, // need pos only
+                       0,.001,0,                 // linear attenuation only
+                       0,0,1);  
 }
 
 void InitGL(RenderContext *rcx)
