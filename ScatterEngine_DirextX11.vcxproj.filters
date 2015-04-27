@@ -14,9 +14,15 @@
     <ClCompile Include="render\SED3D11Driver.cpp">
       <Filter>render</Filter>
     </ClCompile>
+    <ClCompile Include="render\SENullDriver.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render\SED3D11Driver.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\SENullDriver.h">
       <Filter>render</Filter>
     </ClInclude>
   </ItemGroup>
