@@ -1,7 +1,8 @@
 #ifndef SE_DEVICE_CREATEION_PARAM_H
 #define SE_DEVICE_CREATEION_PARAM_H
 
-#include "render/SEDriverTypes.h"
+#include "../render/SEDriverTypes.h"
+
 namespace se
 {
 	struct SEDeviceCreationParameter
