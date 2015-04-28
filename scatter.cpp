@@ -8,5 +8,8 @@ namespace se
 		render::SE_DRIVER_TYPE driverType, 
 		int clientWidth,
 		int clientHeight,
-		bool fullscreen);
+		bool fullscreen)
+	{
+		
+	}
 }
