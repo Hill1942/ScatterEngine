@@ -8,6 +8,9 @@
     <Filter Include="render">
       <UniqueIdentifier>{4ccba57a-2616-4d56-9e64-29cfbcb4b79e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="device">
+      <UniqueIdentifier>{a6ce694e-3a36-4758-81c0-aab761fb5937}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="scatter.cpp" />
@@ -17,7 +20,9 @@
     <ClCompile Include="render\SENullDriver.cpp">
       <Filter>render</Filter>
     </ClCompile>
-    <ClCompile Include="SEDevice.cpp" />
+    <ClCompile Include="device\SEDevice.cpp">
+      <Filter>device</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render\SED3D11Driver.h">
@@ -30,6 +35,11 @@
     <ClInclude Include="render\SEDriverTypes.h">
       <Filter>render</Filter>
     </ClInclude>
-    <ClInclude Include="SEDevice.h" />
+    <ClInclude Include="device\SEDevice.h">
+      <Filter>device</Filter>
+    </ClInclude>
+    <ClInclude Include="device\SEDeviceCreationParameter.h">
+      <Filter>device</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
