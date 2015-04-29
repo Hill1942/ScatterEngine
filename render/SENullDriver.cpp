@@ -5,6 +5,7 @@ namespace se
 	namespace render
 	{
 		SENullDriver::SENullDriver(void)
+			:SEIDriver()
 		{
 		}
 

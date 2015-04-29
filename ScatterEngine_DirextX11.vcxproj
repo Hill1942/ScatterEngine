@@ -11,18 +11,22 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="device\SEDevice.cpp" />
+    <ClCompile Include="device\SEIDevice.cpp" />
+    <ClCompile Include="device\SEDeviceWin32.cpp" />
     <ClCompile Include="render\SED3D11Driver.cpp" />
     <ClCompile Include="render\SENullDriver.cpp" />
     <ClCompile Include="scatter.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="device\SEDevice.h" />
+    <ClInclude Include="device\SEIDevice.h" />
     <ClInclude Include="device\SEDeviceCreationParameter.h" />
+    <ClInclude Include="device\SEDeviceWin32.h" />
     <ClInclude Include="render\SED3D11Driver.h" />
     <ClInclude Include="render\SEDriverTypes.h" />
+    <ClInclude Include="render\SEIDriver.h" />
     <ClInclude Include="render\SENullDriver.h" />
     <ClInclude Include="scatter.h" />
+    <ClInclude Include="se_config.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{EEDB46C4-14CE-4C33-8FB3-91895172E500}</ProjectGuid>
