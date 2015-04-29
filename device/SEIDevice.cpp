@@ -1,11 +1,11 @@
-#include "SEDevice.h"
+#include "SEIDevice.h"
 
 
 
 
 namespace se
 {
-	SEDevice::SEDevice(const SEDeviceCreationParameter& param)
+	SEIDevice::SEIDevice(const SEDeviceCreationParameter& param)
 	{
 		this->m_driverType   = param.driverType;
 		this->m_clientWidth  = param.clientWidth;
@@ -14,7 +14,7 @@ namespace se
 	}
 
 
-	SEDevice::~SEDevice(void)
+	SEIDevice::~SEIDevice(void)
 	{
 	}
 }

@@ -3,7 +3,7 @@
 
 #include "../render/SED3D11Driver.h"
 
-#include "SEDevice.h"
+#include "SEIDevice.h"
 #include "SEDeviceWin32.h"
 
 
@@ -21,7 +21,19 @@ namespace se
 	{
 		g_pSEDeviceWin32 = this;
 
-		InitWindow();
+		if (!InitWindow())
+		{
+			MessageBox(0, L"Cannot init window!", L"Error", MB_OK);
+			return;
+		}
+
+		if (!InitDriver())
+		{
+			MessageBox(0, L"Cannot init render driver!", L"Error", MB_OK);
+			return;
+		}
+
+
 		
 	}
 

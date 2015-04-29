@@ -5,7 +5,7 @@
 
 namespace se
 {
-	class SEDeviceWin32: public SEDevice
+	class SEDeviceWin32: public SEIDevice
 	{
 	public:
 		SEDeviceWin32(const SEDeviceCreationParameter& param);

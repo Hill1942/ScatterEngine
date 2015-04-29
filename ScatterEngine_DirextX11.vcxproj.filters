@@ -20,10 +20,10 @@
     <ClCompile Include="render\SENullDriver.cpp">
       <Filter>render</Filter>
     </ClCompile>
-    <ClCompile Include="device\SEDevice.cpp">
+    <ClCompile Include="device\SEDeviceWin32.cpp">
       <Filter>device</Filter>
     </ClCompile>
-    <ClCompile Include="device\SEDeviceWin32.cpp">
+    <ClCompile Include="device\SEIDevice.cpp">
       <Filter>device</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,9 +38,6 @@
     <ClInclude Include="render\SEDriverTypes.h">
       <Filter>render</Filter>
     </ClInclude>
-    <ClInclude Include="device\SEDevice.h">
-      <Filter>device</Filter>
-    </ClInclude>
     <ClInclude Include="device\SEDeviceCreationParameter.h">
       <Filter>device</Filter>
     </ClInclude>
@@ -50,6 +47,9 @@
     <ClInclude Include="se_config.h" />
     <ClInclude Include="render\SEIDriver.h">
       <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="device\SEIDevice.h">
+      <Filter>device</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

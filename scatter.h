@@ -19,7 +19,7 @@
 
 #include "render/SEDriverTypes.h"
 #include "device/SEDeviceCreationParameter.h"
-#include "device/SEDevice.h"
+#include "device/SEIDevice.h"
 #include "device/SEDeviceWin32.h"
 
 namespace se

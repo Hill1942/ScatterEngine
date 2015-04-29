@@ -6,11 +6,14 @@
 
 namespace se
 {
-	class SEDevice
+	class SEIDevice
 	{
 	public:
-		SEDevice(const SEDeviceCreationParameter& param);
-		virtual ~SEDevice(void);
+		SEIDevice(const SEDeviceCreationParameter& param);
+		virtual ~SEIDevice(void);
+
+		void run();
+		void drop();
 
 	protected:
 		render::SE_DRIVER_TYPE m_driverType;

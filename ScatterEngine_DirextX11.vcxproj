@@ -11,14 +11,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="device\SEDevice.cpp" />
+    <ClCompile Include="device\SEIDevice.cpp" />
     <ClCompile Include="device\SEDeviceWin32.cpp" />
     <ClCompile Include="render\SED3D11Driver.cpp" />
     <ClCompile Include="render\SENullDriver.cpp" />
     <ClCompile Include="scatter.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="device\SEDevice.h" />
+    <ClInclude Include="device\SEIDevice.h" />
     <ClInclude Include="device\SEDeviceCreationParameter.h" />
     <ClInclude Include="device\SEDeviceWin32.h" />
     <ClInclude Include="render\SED3D11Driver.h" />
