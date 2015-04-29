@@ -26,6 +26,9 @@
     <ClCompile Include="device\SEIDevice.cpp">
       <Filter>device</Filter>
     </ClCompile>
+    <ClCompile Include="render\SERenderTimer.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render\SED3D11Driver.h">
@@ -50,6 +53,9 @@
     </ClInclude>
     <ClInclude Include="device\SEIDevice.h">
       <Filter>device</Filter>
+    </ClInclude>
+    <ClInclude Include="render\SERenderTimer.h">
+      <Filter>render</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

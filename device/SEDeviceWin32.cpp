@@ -34,12 +34,12 @@ namespace se
 		}
 
 
-		
+
 	}
 
 	SEDeviceWin32::~SEDeviceWin32()
 	{
-		
+
 	}
 
 	bool SEDeviceWin32::InitWindow()
@@ -92,6 +92,120 @@ namespace se
 		return true;
 	}
 
+	LRESULT SEDeviceWin32::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+	{
+		switch (msg)
+		{
+		case WM_ACTIVATE:
+			if (LOWORD(wParam) == WA_INACTIVE)
+			{
+				m_bPaused = true;
+				m_renderTimer.Stop();
+			}
+			else
+			{
+				m_bPaused = false;
+				m_renderTimer.Start();
+			}
+			return 0;
+
+		case WM_SIZE:
+			m_clientWidth = LOWORD(lParam);
+			m_clientHeight = HIWORD(lParam);
+			if (m_renderDirver)
+			{
+				if (wParam == SIZE_MINIMIZED)
+				{
+					m_bPaused = true;
+					m_bMinimized = true;
+					m_bMaximized = false;
+				}
+				else if (wParam == SIZE_MAXIMIZED)
+				{
+					m_bPaused = false;
+					m_bMinimized = false;
+					m_bMaximized = true;
+					m_renderDirver->onResize();
+				}
+				else if (wParam == SIZE_RESTORED)
+				{
+					if (m_bMinimized)
+					{
+						m_bPaused = false;
+						m_bMinimized = false;
+						m_renderDirver->onResize();
+					}
+					else if (m_bMaximized)
+					{
+						m_bPaused = false;
+						m_bMaximized = false;
+						m_renderDirver->onResize();
+					}
+					else if (m_Resizing)
+					{
+
+					}
+					else
+					{
+						m_renderDirver->onResize();
+					}
+				}
+			}
+
+			return 0;
+
+		case WM_ENTERSIZEMOVE:
+			m_bPaused = true;
+			m_Resizing = true;
+			m_renderTimer.Stop();
+			return 0;
+
+		case WM_EXITSIZEMOVE:
+			m_bPaused = false;
+			m_Resizing   = false;
+			m_renderTimer.Start();
+			m_renderDirver->onResize();
+			return 0;
+
+		case WM_DESTROY:
+			PostQuitMessage(0);
+			return 0;
+
+		case WM_SYSCOMMAND:
+			if ((wParam & 0xFFF0) == SC_SCREENSAVE ||
+				(wParam & 0xFFF0) == SC_MONITORPOWER ||
+				(wParam & 0xFFF0) == SC_KEYMENU
+				)
+				return 0;
+
+		case WM_MENUCHAR:
+			return MAKELRESULT(0, MNC_CLOSE);
+
+		case WM_GETMINMAXINFO:
+			((MINMAXINFO*)lParam)->ptMinTrackSize.x = 200;
+			((MINMAXINFO*)lParam)->ptMinTrackSize.y = 200;
+			return 0;
+
+		case WM_LBUTTONDOWN:
+		case WM_MBUTTONDOWN:
+		case WM_RBUTTONDOWN:
+			//OnMouseDown(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+			return 0;
+
+		case WM_LBUTTONUP:
+		case WM_MBUTTONUP:
+		case WM_RBUTTONUP:
+			//OnMouseUp(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+			return 0;
+
+		case WM_MOUSEMOVE:
+			//OnMouseMove(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+			return 0;
+		}
+
+		return DefWindowProc(hwnd, msg, wParam, lParam);
+	}
+
 	bool SEDeviceWin32::InitDriver()
 	{
 		switch (m_driverType)
@@ -102,7 +216,7 @@ namespace se
 
 				if (!m_renderDirver)
 				{
-					
+
 				}
 
 				break;

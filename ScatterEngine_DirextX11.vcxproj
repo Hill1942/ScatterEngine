@@ -15,6 +15,7 @@
     <ClCompile Include="device\SEDeviceWin32.cpp" />
     <ClCompile Include="render\SED3D11Driver.cpp" />
     <ClCompile Include="render\SENullDriver.cpp" />
+    <ClCompile Include="render\SERenderTimer.cpp" />
     <ClCompile Include="scatter.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -25,6 +26,7 @@
     <ClInclude Include="render\SEDriverTypes.h" />
     <ClInclude Include="render\SEIDriver.h" />
     <ClInclude Include="render\SENullDriver.h" />
+    <ClInclude Include="render\SERenderTimer.h" />
     <ClInclude Include="scatter.h" />
     <ClInclude Include="se_config.h" />
   </ItemGroup>
