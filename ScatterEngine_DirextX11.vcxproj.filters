@@ -23,6 +23,9 @@
     <ClCompile Include="device\SEDevice.cpp">
       <Filter>device</Filter>
     </ClCompile>
+    <ClCompile Include="device\SEDeviceWin32.cpp">
+      <Filter>device</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render\SED3D11Driver.h">
@@ -41,5 +44,9 @@
     <ClInclude Include="device\SEDeviceCreationParameter.h">
       <Filter>device</Filter>
     </ClInclude>
+    <ClInclude Include="device\SEDeviceWin32.h">
+      <Filter>device</Filter>
+    </ClInclude>
+    <ClInclude Include="se_config.h" />
   </ItemGroup>
 </Project>
