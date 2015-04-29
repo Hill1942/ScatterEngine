@@ -24,7 +24,7 @@
 
 namespace se
 {
-	SEDevice* CreateSEDevice(
+	SEIDevice* CreateSEDevice(
 		render::SE_DRIVER_TYPE driverType, 
 		int clientWidth,
 		int clientHeight,

@@ -2,7 +2,7 @@
 
 namespace se
 {
-	SEDevice* CreateSEDevice(
+	SEIDevice* CreateSEDevice(
 		render::SE_DRIVER_TYPE driverType, 
 		int clientWidth,
 		int clientHeight,
@@ -14,7 +14,7 @@ namespace se
 		param.clientHeight = clientHeight;
 		param.fullscreen = fullscreen;
 
-		SEDevice* pDevice = nullptr;
+		SEIDevice* pDevice = nullptr;
 #ifdef SE_WINDOWS_PLATFORM
 		pDevice = new SEDeviceWin32(param);
 #endif

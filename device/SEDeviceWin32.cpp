@@ -17,7 +17,7 @@ namespace se
 	}
 
 	SEDeviceWin32::SEDeviceWin32(const SEDeviceCreationParameter& param)
-		:SEDevice(param)
+		:SEIDevice(param)
 	{
 		g_pSEDeviceWin32 = this;
 
