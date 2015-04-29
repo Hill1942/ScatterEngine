@@ -9,7 +9,22 @@ namespace se
 	{
 	public:
 		SEDeviceWin32(const SEDeviceCreationParameter& param);
-		~SEDeviceWin32(void);
+		virtual ~SEDeviceWin32(void);
+
+		virtual LRESULT MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+	private:
+		bool InitWindow();
+		bool InitDriver();
+
+	protected:
+		HWND         m_hMainWnd;
+		HINSTANCE    m_hAppInstance;
+		bool         m_AppPaused;
+		bool         m_Minimized;
+		bool         m_Maximized;
+		bool         m_Resizing;
+		std::wstring m_strMainWndCaption;
 	};
 }
 

@@ -48,5 +48,8 @@
       <Filter>device</Filter>
     </ClInclude>
     <ClInclude Include="se_config.h" />
+    <ClInclude Include="render\SEIDriver.h">
+      <Filter>render</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -8,6 +8,7 @@
 #endif
 
 #if defined(__APPLE__) && defined(__MACH__)
+#define SE_APPLE_PLATFORM
 #include <TargetConditionals.h>
 #if TARGET_IPHONE_SIMULATOR == 1  // iOS in Xcode simulator
 #define SE_IOS_SIMULATOR

@@ -23,6 +23,7 @@
     <ClInclude Include="device\SEDeviceWin32.h" />
     <ClInclude Include="render\SED3D11Driver.h" />
     <ClInclude Include="render\SEDriverTypes.h" />
+    <ClInclude Include="render\SEIDriver.h" />
     <ClInclude Include="render\SENullDriver.h" />
     <ClInclude Include="scatter.h" />
     <ClInclude Include="se_config.h" />

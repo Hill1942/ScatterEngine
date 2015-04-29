@@ -1,9 +1,3 @@
-#include "se_config.h"
-
-#include "render/SEDriverTypes.h"
-#include "device/SEDeviceCreationParameter.h"
-#include "device/SEDevice.h"
-#include "device/SEDeviceWin32.h"
 #include "scatter.h"
 
 namespace se

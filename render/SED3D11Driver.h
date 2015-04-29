@@ -1,6 +1,7 @@
 #ifndef SE_D3D11DRIVER_H
 #define SE_D3D11DRIVER_H
 
+#include "SENullDriver.h"
 
 namespace se
 {
@@ -8,16 +9,17 @@ namespace se
 	{
 		class SED3D11Driver: public SENullDriver
 		{
+		public:
 			SED3D11Driver();
 			virtual ~SED3D11Driver();
 
-			virtual void drawPixel();
+			void drawPixel() override;
 
-			virtual void draw2DLine();
-			virtual void draw3DLine();
+			void draw2DLine() override;
+			void draw3DLine() override;
 
-			virtual void draw2DImage();
-			virtual void draw2DRectangle();
+			void draw2DImage() override;
+			void draw2DRectangle() override;
 		};
 	}
 }
