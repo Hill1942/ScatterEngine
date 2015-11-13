@@ -26,6 +26,7 @@
     <ClCompile Include="device\SEIDevice.cpp">
       <Filter>device</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render\SED3D11Driver.h">

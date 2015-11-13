@@ -102,8 +102,11 @@ namespace se
 
 				if (!m_renderDirver)
 				{
-					
+					MessageBox(0, L"Cannot init Driver!", L"Error", MB_OK);
+					return false;
 				}
+
+				return true;
 
 				break;
 			}
@@ -134,8 +137,35 @@ namespace se
 		default:
 			break;
 		}
+
+		return false;
+	}
+
+	int SEDeviceWin32::run() 
+	{
+		MSG msg = { 0 };
+
+		while (msg.message != WM_QUIT)
+		{
+			if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
+			else
+			{
+				if (!renderOneFrame())
+					break;
+			}
+		}
+
+		return (int)msg.wParam;
 	}
 
 
+	bool SEDeviceWin32::renderOneFrame() 
+	{
+		return true;
+	}
 
 }

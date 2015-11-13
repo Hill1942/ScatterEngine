@@ -17,6 +17,10 @@ namespace se
 		bool InitWindow();
 		bool InitDriver();
 
+		bool renderOneFrame();
+
+		virtual int run();
+
 	protected:
 		HWND         m_hMainWnd;
 		HINSTANCE    m_hAppInstance;
@@ -25,6 +29,8 @@ namespace se
 		bool         m_Maximized;
 		bool         m_Resizing;
 		std::wstring m_strMainWndCaption;
+
+		render::SEIDriver* renderDriver;
 	};
 }
 

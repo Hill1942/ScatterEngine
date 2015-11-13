@@ -17,4 +17,5 @@ namespace se
 	SEIDevice::~SEIDevice(void)
 	{
 	}
+
 }

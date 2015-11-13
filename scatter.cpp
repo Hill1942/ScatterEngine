@@ -9,10 +9,10 @@ namespace se
 		bool fullscreen)
 	{
 		SEDeviceCreationParameter param;
-		param.driverType = driverType;
-		param.clientWidth = clientWidth;
+		param.driverType   = driverType;
+		param.clientWidth  = clientWidth;
 		param.clientHeight = clientHeight;
-		param.fullscreen = fullscreen;
+		param.fullscreen   = fullscreen;
 
 		SEIDevice* pDevice = nullptr;
 #ifdef SE_WINDOWS_PLATFORM
